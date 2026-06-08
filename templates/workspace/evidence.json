@@ -1,0 +1,26 @@
+{
+  "schema_version": "0.1",
+  "project": {
+    "name": "",
+    "owner": "",
+    "updated_at": "",
+    "notes": ""
+  },
+  "claim_labels": [
+    "Source-backed",
+    "Assumption",
+    "Needs validation"
+  ],
+  "sources": [],
+  "claims": [
+    {
+      "id": "claim-001",
+      "claim": "Replace this sample claim with a real product, market, user, or technology claim.",
+      "label": "Needs validation",
+      "confidence": "Low",
+      "source_ids": [],
+      "notes": "Every important claim must be labeled. Add source IDs only when the claim is source-backed."
+    }
+  ]
+}
+
