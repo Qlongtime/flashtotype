@@ -14,8 +14,9 @@ Use the Flashtotype repository to install the Flashtotype PM/PO sidekick into th
 
 The agent should read `AGENTS.md` first. It will create:
 
-- `.flashtotype/` with the portable skill and templates.
-- `flashtotype-workspace/` for generated research, briefs, and prototypes.
+- `.flashtotype/` with the portable agent-only skill and generated-output templates.
+- `flashtotype-workspace/current/user-editable/` for PO/PM source files, reference docs, design notes, CSVs, and assets.
+- `flashtotype-workspace/current/output/` for the HTML board users can open in a browser.
 - A `.gitignore` entry so generated work is private by default.
 - A project-local `AGENTS.md` section so future agents know how to run the workflow.
 
@@ -37,6 +38,9 @@ The visual output is a static HTML briefing page:
 
 - `index.html`
 - `flashtotype.js`
+- `logo.png`
+
+The page renders a Miro-inspired board with Homepage, User journey flow, Prototype, Design system, and Flashtotype library pages.
 
 No backend, database, package manager, or build step is required.
 
@@ -53,13 +57,12 @@ Market and technology claims should include source URL, access date, confidence,
 ## Repository Map
 
 - `AGENTS.md`: universal agent entrypoint and bootstrap instructions.
-- `skills/flashtotype-product-sidekick/`: portable PM/PO workflow skill.
-- `templates/workspace/`: Markdown and JSON artifacts for a Flashtotype run.
-- `templates/html/`: static briefing page template.
+- `agent/skills/flashtotype-product-sidekick/`: agent-only PM/PO workflow skill.
+- `agent/board-template/`: master static board template used to generate user output.
+- `user-workspace-template/current/user-editable/`: user-editable source templates for a Flashtotype run.
 - `docs/`: public usage, evidence, and output contract docs.
 - `scripts/validate.mjs`: lightweight repository validation.
 
 ## Public Safety
 
 This repository should stay public-safe. Generated user research and prototypes belong in `flashtotype-workspace/`, which is gitignored by default. Promote only sanitized outputs into tracked docs.
-

@@ -1,0 +1,1219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flashtotype Board</title>
+  <style>
+    :root {
+      --ink: #172026;
+      --muted: #64717b;
+      --line: #d8e0e7;
+      --grid: #e7edf2;
+      --paper: #f7f9fb;
+      --panel: #ffffff;
+      --teal: #0f766e;
+      --teal-bg: #e6f5f1;
+      --blue: #2563eb;
+      --blue-bg: #eaf1ff;
+      --pink: #f4a3d8;
+      --pink-bg: #ffe6f6;
+      --yellow: #f8df72;
+      --yellow-bg: #fff7ce;
+      --amber: #b45309;
+      --amber-bg: #fff1d6;
+      --red: #b91c1c;
+      --red-bg: #fee7e7;
+      --shadow: 0 12px 32px rgba(23, 32, 38, 0.12);
+      --radius: 8px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-width: 320px;
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      letter-spacing: 0;
+      overflow: hidden;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .topbar {
+      position: fixed;
+      z-index: 20;
+      top: 12px;
+      left: 12px;
+      right: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      pointer-events: none;
+    }
+
+    .board-card {
+      display: flex;
+      align-items: center;
+      min-height: 48px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 6px 20px rgba(23, 32, 38, 0.12);
+      pointer-events: auto;
+    }
+
+    .brand-card {
+      gap: 14px;
+      padding: 0 14px 0 10px;
+    }
+
+    .menu-button,
+    .control-button {
+      display: inline-grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      border: 0;
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .menu-button:hover,
+    .control-button:hover {
+      background: #eef3f6;
+    }
+
+    .hamburger,
+    .hamburger::before,
+    .hamburger::after {
+      display: block;
+      width: 18px;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--ink);
+      content: "";
+    }
+
+    .hamburger::before {
+      transform: translateY(-6px);
+    }
+
+    .hamburger::after {
+      transform: translateY(4px);
+    }
+
+    .brand-logo {
+      display: block;
+      width: 214px;
+      height: 42px;
+      object-fit: cover;
+      object-position: center;
+      user-select: none;
+    }
+
+    .project-meta {
+      min-width: 0;
+      border-left: 1px solid var(--line);
+      padding-left: 14px;
+    }
+
+    .project-title {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 360px;
+    }
+
+    .project-subtitle {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 360px;
+    }
+
+    .status-card {
+      gap: 10px;
+      padding: 0 12px;
+    }
+
+    .status-pill {
+      border-radius: 999px;
+      background: var(--teal-bg);
+      color: var(--teal);
+      font-size: 12px;
+      font-weight: 800;
+      padding: 6px 10px;
+      white-space: nowrap;
+    }
+
+    .share-button {
+      border: 0;
+      border-radius: var(--radius);
+      background: var(--blue);
+      color: #ffffff;
+      cursor: default;
+      font-weight: 800;
+      min-height: 36px;
+      padding: 0 13px;
+    }
+
+    .page-rail {
+      position: fixed;
+      z-index: 18;
+      top: 76px;
+      left: 12px;
+      width: 268px;
+      max-height: calc(100vh - 120px);
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.97);
+      box-shadow: var(--shadow);
+      padding: 12px;
+      transition: transform 160ms ease, opacity 160ms ease;
+    }
+
+    .page-rail.is-collapsed {
+      transform: translateX(-292px);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .rail-title {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .page-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .page-button {
+      display: grid;
+      grid-template-columns: 30px minmax(0, 1fr);
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      color: var(--ink);
+      cursor: pointer;
+      padding: 8px;
+      text-align: left;
+      transition: border-color 140ms ease, background-color 140ms ease;
+    }
+
+    .page-button:hover {
+      border-color: #b4c2ce;
+      background: #fcfdfe;
+    }
+
+    .page-button[aria-current="page"] {
+      border-color: var(--teal);
+      background: var(--teal-bg);
+    }
+
+    .page-button[aria-current="page"]:hover {
+      border-color: var(--teal);
+      background: var(--teal-bg);
+    }
+
+    .page-index {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: var(--radius);
+      background: #eef3f6;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      transition: background-color 140ms ease, color 140ms ease;
+    }
+
+    .page-index svg {
+      display: block;
+      transition: transform 140ms ease;
+    }
+
+    .page-button:hover .page-index {
+      background: #e1e8ed;
+      color: var(--ink);
+    }
+
+    .page-button:hover .page-index svg {
+      transform: scale(1.1);
+    }
+
+    .page-button[aria-current="page"] .page-index {
+      background: var(--teal);
+      color: #ffffff;
+    }
+
+    .page-button[aria-current="page"]:hover .page-index {
+      background: var(--teal);
+      color: #ffffff;
+    }
+
+    .page-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 850;
+      overflow-wrap: anywhere;
+    }
+
+    .page-source {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+      overflow-wrap: anywhere;
+    }
+
+    .board-shell {
+      height: 100vh;
+      background-color: #f6f8fa;
+      background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    .board-viewport {
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      padding: 96px 72px 96px 320px;
+      cursor: default;
+      touch-action: pan-x pan-y;
+    }
+
+    .board-viewport.is-panning {
+      cursor: grabbing;
+    }
+
+    .board-stage {
+      position: relative;
+      width: 1720px;
+      min-height: 1120px;
+      transform-origin: top left;
+    }
+
+    .page-frame,
+    .page-rail,
+    .topbar,
+    .zoom-controls {
+      user-select: auto;
+    }
+
+    .page-frame {
+      width: 1180px;
+      max-width: 1540px;
+    }
+
+    .page-frame.is-home {
+      width: 920px;
+    }
+
+    .page-frame.is-canvas {
+      width: 1540px;
+    }
+
+    .source-strip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 4px 16px rgba(23, 32, 38, 0.08);
+      width: 100%;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+
+    .source-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .source-chip {
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: #eef3f6;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 750;
+      padding: 6px 9px;
+      white-space: nowrap;
+    }
+
+    .board-title {
+      margin: 0 0 18px;
+      font-size: 44px;
+      line-height: 1.05;
+      font-weight: 850;
+    }
+
+    .board-summary {
+      max-width: 780px;
+      margin: 0 0 28px;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    .board-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 18px;
+    }
+
+    .tile {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      box-shadow: 0 8px 24px rgba(23, 32, 38, 0.08);
+      padding: 18px;
+      min-height: 130px;
+    }
+
+    .tile h2,
+    .tile h3 {
+      margin: 0 0 10px;
+      line-height: 1.2;
+    }
+
+    .tile h2 {
+      font-size: 22px;
+    }
+
+    .tile h3 {
+      font-size: 17px;
+    }
+
+    .tile p,
+    .tile li {
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .tile p {
+      margin: 0;
+    }
+
+    .tile ul,
+    .tile ol {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-7 { grid-column: span 7; }
+    .span-8 { grid-column: span 8; }
+    .span-12 { grid-column: span 12; }
+
+    .notion-sheet {
+      width: 920px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      box-shadow: var(--shadow);
+      padding: 34px;
+    }
+
+    .notion-sheet .board-title {
+      font-size: 40px;
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 22px 0;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fbfcfd;
+      padding: 14px;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 22px;
+      overflow-wrap: anywhere;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      border-radius: 999px;
+      padding: 0 9px;
+      font-size: 12px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .source-backed { background: var(--teal-bg); color: var(--teal); }
+    .assumption { background: var(--amber-bg); color: var(--amber); }
+    .needs-validation { background: var(--red-bg); color: var(--red); }
+
+    .evidence-row {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr);
+      gap: 12px;
+      padding: 12px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .evidence-row:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .evidence-row strong {
+      display: block;
+      margin-bottom: 6px;
+      overflow-wrap: anywhere;
+    }
+
+    .sticky {
+      position: absolute;
+      display: grid;
+      align-content: start;
+      gap: 8px;
+      width: 210px;
+      min-height: 160px;
+      border: 1px solid rgba(23, 32, 38, 0.12);
+      background: var(--pink-bg);
+      box-shadow: 0 8px 18px rgba(23, 32, 38, 0.16);
+      padding: 16px;
+    }
+
+    .sticky h3 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.15;
+    }
+
+    .sticky p {
+      margin: 0;
+      color: #3a3038;
+      line-height: 1.4;
+    }
+
+    .sticky.yellow {
+      background: var(--yellow-bg);
+    }
+
+    .sticky.blue {
+      background: var(--blue-bg);
+    }
+
+    .journey-canvas,
+    .prototype-canvas {
+      position: relative;
+      width: 1540px;
+      min-height: 900px;
+    }
+
+    .connector-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    .journey-node {
+      position: absolute;
+      width: 230px;
+      min-height: 116px;
+      border: 1px solid rgba(23, 32, 38, 0.18);
+      border-radius: 2px;
+      background: var(--pink-bg);
+      box-shadow: 0 8px 18px rgba(23, 32, 38, 0.16);
+      padding: 14px;
+    }
+
+    .journey-node.is-action {
+      background: #f58bd9;
+    }
+
+    .journey-node.is-system {
+      background: var(--yellow-bg);
+    }
+
+    .journey-node h3 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      line-height: 1.15;
+    }
+
+    .journey-node p {
+      margin: 0;
+      color: #3f3f46;
+      line-height: 1.4;
+    }
+
+    .flow-label {
+      position: absolute;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      padding: 5px 7px;
+    }
+
+    .screen-frame {
+      position: absolute;
+      width: 320px;
+      min-height: 390px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+
+    .screen-top {
+      height: 34px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+      line-height: 34px;
+    }
+
+    .wire-block {
+      min-height: 54px;
+      margin-top: 12px;
+      border-radius: var(--radius);
+      background: #eef3f6;
+    }
+
+    .wire-block.short {
+      width: 66%;
+    }
+
+    .wire-block.accent {
+      background: var(--teal-bg);
+    }
+
+    .screen-frame h3 {
+      margin: 16px 0 8px;
+      font-size: 20px;
+    }
+
+    .screen-frame p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .design-swatches {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .swatch {
+      min-height: 124px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+    }
+
+    .swatch-color {
+      height: 72px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .swatch-body {
+      padding: 10px;
+    }
+
+    .swatch-body strong,
+    .swatch-body span {
+      display: block;
+      overflow-wrap: anywhere;
+    }
+
+    .swatch-body span {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .library-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .skill-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .library-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      box-shadow: 0 8px 24px rgba(23, 32, 38, 0.08);
+      padding: 18px;
+    }
+
+    .library-card h3,
+    .skill-card h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .library-card p,
+    .skill-card p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .skill-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      box-shadow: 0 8px 24px rgba(23, 32, 38, 0.08);
+      padding: 18px;
+    }
+
+    .skill-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .skill-path {
+      display: block;
+      margin-bottom: 12px;
+      color: var(--muted);
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .skill-prompt {
+      margin-top: 16px;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+    }
+
+    .skill-prompt summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 900;
+      list-style: none;
+      padding: 8px 2px;
+      text-transform: uppercase;
+    }
+
+    .skill-prompt summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .skill-prompt summary::after {
+      content: "+";
+      display: inline-grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #eef3f6;
+      color: var(--ink);
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .skill-prompt details[open] summary::after {
+      content: "-";
+    }
+
+    .prompt-panel {
+      margin-top: 8px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #f7fafb;
+    }
+
+    .prompt-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #f7fafb;
+      padding: 10px 12px;
+    }
+
+    .prompt-toolbar span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .copy-prompt-button {
+      position: relative;
+      display: inline-grid;
+      flex: 0 0 auto;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      cursor: pointer;
+    }
+
+    .copy-prompt-button::before,
+    .copy-prompt-button::after {
+      content: "";
+      position: absolute;
+      width: 12px;
+      height: 15px;
+      border: 2px solid var(--muted);
+      border-radius: 3px;
+      background: #ffffff;
+    }
+
+    .copy-prompt-button::before {
+      transform: translate(3px, -3px);
+    }
+
+    .copy-prompt-button::after {
+      transform: translate(-2px, 2px);
+    }
+
+    .copy-prompt-button:hover {
+      background: #eef3f6;
+    }
+
+    .copy-prompt-button.is-copied::before,
+    .copy-prompt-button.is-copied::after {
+      border-color: var(--teal);
+    }
+
+    .prompt-code {
+      display: block;
+      max-height: 220px;
+      overflow: auto;
+      margin: 0;
+      padding: 12px;
+      color: var(--ink);
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    .zoom-controls {
+      position: fixed;
+      z-index: 21;
+      right: 12px;
+      bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      box-shadow: var(--shadow);
+      padding: 6px;
+    }
+
+    .zoom-label {
+      min-width: 54px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 850;
+      text-align: center;
+    }
+
+    .empty {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    @media (max-width: 920px) {
+      .status-card {
+        display: none;
+      }
+
+      .brand-logo {
+        width: 184px;
+      }
+
+      .project-title,
+      .project-subtitle {
+        max-width: 190px;
+      }
+
+      .board-viewport {
+        padding-left: 28px;
+        padding-right: 28px;
+      }
+
+      .page-rail {
+        top: 70px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .project-meta {
+        display: none;
+      }
+
+      .brand-logo {
+        width: 168px;
+      }
+
+      .board-viewport {
+        padding-top: 88px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <section class="board-card brand-card" aria-label="Board navigation">
+      <button class="menu-button" type="button" id="menu-toggle" aria-label="Toggle page menu">
+        <span class="hamburger" aria-hidden="true"></span>
+      </button>
+      <img class="brand-logo" src="logo.png" alt="Flashtotype" draggable="false">
+      <div class="project-meta">
+        <p class="project-title" id="project-title">Project board</p>
+        <p class="project-subtitle" id="project-subtitle">PM/PO visual workspace</p>
+      </div>
+    </section>
+    <section class="board-card status-card" aria-label="Board status">
+      <span class="status-pill" id="board-status">Draft</span>
+      <button class="control-button" type="button" id="reset-view" aria-label="Reset board zoom">100</button>
+      <button class="share-button" type="button" aria-label="Static local file">Local HTML</button>
+    </section>
+  </header>
+
+  <aside class="page-rail" id="page-rail" aria-label="Project pages">
+    <p class="rail-title">Project pages</p>
+    <nav class="page-list" id="page-list"></nav>
+  </aside>
+
+  <main class="board-shell">
+    <section class="board-viewport" id="board-viewport" aria-label="Flashtotype board viewport">
+      <div class="board-stage" id="board-stage"></div>
+    </section>
+  </main>
+
+  <section class="zoom-controls" aria-label="Zoom controls">
+    <button class="control-button" type="button" id="zoom-out" aria-label="Zoom out">-</button>
+    <span class="zoom-label" id="zoom-label">100%</span>
+    <button class="control-button" type="button" id="zoom-in" aria-label="Zoom in">+</button>
+  </section>
+
+  <script type="application/json" id="flashtotype-data">
+  {
+    "projectName": "Example Product",
+    "subtitle": "PM/PO visual workspace generated from Flashtotype artifacts.",
+    "status": "Draft",
+    "updatedAt": "",
+    "sourceFiles": [
+      "user-editable/flashtotype-brief.md",
+      "user-editable/decision-pack.md",
+      "user-editable/evidence.json",
+      "user-editable/user-journey.md",
+      "user-editable/prototype.md",
+      "user-editable/Design.md",
+      "user-editable/flashtotype-library.md"
+    ],
+    "pages": [
+      {
+        "id": "home",
+        "label": "Homepage",
+        "type": "home",
+        "sourceFiles": ["user-editable/decision-pack.md", "user-editable/flashtotype-brief.md", "user-editable/evidence.json"],
+        "title": "Project Overview",
+        "summary": "Use this page as the Notion-style summary for the product thesis, research backup, user pain, recommendation, and next validation work.",
+        "metrics": [
+          { "label": "Source-backed", "value": "0" },
+          { "label": "Assumptions", "value": "1" },
+          { "label": "Needs validation", "value": "1" },
+          { "label": "Next actions", "value": "3" }
+        ],
+        "blocks": [
+          {
+            "title": "Background idea",
+            "body": "Replace this with the background from flashtotype-brief.md.",
+            "items": ["What changed in the market or workflow?", "Why should the team care now?"]
+          },
+          {
+            "title": "User problem and pain",
+            "body": "Summarize the painful workflow and current workaround.",
+            "items": ["Primary persona", "Current workaround", "Urgency signal"]
+          },
+          {
+            "title": "Research backup",
+            "body": "Summarize evidence from evidence.json and decision-pack.md.",
+            "items": ["Cited sources", "Known gaps", "Confidence"]
+          },
+          {
+            "title": "Recommendation",
+            "body": "State the current PM/PO recommendation and what would change it.",
+            "items": ["Proceed, pause, or research more", "Top validation action"]
+          }
+        ],
+        "evidence": [
+          {
+            "claim": "Sample claim awaiting validation.",
+            "label": "Needs validation",
+            "confidence": "Low",
+            "sourceTitle": "",
+            "url": "",
+            "note": "Add a cited source or keep this as a validation gap."
+          }
+        ],
+        "nextActions": [
+          "Interview target users about the painful workflow.",
+          "Collect primary source evidence for market and tech claims.",
+          "Create the first prototype scenario for team review."
+        ]
+      },
+      {
+        "id": "journey",
+        "label": "User journey flow",
+        "type": "journey",
+        "sourceFiles": ["user-editable/user-journey.md", "user-editable/flashtotype-brief.md"],
+        "title": "User Journey Flow",
+        "summary": "Show how the user moves through the problem, product touchpoints, system responses, and feedback loops.",
+        "nodes": [
+          { "id": "problem", "title": "1. Pain appears", "body": "User hits the painful workflow.", "x": 80, "y": 260 },
+          { "id": "input", "title": "2. Input", "body": "User gives context, files, or notes.", "x": 390, "y": 260, "tone": "action" },
+          { "id": "system", "title": "3. System maps", "body": "Flashtotype converts input into product artifacts.", "x": 700, "y": 260, "tone": "system" },
+          { "id": "prototype", "title": "4. Prototype", "body": "Team reviews a visual scenario.", "x": 1010, "y": 260, "tone": "action" },
+          { "id": "learn", "title": "5. Learn", "body": "PO/PM updates assumptions and next actions.", "x": 700, "y": 520 }
+        ],
+        "links": [
+          { "from": "problem", "to": "input", "label": "clarify" },
+          { "from": "input", "to": "system", "label": "structure" },
+          { "from": "system", "to": "prototype", "label": "visualize" },
+          { "from": "prototype", "to": "learn", "label": "review" },
+          { "from": "learn", "to": "input", "label": "iterate" }
+        ]
+      },
+      {
+        "id": "prototype",
+        "label": "Prototype",
+        "type": "prototype",
+        "sourceFiles": ["user-editable/prototype.md", "user-editable/flashtotype-brief.md"],
+        "title": "Prototype Workspace",
+        "summary": "Main PO/PM workspace for iterating the product idea until the first team-review scenario is clear.",
+        "screens": [
+          {
+            "title": "Entry point",
+            "state": "Draft",
+            "body": "First screen or moment where the user starts the workflow.",
+            "x": 80,
+            "y": 240
+          },
+          {
+            "title": "Core action",
+            "state": "Draft",
+            "body": "The highest-value user action or AI-assisted step.",
+            "x": 460,
+            "y": 240
+          },
+          {
+            "title": "Output",
+            "state": "Draft",
+            "body": "The artifact, decision, recommendation, or visual result.",
+            "x": 840,
+            "y": 240
+          }
+        ],
+        "notes": [
+          { "title": "Open question", "body": "What must the prototype prove first?", "x": 230, "y": 700, "tone": "yellow" },
+          { "title": "Iteration rule", "body": "Change one scenario at a time and keep evidence labels visible.", "x": 560, "y": 690, "tone": "blue" },
+          { "title": "Decision", "body": "Ready when the team can explain the workflow without extra narration.", "x": 890, "y": 700, "tone": "pink" }
+        ]
+      },
+      {
+        "id": "design",
+        "label": "Design system",
+        "type": "design",
+        "sourceFiles": ["user-editable/Design.md", "user-editable/prototype.md"],
+        "title": "Design System",
+        "summary": "Reflect the current theme, tokens, components, and design references used by the prototype.",
+        "colors": [
+          { "name": "Primary", "value": "#0f766e", "usage": "Actions and positive recommendation" },
+          { "name": "Evidence", "value": "#2563eb", "usage": "Source links and research" },
+          { "name": "Ideation", "value": "#f4a3d8", "usage": "Sticky notes and brainstorm areas" },
+          { "name": "Warning", "value": "#f8df72", "usage": "Assumptions and review points" },
+          { "name": "Surface", "value": "#ffffff", "usage": "Panels and prototype frames" }
+        ],
+        "typography": [
+          "Use system sans-serif for portability.",
+          "Use large board titles for page orientation.",
+          "Keep cards compact and readable during screen share."
+        ],
+        "components": [
+          "Board page rail",
+          "Notion-style summary sheet",
+          "Journey sticky nodes",
+          "Prototype screen frames",
+          "Evidence badges"
+        ]
+      },
+      {
+        "id": "library",
+        "label": "Flashtotype library",
+        "type": "library",
+        "sourceFiles": ["user-editable/flashtotype-library.md"],
+        "title": "Flashtotype Library",
+        "summary": "Installed skills, active workflow modules, and reusable PO/PM frameworks available in this project.",
+        "skills": [
+          {
+            "name": "flashtotype-product-sidekick",
+            "type": "Installed skill",
+            "status": "Active",
+            "path": ".flashtotype/skills/flashtotype-product-sidekick/SKILL.md",
+            "description": "Turns product ideas into evidence-labeled decision packs, research summaries, personas, tech/risk briefs, and visual board output.",
+            "usedFor": ["Product discovery", "Evidence-backed research", "Persona and risk synthesis", "Board generation"],
+            "prompt": "Use Flashtotype as the PM/PO sidekick for this project.\n\nFirst read `.flashtotype/skills/flashtotype-product-sidekick/SKILL.md` and follow it as the primary workflow. Interview me before generating artifacts. Produce product, market, persona, and tech/risk angles. Label every important claim as `Source-backed`, `Assumption`, or `Needs validation`. Update `flashtotype-workspace/current/user-editable/` source files and regenerate `flashtotype-workspace/current/output/index.html` as a static board."
+          },
+          {
+            "name": "safe-run-rules",
+            "type": "Required workflow module",
+            "status": "Active",
+            "path": ".flashtotype/skills/flashtotype-product-sidekick/references/safe-run-rules.md",
+            "description": "Keeps PM/PO artifact edits safe with continuation checks, impact maps, checkpoints, verification, and handoff rules.",
+            "usedFor": ["Safe iteration", "Checkpointing", "Regression watchlist"],
+            "prompt": "Before editing any Flashtotype artifact, read `.flashtotype/skills/flashtotype-product-sidekick/references/safe-run-rules.md`.\n\nInspect the current user-editable artifacts and output HTML, write a compact impact map, preserve existing user work, verify evidence JSON and embedded board JSON, and finish with changed files, confidence, assumptions, validation gaps, and next actions."
+          },
+          {
+            "name": "interview-flow",
+            "type": "Required workflow module",
+            "status": "Active",
+            "path": ".flashtotype/skills/flashtotype-product-sidekick/references/interview-flow.md",
+            "description": "Guides the agent through product grilling questions before generating artifacts.",
+            "usedFor": ["PM/PO interview", "Problem clarity", "Assumption discovery"],
+            "prompt": "Before creating the decision pack, read `.flashtotype/skills/flashtotype-product-sidekick/references/interview-flow.md`.\n\nAsk only questions that materially change the decision: product idea, user/buyer, painful workflow, current workaround, prototype scenario, constraints, success metric, and riskiest assumptions. Do not generate final artifacts until the stop condition is clear or assumptions are explicitly labeled."
+          },
+          {
+            "name": "evidence-rules",
+            "type": "Required workflow module",
+            "status": "Active",
+            "path": ".flashtotype/skills/flashtotype-product-sidekick/references/evidence-rules.md",
+            "description": "Defines source-backed, assumption, and needs-validation claim handling.",
+            "usedFor": ["Claim labeling", "Source quality", "Confidence control"],
+            "prompt": "Before making market, user, product, or technology claims, read `.flashtotype/skills/flashtotype-product-sidekick/references/evidence-rules.md`.\n\nDo not invent citations. Use `Source-backed` only when a matching source record exists in `evidence.json`; otherwise use `Assumption` or `Needs validation`. Treat legal, medical, financial, privacy, security, and compliance claims as `Needs validation` unless authoritative sources support them."
+          },
+          {
+            "name": "output-contract",
+            "type": "Required workflow module",
+            "status": "Active",
+            "path": ".flashtotype/skills/flashtotype-product-sidekick/references/output-contract.md",
+            "description": "Defines the board data shape and required output files.",
+            "usedFor": ["HTML board data", "Artifact structure", "Final handoff"],
+            "prompt": "Before updating the visual board, read `.flashtotype/skills/flashtotype-product-sidekick/references/output-contract.md`.\n\nKeep source docs in `flashtotype-workspace/current/user-editable/`, generated files in `flashtotype-workspace/current/output/`, and update the `flashtotype-data` JSON in `output/index.html` with all five pages: home, journey, prototype, design, and library. Keep `flashtotype.js` generic and require no backend or build step."
+          }
+        ],
+        "items": [
+          {
+            "title": "Research framework",
+            "body": "Use source-backed claims, assumptions, and validation gaps to keep confidence visible.",
+            "tags": ["Evidence", "Market", "Risk"]
+          },
+          {
+            "title": "Success metric framework",
+            "body": "Define one user behavior metric, one business metric, and one guardrail metric.",
+            "tags": ["Metrics", "Decision"]
+          },
+          {
+            "title": "Prototype framework",
+            "body": "Prototype the smallest workflow that can prove the painful moment and team alignment.",
+            "tags": ["Prototype", "UX"]
+          },
+          {
+            "title": "Design system starter",
+            "body": "Start with a calm, readable theme, then import project-specific tokens from Design.md.",
+            "tags": ["Theme", "UI"]
+          },
+          {
+            "title": "Risk review",
+            "body": "Review technical feasibility, data sensitivity, delivery complexity, and adoption risk.",
+            "tags": ["Tech", "Risk"]
+          },
+          {
+            "title": "Team narrative",
+            "body": "Use the homepage and journey page to explain why, who, how, and what happens next.",
+            "tags": ["Story", "Alignment"]
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+  <script src="flashtotype.js"></script>
+</body>
+</html>

@@ -11,15 +11,17 @@ Act as a PM/PO sidekick. Be direct, skeptical, practical, and evidence-aware. He
 
 ## Required Workflow
 
-1. Inspect the project and find `.flashtotype/templates/` and `flashtotype-workspace/current/`.
-2. Read `references/interview-flow.md` before interviewing the user.
-3. Ask targeted questions until the product thesis, target user, pain, constraints, success metric, and known assumptions are clear.
-4. Create or update `flashtotype-workspace/current/flashtotype-brief.md`.
-5. Read `references/evidence-rules.md` before making market, user, or technology claims.
-6. Create or update `flashtotype-workspace/current/evidence.json`.
-7. Create or update `flashtotype-workspace/current/decision-pack.md`.
-8. Read `references/output-contract.md` before updating the HTML.
-9. Update `flashtotype-workspace/current/html/index.html` data and keep `flashtotype.js` generic.
+1. Inspect the project and find `.flashtotype/`, `flashtotype-workspace/current/user-editable/`, and `flashtotype-workspace/current/output/`.
+2. Read `references/safe-run-rules.md` before interviewing the user or editing artifacts.
+3. Read `references/interview-flow.md` before interviewing the user.
+4. Ask targeted questions until the product thesis, target user, pain, constraints, success metric, and known assumptions are clear.
+5. Create or update `flashtotype-workspace/current/user-editable/flashtotype-brief.md`.
+6. Read `references/evidence-rules.md` before making market, user, or technology claims.
+7. Create or update `flashtotype-workspace/current/user-editable/evidence.json`.
+8. Create or update `flashtotype-workspace/current/user-editable/decision-pack.md`.
+9. Create or update `flashtotype-workspace/current/user-editable/user-journey.md`, `prototype.md`, `Design.md`, and `flashtotype-library.md`.
+10. Read `references/output-contract.md` before updating the HTML.
+11. Update `flashtotype-workspace/current/output/index.html` board data and keep `flashtotype.js` generic.
 
 ## Four Angles
 
@@ -47,13 +49,14 @@ End each run with:
 - Recommendation and confidence level.
 - Decision pack path.
 - HTML path.
+- Board pages generated: Homepage, User journey flow, Prototype, Design system, Flashtotype library.
 - Evidence count by label.
 - Top assumptions and validation gaps.
 - Next 3 to 5 validation actions.
 
 ## References
 
+- `references/safe-run-rules.md`: safe iteration loop, checkpoints, verification, and artifact regression watchlist.
 - `references/interview-flow.md`: question sequence and grilling rules.
 - `references/evidence-rules.md`: claim labels, source quality, and confidence.
 - `references/output-contract.md`: artifact and HTML data requirements.
-
