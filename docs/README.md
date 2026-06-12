@@ -9,3 +9,5 @@ Start here:
 - `USER_JOURNEY.md`: how a user starts from zero and gets to research, prototype, and presentation.
 
 Flashtotype is intentionally lightweight. V1 is a portable agent workflow plus templates, not a SaaS app.
+
+The installing agent must begin onboarding in the same conversation without requiring a restart. Reopened projects expose `$flash-onboard`, `$flash-revise`, `$flash-present`, `$flash-research`, and `$flash-review` from `.agents/skills/`, with `flashtotype-workspace/current/START-HERE.md` as the durable fallback.

@@ -21,4 +21,4 @@ Edit files in this folder during Flashtotype work.
 
 Generated presentation images are output files, not source files. They should be saved under `../output/assets/` during a real run.
 
-Do not edit `.flashtotype/` during normal work. Open `../output/index.html` to view the board, and ask the agent to regenerate output from this folder after source changes.
+Do not edit `.agents/skills/` or `.flashtotype/` during normal work. The installing agent should start onboarding without a restart. For a reopened session, follow `../START-HERE.md` and choose the matching `$flash-*` command. Open `../output/index.html` to view the regenerated board.

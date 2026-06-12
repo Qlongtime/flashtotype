@@ -19,7 +19,7 @@ Act as a PM/PO sidekick. Be direct, skeptical, practical, and evidence-aware. He
 6. Read `references/evidence-rules.md` before making market, user, or technology claims.
 7. Create or update `flashtotype-workspace/current/user-editable/evidence.json`.
 8. Create or update `flashtotype-workspace/current/user-editable/decision-pack.md`.
-9. Create or update `flashtotype-workspace/current/user-editable/user-journey.md`, `prototype.md`, `Design.md`, `presentation.md`, and `flashtotype-library.md`.
+9. Create or update `flashtotype-workspace/current/user-editable/user-journey.md`, `prototype.md`, `Design.md`, `presentation.md`, and `flashtotype-library.md`. Prototype screens must contain product-specific structured elements, copy, states, controls, and outcomes rather than anonymous skeleton blocks.
 10. Read `references/output-contract.md` before updating the HTML.
 11. Update `flashtotype-workspace/current/output/index.html` board data, save generated presentation images under `flashtotype-workspace/current/output/assets/` when used, and keep `flashtotype.js` generic.
 

@@ -66,6 +66,10 @@ The `pages` array must include:
 - `presentation`: internal static stakeholder slide story from `presentation.md`, opened from the Homepage Presentation mode button instead of the project page rail.
 - `library`: installed skills, active workflow modules, and Flashtotype framework suggestions from `flashtotype-library.md`.
 
+The `prototype` page must contain product-specific screens rather than generic skeletons. Each screen should include `title`, `state`, `body`, `x`, `y`, `device`, and a non-empty `elements` array.
+
+Supported `elements[].type` values are `text`, `field`, `list`, `card`, `notice`, `actions`, and `progress`. Use real product copy, field values or placeholders, lists, states, evidence or safety notices, actions, and outcomes from `prototype.md`. Supported tones are `neutral`, `accent`, `success`, `warning`, and `danger`.
+
 The `home` page should include a `blocks` array for product overview cards. Each block should show summarized content on the board and provide embedded full Markdown for the read-full modal:
 
 - `title`: overview card title.

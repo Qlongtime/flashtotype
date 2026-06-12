@@ -14,6 +14,16 @@ const requiredFiles = [
   "docs/EVIDENCE_POLICY.md",
   "docs/OUTPUT_CONTRACT.md",
   "docs/PROJECT_STRUCTURE.md",
+  "agent/skills/flash-onboard/SKILL.md",
+  "agent/skills/flash-onboard/agents/openai.yaml",
+  "agent/skills/flash-revise/SKILL.md",
+  "agent/skills/flash-revise/agents/openai.yaml",
+  "agent/skills/flash-present/SKILL.md",
+  "agent/skills/flash-present/agents/openai.yaml",
+  "agent/skills/flash-research/SKILL.md",
+  "agent/skills/flash-research/agents/openai.yaml",
+  "agent/skills/flash-review/SKILL.md",
+  "agent/skills/flash-review/agents/openai.yaml",
   "agent/skills/flashtotype-product-sidekick/SKILL.md",
   "agent/skills/flashtotype-product-sidekick/agents/openai.yaml",
   "agent/skills/flashtotype-product-sidekick/references/safe-run-rules.md",
@@ -23,6 +33,7 @@ const requiredFiles = [
   "agent/skills/flashtotype-presentation-generator/SKILL.md",
   "agent/skills/flashtotype-presentation-generator/agents/openai.yaml",
   "agent/skills/flashtotype-presentation-generator/references/data-storytelling.md",
+  "user-workspace-template/current/START-HERE.md",
   "user-workspace-template/current/user-editable/README.md",
   "user-workspace-template/current/user-editable/flashtotype-brief.md",
   "user-workspace-template/current/user-editable/decision-pack.md",
@@ -51,6 +62,8 @@ const forbiddenRootPaths = [
 
 const failures = [];
 const allowedVisualLayouts = new Set(["split-right", "split-left", "full-bleed", "none"]);
+const allowedPrototypeElementTypes = new Set(["text", "field", "list", "card", "notice", "actions", "progress"]);
+const commandNames = ["flash-onboard", "flash-revise", "flash-present", "flash-research", "flash-review"];
 
 function read(relativePath) {
   return readFileSync(join(root, relativePath), "utf8");
@@ -103,6 +116,53 @@ if (failures.length === 0) {
   }
   if (!skill.includes("references/safe-run-rules.md")) {
     failures.push("Skill workflow must require references/safe-run-rules.md.");
+  }
+  const productOpenAi = read("agent/skills/flashtotype-product-sidekick/agents/openai.yaml");
+  if (!productOpenAi.includes("interface:") || !productOpenAi.includes("$flashtotype-product-sidekick")) {
+    failures.push("Product sidekick openai.yaml must use interface metadata and an explicit skill prompt.");
+  }
+  const interviewFlow = read("agent/skills/flashtotype-product-sidekick/references/interview-flow.md");
+  for (const marker of ["Ask no more than four concise questions", "Do not dump the full interview checklist"]) {
+    if (!interviewFlow.includes(marker)) {
+      failures.push(`Interview flow must preserve progressive onboarding UX: ${marker}.`);
+    }
+  }
+
+  for (const commandName of commandNames) {
+    const commandSkill = read(`agent/skills/${commandName}/SKILL.md`);
+    const commandOpenAi = read(`agent/skills/${commandName}/agents/openai.yaml`);
+    if (!commandSkill.startsWith("---\n") || !commandSkill.includes(`\nname: ${commandName}\n`)) {
+      failures.push(`${commandName} must have valid skill frontmatter and the expected name.`);
+    }
+    if (commandSkill.includes("[TODO:")) {
+      failures.push(`${commandName} must not contain scaffold TODO content.`);
+    }
+    if (!commandOpenAi.includes(`$${commandName}`) || !commandOpenAi.includes("allow_implicit_invocation: true")) {
+      failures.push(`${commandName} openai.yaml must provide discoverable command metadata.`);
+    }
+  }
+  const commandContracts = {
+    "flash-present": [
+      ".flashtotype/skills/flashtotype-presentation-generator/SKILL.md",
+      "follow it as the primary workflow"
+    ],
+    "flash-research": [
+      "Update `evidence.json` first",
+      "Do not force the research to support the current recommendation"
+    ],
+    "flash-review": [
+      "Do not edit files by default",
+      "Ready with caveats",
+      "findings ordered by severity"
+    ]
+  };
+  for (const [commandName, markers] of Object.entries(commandContracts)) {
+    const commandSkill = read(`agent/skills/${commandName}/SKILL.md`);
+    for (const marker of markers) {
+      if (!commandSkill.includes(marker)) {
+        failures.push(`${commandName} must preserve workflow contract: ${marker}.`);
+      }
+    }
   }
 
   const presentationSkill = read("agent/skills/flashtotype-presentation-generator/SKILL.md");
@@ -167,6 +227,14 @@ if (failures.length === 0) {
       failures.push(`flashtotype.js must include presenter/render marker: ${marker}.`);
     }
   }
+  for (const marker of ["renderPrototypeElement", "prototype-element", "prototype-screen-body"]) {
+    if (!renderer.includes(marker)) {
+      failures.push(`flashtotype.js must include structured prototype marker: ${marker}.`);
+    }
+  }
+  if (renderer.includes('<div class="wire-block')) {
+    failures.push("flashtotype.js must not hard-code anonymous prototype wire blocks.");
+  }
   for (const marker of ["checkBridgeHealth", "data-send-codex", "data-prompt-addon", "data-prompt-fixed", "codex-bridge-modal", "start-flashtotype-bridge.ps1", "workspace-write", "Run prompt", "Optional user request", "data-read-full", "renderMarkdown", "content-modal"]) {
     if (!renderer.includes(marker)) {
       failures.push(`flashtotype.js must include local Codex bridge marker: ${marker}.`);
@@ -209,6 +277,22 @@ if (failures.length === 0) {
         }
       }
       const presentationPage = (boardData.pages || []).find((page) => page.id === "presentation");
+      const prototypePage = (boardData.pages || []).find((page) => page.id === "prototype");
+      if (!prototypePage || !Array.isArray(prototypePage.screens) || prototypePage.screens.length === 0) {
+        failures.push("Prototype page must include a non-empty screens array.");
+      } else {
+        prototypePage.screens.forEach((screen, screenIndex) => {
+          if (!Array.isArray(screen.elements) || screen.elements.length === 0) {
+            failures.push(`Prototype screen ${screenIndex + 1} must include structured elements.`);
+            return;
+          }
+          screen.elements.forEach((element, elementIndex) => {
+            if (!element || typeof element !== "object" || !allowedPrototypeElementTypes.has(element.type)) {
+              failures.push(`Prototype screen ${screenIndex + 1} element ${elementIndex + 1} has an unsupported type.`);
+            }
+          });
+        });
+      }
       if (!presentationPage) {
         failures.push("Embedded board data must include a presentation page.");
       } else {
@@ -237,6 +321,8 @@ if (failures.length === 0) {
         }
         if (!presentationPage.prompt || typeof presentationPage.prompt !== "string") {
           failures.push("Presentation page must include a copyable prompt string.");
+        } else if (!presentationPage.prompt.includes("$flash-present")) {
+          failures.push("Presentation page prompt must use $flash-present.");
         }
       }
       const libraryPage = (boardData.pages || []).find((page) => page.id === "library");
@@ -266,6 +352,11 @@ if (failures.length === 0) {
       if (!librarySkills.some((skill) => skill.name === "flashtotype-presentation-generator")) {
         failures.push("Library page skills must include flashtotype-presentation-generator.");
       }
+      for (const commandName of commandNames) {
+        if (!librarySkills.some((skill) => skill.name === commandName)) {
+          failures.push(`Library page skills must include ${commandName}.`);
+        }
+      }
       const skillsWithoutPrompts = librarySkills.filter((skill) => !skill.prompt || typeof skill.prompt !== "string");
       if (skillsWithoutPrompts.length > 0) {
         failures.push("Every library page skill must include a copyable prompt string.");
@@ -292,6 +383,46 @@ if (failures.length === 0) {
   const ignore = read(".gitignore");
   if (!ignore.includes("flashtotype-workspace/")) {
     failures.push(".gitignore must ignore flashtotype-workspace/.");
+  }
+
+  const bootstrapDocs = [
+    read("AGENTS.md"),
+    read("README.md"),
+    read("docs/BOOTSTRAP.md"),
+    read("docs/PROJECT_STRUCTURE.md"),
+    read("docs/USER_JOURNEY.md")
+  ].join("\n");
+  for (const marker of [".agents/skills/", ...commandNames.map((name) => `$${name}`)]) {
+    if (!bootstrapDocs.includes(marker)) {
+      failures.push(`Bootstrap documentation must include ${marker}.`);
+    }
+  }
+
+  for (const marker of [
+    "Do not stop after installation",
+    "do not ask me to restart Codex before onboarding",
+    ".flashtotype/skills/flash-onboard/SKILL.md"
+  ]) {
+    if (!bootstrapDocs.includes(marker)) {
+      failures.push(`Bootstrap documentation must preserve the same-thread onboarding contract: ${marker}.`);
+    }
+  }
+  if (read("README.md").includes("After installation, start a new Codex thread")) {
+    failures.push("README must not make a new Codex thread the next onboarding step.");
+  }
+
+  const startHere = read("user-workspace-template/current/START-HERE.md");
+  for (const marker of [...commandNames.map((name) => `$${name}`), ".flashtotype/skills/flash-onboard/SKILL.md", "Restarting Codex is not required"]) {
+    if (!startHere.includes(marker)) {
+      failures.push(`START-HERE.md is missing recovery marker: ${marker}.`);
+    }
+  }
+
+  const librarySource = read("user-workspace-template/current/user-editable/flashtotype-library.md");
+  for (const commandName of commandNames) {
+    if (!librarySource.includes(`| ${commandName} |`) || !librarySource.includes(`$${commandName}`)) {
+      failures.push(`Starter Flashtotype library must include ${commandName} and its copyable prompt.`);
+    }
   }
 }
 

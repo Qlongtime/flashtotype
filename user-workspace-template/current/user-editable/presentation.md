@@ -26,9 +26,7 @@ Use this file as the source for the `Presentation` board page.
 Agents should mirror this prompt into the `presentation.prompt` field on the board presentation page so users can copy it from the static HTML.
 
 ```text
-Use $flashtotype-presentation-generator for this Flashtotype project.
-
-Read `.flashtotype/skills/flashtotype-presentation-generator/SKILL.md` and follow it as the primary workflow. Create or update `flashtotype-workspace/current/user-editable/presentation.md` from the existing Flashtotype artifacts: `flashtotype-brief.md`, `decision-pack.md`, `evidence.json`, `user-journey.md`, `prototype.md`, `Design.md`, and `flashtotype-library.md`. Build a static 16:9 stakeholder slide story with evidence labels, source notes, speaker notes, generated image prompts, local visual asset references, top assumptions, validation gaps, and next actions. If image generation is available, save slide images under `flashtotype-workspace/current/output/assets/`; otherwise keep prompt-only visual placeholders. Regenerate the `presentation` page data inside `flashtotype-workspace/current/output/index.html` without adding a backend, build step, package manager, or network dependency.
+Use $flash-present to create or refresh the stakeholder presentation from this Flashtotype decision pack. Preserve evidence labels, source notes, speaker notes, local visual assets, assumptions, validation gaps, and the static presentation page.
 ```
 
 When image generation is available, generate slide visuals from the same Flashtotype sources and save final images under `flashtotype-workspace/current/output/assets/`. If image generation fails or is unavailable, keep `Visual status: prompt-only` and render the prompt placeholder instead.

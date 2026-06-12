@@ -100,6 +100,25 @@ The embedded JSON may include `codexBridge`. If omitted, the renderer uses these
 
 The `pages` array must include page objects with ids `home`, `journey`, `prototype`, `design`, `presentation`, and `library`.
 
+The `prototype` page must include a non-empty `screens` array. Each screen should include:
+
+- `title`, `state`, `body`, `x`, and `y`.
+- `device`: `mobile` or `desktop`.
+- Optional `step`, `eyebrow`, `width`, and `navigation`.
+- `elements`: product-specific structured content. Do not use anonymous skeleton blocks.
+
+Supported prototype element types are:
+
+- `text`: `eyebrow`, `title`, `body`, `tone`.
+- `field`: `label`, `value` or `placeholder`, optional `meta` or `status`.
+- `list`: `title` and `items`; item objects may include `title`, `body`, `meta`, or `status`.
+- `card`: `eyebrow`, `title`, `body`, `meta`, `tags`, `tone`.
+- `notice`: `title`, `body`, `tone`.
+- `actions`: `primary` and optional `secondary`.
+- `progress`: `title`, numeric `value` from 0 to 100, and optional `displayValue`.
+
+Supported tones are `neutral`, `accent`, `success`, `warning`, and `danger`. The renderer should show a meaningful notice for legacy screens without `elements`, never generic gray skeleton cards.
+
 The `home` page should include a `blocks` array for product overview cards. Each block should show summarized content on the board and provide embedded full Markdown for the read-full modal:
 
 - `title`: overview card title.
@@ -142,3 +161,5 @@ Each `skills` item should include:
 - `description`
 - `usedFor`
 - `prompt`: the real fixed agent prompt users can expand, copy with their added request, and optionally send to the local Codex bridge to confirm or reuse the skill/module workflow.
+
+Installed Flashtotype projects should include `flash-onboard`, `flash-revise`, `flash-present`, `flash-research`, and `flash-review` command-skill entries pointing to `.agents/skills/`, plus the full product-sidekick and presentation-generator entries from `.flashtotype/skills/`.

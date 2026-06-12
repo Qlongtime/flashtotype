@@ -1,0 +1,7 @@
+interface:
+  display_name: "Flash Onboard"
+  short_description: "Start a guided Flashtotype product discovery run."
+  default_prompt: "Use $flash-onboard to start or resume the Flashtotype discovery workflow."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Flash Review"
+  short_description: "Audit a Flashtotype decision pack before sharing."
+  default_prompt: "Use $flash-review to audit this Flashtotype decision pack for evidence gaps, contradictions, and sharing readiness."
+
+policy:
+  allow_implicit_invocation: true

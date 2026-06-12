@@ -14,6 +14,7 @@ Use the current project root as the target unless the user names another path.
    - Check whether `AGENTS.md`, `.gitignore`, `docs/`, or private workspace folders already exist.
    - Preserve existing files. Do not overwrite user content.
 2. Create these target folders if missing:
+   - `.agents/skills/`
    - `.flashtotype/skills/`
    - `.flashtotype/board-template/`
    - `flashtotype-workspace/current/user-editable/`
@@ -23,10 +24,13 @@ Use the current project root as the target unless the user names another path.
    - `flashtotype-workspace/current/output/`
    - `flashtotype-workspace/current/output/assets/`
 3. Copy from this repository into the target project:
+   - `agent/skills/` to `.agents/skills/` so Codex discovers the project-scoped skills.
    - `agent/skills/` to `.flashtotype/skills/`
    - `agent/board-template/` to `.flashtotype/board-template/`
+   - Merge into an existing `.agents/skills/` directory. Do not remove or replace unrelated project skills.
 4. Create the first run from templates:
    - `user-workspace-template/current/` to `flashtotype-workspace/current/`
+   - Preserve `flashtotype-workspace/current/START-HERE.md` as the durable recovery guide for reopened Codex sessions.
    - `.flashtotype/board-template/index.html` to `flashtotype-workspace/current/output/index.html`
    - `.flashtotype/board-template/flashtotype.js` to `flashtotype-workspace/current/output/flashtotype.js`
    - `.flashtotype/board-template/flashtotype-codex-bridge.mjs` to `flashtotype-workspace/current/output/flashtotype-codex-bridge.mjs`
@@ -40,12 +44,22 @@ Use the current project root as the target unless the user names another path.
 6. Add or update the target `AGENTS.md`:
    - If missing, create it.
    - If present, append a short `## Flashtotype` section.
-   - Include the paths `.flashtotype/skills/flashtotype-product-sidekick/SKILL.md` and `.flashtotype/skills/flashtotype-presentation-generator/SKILL.md`.
+   - Include the command skill paths under `.agents/skills/`: `flash-onboard`, `flash-revise`, `flash-present`, `flash-research`, and `flash-review`.
+   - Include the engine paths `.flashtotype/skills/flashtotype-product-sidekick/SKILL.md` and `.flashtotype/skills/flashtotype-presentation-generator/SKILL.md`.
    - Instruct future agents to use the product sidekick for discovery, research, personas, tech/risk, and HTML decision packs, and the presentation generator for static stakeholder slide stories.
+   - Tell users to invoke `$flash-onboard` for discovery, `$flash-revise` for focused edits, `$flash-present` for stakeholder stories, `$flash-research` for evidence gathering, and `$flash-review` for a read-only sharing-readiness audit.
+   - State that if a skill is not visible in the current selector, the agent must read the matching `.flashtotype/skills/<skill-name>/SKILL.md` directly instead of blocking on a restart.
 7. Tell the user the working boundary:
    - User-editable source files live in `flashtotype-workspace/current/user-editable/`.
    - User-viewable generated files live in `flashtotype-workspace/current/output/`.
-   - Agent kit files live in `.flashtotype/` and should not be manually edited during normal runs.
+   - Agent kit files live in `.flashtotype/`, and Codex-discoverable skill copies live in `.agents/skills/`; neither should be manually edited during normal runs.
+8. Continue directly into the first run in the same conversation:
+   - Do not stop after file installation.
+   - Do not require the user to restart Codex before onboarding.
+   - Read `.flashtotype/skills/flash-onboard/SKILL.md` directly and begin the interview even if the newly copied skill is not yet visible in the current skill selector.
+   - Ask the first focused onboarding questions before ending the response.
+   - Treat a restart or new thread only as an optional way to refresh future `$flash-*` discovery.
+   - If the user intentionally pauses after installation, point them to `flashtotype-workspace/current/START-HERE.md` and give the exact resume prompt: `Use $flash-onboard to start or resume this project's Flashtotype discovery workflow.`
 
 ## Run The PM/PO Workflow
 

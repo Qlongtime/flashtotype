@@ -1,4 +1,4 @@
-display_name: Flashtotype Product Sidekick
-short_description: Turn product ideas into evidence-labeled PM/PO decision packs.
-default_prompt: Use Flashtotype to interview me about a product idea and generate a decision pack with research, personas, tech risks, and a static HTML briefing page.
-
+interface:
+  display_name: "Flashtotype Product Sidekick"
+  short_description: "Create evidence-labeled PM/PO decision packs."
+  default_prompt: "Use $flashtotype-product-sidekick to interview me and create an evidence-labeled product decision pack."

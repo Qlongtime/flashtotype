@@ -504,6 +504,105 @@
     `;
   }
 
+  function prototypeTone(value) {
+    const tone = String(value || "neutral").trim().toLowerCase();
+    return ["neutral", "accent", "success", "warning", "danger"].includes(tone) ? tone : "neutral";
+  }
+
+  function prototypeItem(item) {
+    if (typeof item === "string") {
+      return `<li><span>${escapeHtml(item)}</span></li>`;
+    }
+    const value = item && typeof item === "object" ? item : {};
+    return `
+      <li>
+        <div>
+          <strong>${escapeHtml(value.title || value.label || "")}</strong>
+          ${value.body ? `<span>${escapeHtml(value.body)}</span>` : ""}
+        </div>
+        ${value.meta || value.status ? `<small>${escapeHtml(value.meta || value.status)}</small>` : ""}
+      </li>
+    `;
+  }
+
+  function renderPrototypeElement(element) {
+    const item = element && typeof element === "object" ? element : {};
+    const type = String(item.type || "text").trim().toLowerCase();
+    const tone = prototypeTone(item.tone);
+    const title = item.title || item.label || "";
+    const body = item.body || item.value || item.placeholder || "";
+
+    if (type === "field") {
+      return `
+        <div class="prototype-element prototype-field tone-${tone}">
+          ${title ? `<span class="prototype-element-label">${escapeHtml(title)}</span>` : ""}
+          <div class="prototype-field-value ${item.value ? "has-value" : ""}">${escapeHtml(body || "Add value")}</div>
+          ${item.meta || item.status ? `<small>${escapeHtml(item.meta || item.status)}</small>` : ""}
+        </div>
+      `;
+    }
+
+    if (type === "list") {
+      const items = Array.isArray(item.items) ? item.items : [];
+      return `
+        <div class="prototype-element prototype-list tone-${tone}">
+          ${title ? `<span class="prototype-element-label">${escapeHtml(title)}</span>` : ""}
+          ${items.length ? `<ul>${items.map(prototypeItem).join("")}</ul>` : '<p class="prototype-empty">No items added.</p>'}
+        </div>
+      `;
+    }
+
+    if (type === "card") {
+      const tags = Array.isArray(item.tags) ? item.tags : [];
+      return `
+        <div class="prototype-element prototype-card tone-${tone}">
+          ${item.eyebrow ? `<span class="prototype-element-label">${escapeHtml(item.eyebrow)}</span>` : ""}
+          ${title ? `<strong>${escapeHtml(title)}</strong>` : ""}
+          ${body ? `<p>${escapeHtml(body)}</p>` : ""}
+          ${item.meta ? `<small>${escapeHtml(item.meta)}</small>` : ""}
+          ${tags.length ? `<div class="prototype-tags">${tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div>` : ""}
+        </div>
+      `;
+    }
+
+    if (type === "notice") {
+      return `
+        <div class="prototype-element prototype-notice tone-${tone}">
+          ${title ? `<strong>${escapeHtml(title)}</strong>` : ""}
+          ${body ? `<p>${escapeHtml(body)}</p>` : ""}
+        </div>
+      `;
+    }
+
+    if (type === "actions") {
+      const primary = item.primary || title || "Continue";
+      return `
+        <div class="prototype-element prototype-actions">
+          <button class="prototype-action-primary" type="button" tabindex="-1">${escapeHtml(primary)}</button>
+          ${item.secondary ? `<button class="prototype-action-secondary" type="button" tabindex="-1">${escapeHtml(item.secondary)}</button>` : ""}
+        </div>
+      `;
+    }
+
+    if (type === "progress") {
+      const value = Math.max(0, Math.min(100, toNumber(item.value, 0)));
+      return `
+        <div class="prototype-element prototype-progress tone-${tone}">
+          <div><span>${escapeHtml(title || "Progress")}</span><strong>${escapeHtml(item.displayValue || `${value}%`)}</strong></div>
+          <div class="prototype-progress-track"><span style="width:${value}%"></span></div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="prototype-element prototype-text tone-${tone}">
+        ${item.eyebrow ? `<span class="prototype-element-label">${escapeHtml(item.eyebrow)}</span>` : ""}
+        ${title ? `<strong>${escapeHtml(title)}</strong>` : ""}
+        ${body ? `<p>${escapeHtml(body)}</p>` : ""}
+      </div>
+    `;
+  }
+
   function renderPrototype(page) {
     const screens = Array.isArray(page.screens) ? page.screens : [];
     const notes = Array.isArray(page.notes) ? page.notes : [];
@@ -513,16 +612,38 @@
         <h1 class="board-title">${escapeHtml(page.title || "Prototype Workspace")}</h1>
         <p class="board-summary">${escapeHtml(page.summary || "")}</p>
         <section class="prototype-canvas">
-          ${screens.map((screen) => `
-            <article class="screen-frame" style="left:${toNumber(screen.x, 0)}px;top:${toNumber(screen.y, 0)}px">
-              <div class="screen-top">${escapeHtml(screen.state || "Draft")}</div>
-              <div class="wire-block accent"></div>
-              <div class="wire-block"></div>
-              <div class="wire-block short"></div>
-              <h3>${escapeHtml(screen.title)}</h3>
-              <p>${escapeHtml(screen.body)}</p>
-            </article>
-          `).join("")}
+          ${screens.map((screen) => {
+            const elements = Array.isArray(screen.elements) ? screen.elements : [];
+            const navigation = Array.isArray(screen.navigation) ? screen.navigation : [];
+            const device = screen.device === "desktop" ? "desktop" : "mobile";
+            const defaultWidth = device === "desktop" ? 520 : 320;
+            const width = Math.max(280, Math.min(720, toNumber(screen.width, defaultWidth)));
+            return `
+              <article class="screen-frame is-${device}" style="left:${toNumber(screen.x, 0)}px;top:${toNumber(screen.y, 0)}px;--prototype-screen-width:${width}px">
+                <div class="screen-top">
+                  <span>${escapeHtml(screen.state || "Draft")}</span>
+                  <span>${escapeHtml(screen.step || device)}</span>
+                </div>
+                <div class="prototype-screen-body">
+                  <header class="prototype-screen-heading">
+                    ${screen.eyebrow ? `<span>${escapeHtml(screen.eyebrow)}</span>` : ""}
+                    <h3>${escapeHtml(screen.title || "Prototype screen")}</h3>
+                    ${screen.body ? `<p>${escapeHtml(screen.body)}</p>` : ""}
+                  </header>
+                  <div class="prototype-elements">
+                    ${elements.length
+                      ? elements.map(renderPrototypeElement).join("")
+                      : renderPrototypeElement({ type: "notice", title: "Screen content needed", body: screen.body || "Add structured prototype elements from prototype.md.", tone: "warning" })}
+                  </div>
+                  ${navigation.length ? `
+                    <nav class="prototype-navigation" aria-label="Prototype navigation">
+                      ${navigation.map((item) => `<span class="${item.active ? "is-active" : ""}">${escapeHtml(item.label || item)}</span>`).join("")}
+                    </nav>
+                  ` : ""}
+                </div>
+              </article>
+            `;
+          }).join("")}
           ${notes.map((note) => `
             <article class="sticky ${escapeHtml(note.tone || "pink")}" style="left:${toNumber(note.x, 0)}px;top:${toNumber(note.y, 0)}px">
               <h3>${escapeHtml(note.title)}</h3>

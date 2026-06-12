@@ -10,6 +10,7 @@ agent/
   board-template/
 user-workspace-template/
   current/
+    START-HERE.md
     user-editable/
     output/
       assets/
@@ -26,11 +27,28 @@ scripts/
 ## Installed Project
 
 ```text
+.agents/
+  skills/
+    flash-onboard/
+    flash-revise/
+    flash-present/
+    flash-research/
+    flash-review/
+    flashtotype-product-sidekick/
+    flashtotype-presentation-generator/
 .flashtotype/
   skills/
+    flash-onboard/
+    flash-revise/
+    flash-present/
+    flash-research/
+    flash-review/
+    flashtotype-product-sidekick/
+    flashtotype-presentation-generator/
   board-template/
 flashtotype-workspace/
   current/
+    START-HERE.md
     user-editable/
     output/
       index.html
@@ -58,10 +76,13 @@ Use `flashtotype-workspace/current/user-editable/` for:
 - `data/`
 - `assets/`
 
+Use `flashtotype-workspace/current/START-HERE.md` only as the durable resume guide when reopening the project.
+
 ## What Users Should Not Edit
 
 Avoid manual edits in:
 
+- `.agents/skills/`
 - `.flashtotype/`
 - `flashtotype-workspace/current/output/`
 

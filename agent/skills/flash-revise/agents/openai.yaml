@@ -1,0 +1,7 @@
+interface:
+  display_name: "Flash Revise"
+  short_description: "Revise an existing Flashtotype decision pack safely."
+  default_prompt: "Use $flash-revise to revise the current Flashtotype artifacts from my requested changes."
+
+policy:
+  allow_implicit_invocation: true

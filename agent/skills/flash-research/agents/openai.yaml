@@ -1,0 +1,7 @@
+interface:
+  display_name: "Flash Research"
+  short_description: "Strengthen a Flashtotype decision pack with evidence."
+  default_prompt: "Use $flash-research to research the requested product question and update the Flashtotype evidence ledger and affected artifacts."
+
+policy:
+  allow_implicit_invocation: true

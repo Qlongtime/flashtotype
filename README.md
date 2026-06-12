@@ -9,16 +9,38 @@ It is designed for a simple workflow: give this repository link to your coding a
 Ask your agent:
 
 ```text
-Use the Flashtotype repository to install the Flashtotype PM/PO sidekick into this project. Keep generated work private by default, then interview me and create a decision pack.
+Use the Flashtotype repository at https://github.com/Qlongtime/flashtotype.git to install the Flashtotype PM/PO sidekick into this project.
+
+First, access the repository at that URL (by cloning it to a temporary directory or fetching the files) and read its "AGENTS.md" file to learn how Flashtotype works. Follow the installation guidelines in "AGENTS.md" to set up the workspace folders, copy the agent skills and board templates, and update our target .gitignore. Keep all generated work private by default.
+
+Do not stop after installation and do not ask me to restart Codex before onboarding. In this same conversation, read `.flashtotype/skills/flash-onboard/SKILL.md` directly and begin the product interview. A restart may refresh the skill menu later, but it is not required for the first run.
 ```
 
 The agent should read `AGENTS.md` first. It will create:
 
+- `.agents/skills/` with project-scoped Codex skills.
 - `.flashtotype/` with portable agent-only skills and generated-output templates.
 - `flashtotype-workspace/current/user-editable/` for PO/PM source files, reference docs, design notes, CSVs, and assets.
 - `flashtotype-workspace/current/output/` for the HTML board users can open in a browser, plus local generated presentation images under `output/assets/`.
+- `flashtotype-workspace/current/START-HERE.md` with the exact recovery prompt for a reopened session.
 - A `.gitignore` entry so generated work is private by default.
 - A project-local `AGENTS.md` section so future agents know how to run the workflow.
+
+## Project Commands
+
+The installing agent should begin onboarding in the same conversation. No restart or command is required for that first run.
+
+When reopening or iterating on the project, use:
+
+| Command | Purpose |
+| --- | --- |
+| `$flash-onboard` | Start or resume guided product discovery and the first decision pack. |
+| `$flash-revise` | Apply a focused product, journey, prototype, design, risk, or artifact change. |
+| `$flash-present` | Create or refresh the evidence-labeled stakeholder presentation. |
+| `$flash-research` | Research a bounded product question and update evidence plus affected artifacts. |
+| `$flash-review` | Run a read-only audit for evidence quality, contradictions, completeness, and sharing readiness. |
+
+Codex discovers these skills from `.agents/skills/`. They are also selectable through `/skills`, and supported Codex app surfaces show enabled skills in the `/` menu. If a newly installed skill is not visible yet, Codex can still read `.flashtotype/skills/flash-onboard/SKILL.md` directly and continue; restarting is optional. Direct custom commands such as `/flash-onboard` are not a portable Codex interface; custom prompt slash commands are deprecated and user-local.
 
 ## What Flashtotype Produces
 
@@ -70,6 +92,11 @@ Market and technology claims should include source URL, access date, confidence,
 - `AGENTS.md`: universal agent entrypoint and bootstrap instructions.
 - `agent/skills/flashtotype-product-sidekick/`: agent-only PM/PO workflow skill.
 - `agent/skills/flashtotype-presentation-generator/`: agent-only presentation generator skill.
+- `agent/skills/flash-onboard/`: explicit project command for starting or resuming discovery.
+- `agent/skills/flash-revise/`: explicit project command for revising existing artifacts.
+- `agent/skills/flash-present/`: explicit project command for stakeholder presentations.
+- `agent/skills/flash-research/`: explicit project command for focused evidence gathering.
+- `agent/skills/flash-review/`: explicit project command for sharing-readiness audits.
 - `agent/board-template/`: master static board template used to generate user output.
 - `user-workspace-template/current/user-editable/`: user-editable source templates for a Flashtotype run.
 - `docs/`: public usage, evidence, and output contract docs.

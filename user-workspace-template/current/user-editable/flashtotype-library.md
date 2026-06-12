@@ -6,6 +6,11 @@ Use this file as the source for the `Flashtotype library` board page.
 
 | Name | Type | Path | Used For | Status |
 | --- | --- | --- | --- | --- |
+| flash-onboard | Project command skill | `.agents/skills/flash-onboard/SKILL.md` | Project onboarding, discovery interview, first decision pack, resume incomplete runs | Active |
+| flash-revise | Project command skill | `.agents/skills/flash-revise/SKILL.md` | Focused artifact revision, evidence-safe updates, board regeneration | Active |
+| flash-present | Project command skill | `.agents/skills/flash-present/SKILL.md` | Stakeholder presentations, speaker notes, local slide visuals, presentation mode | Active |
+| flash-research | Project command skill | `.agents/skills/flash-research/SKILL.md` | Competitor, market, pricing, workflow, feasibility, and risk evidence | Active |
+| flash-review | Project command skill | `.agents/skills/flash-review/SKILL.md` | Read-only evidence audit, contradiction checks, completeness, sharing readiness | Active |
 | flashtotype-product-sidekick | Installed skill | `.flashtotype/skills/flashtotype-product-sidekick/SKILL.md` | Product discovery, evidence-backed research, persona and risk synthesis, board generation | Active |
 | flashtotype-presentation-generator | Installed skill | `.flashtotype/skills/flashtotype-presentation-generator/SKILL.md` | Static stakeholder slide stories, local generated slide visuals, evidence-labeled presentation pages, speaker notes | Active |
 | safe-run-rules | Required workflow module | `.flashtotype/skills/flashtotype-product-sidekick/references/safe-run-rules.md` | Safe iteration, checkpoints, verification, handoff | Active |
@@ -16,6 +21,36 @@ Use this file as the source for the `Flashtotype library` board page.
 ## Copyable Skill Prompts
 
 Agents should mirror these prompts into the `skills[].prompt` fields on the board library page so users can expand and copy them.
+
+### flash-onboard
+
+```text
+Use $flash-onboard to start or resume this project's guided Flashtotype product discovery workflow.
+```
+
+### flash-revise
+
+```text
+Use $flash-revise to apply my requested change to the existing Flashtotype decision pack and regenerate affected board content.
+```
+
+### flash-present
+
+```text
+Use $flash-present to create or refresh the stakeholder presentation from this Flashtotype decision pack.
+```
+
+### flash-research
+
+```text
+Use $flash-research to research my requested product question and update the evidence ledger and affected Flashtotype artifacts.
+```
+
+### flash-review
+
+```text
+Use $flash-review to audit this Flashtotype decision pack for evidence gaps, contradictions, completeness, and sharing readiness.
+```
 
 ### flashtotype-product-sidekick
 

@@ -646,6 +646,10 @@
       min-height: 900px;
     }
 
+    .prototype-canvas {
+      min-height: 1120px;
+    }
+
     .connector-layer {
       position: absolute;
       inset: 0;
@@ -699,48 +703,278 @@
 
     .screen-frame {
       position: absolute;
-      width: 320px;
-      min-height: 390px;
+      width: var(--prototype-screen-width, 320px);
+      min-height: 520px;
+      overflow: hidden;
       border: 1px solid var(--line);
-      border-radius: var(--radius);
+      border-radius: 22px;
       background: #ffffff;
       box-shadow: var(--shadow);
-      padding: 14px;
+      padding: 10px;
+    }
+
+    .screen-frame.is-desktop {
+      min-height: 440px;
+      border-radius: var(--radius);
     }
 
     .screen-top {
-      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 30px;
       border-bottom: 1px solid var(--line);
       color: var(--muted);
-      font-size: 12px;
+      font-size: 10px;
       font-weight: 850;
-      line-height: 34px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0 8px 8px;
     }
 
-    .wire-block {
-      min-height: 54px;
-      margin-top: 12px;
-      border-radius: var(--radius);
-      background: #eef3f6;
+    .prototype-screen-body {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 470px;
+      padding: 16px 10px 10px;
     }
 
-    .wire-block.short {
-      width: 66%;
+    .screen-frame.is-desktop .prototype-screen-body {
+      min-height: 390px;
     }
 
-    .wire-block.accent {
+    .prototype-screen-heading > span,
+    .prototype-element-label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 850;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .prototype-screen-heading h3 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.12;
+    }
+
+    .prototype-screen-heading p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .prototype-elements {
+      display: grid;
+      gap: 10px;
+    }
+
+    .prototype-element {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #ffffff;
+      padding: 11px;
+    }
+
+    .prototype-element.tone-accent {
+      border-color: rgba(15, 118, 110, 0.28);
       background: var(--teal-bg);
     }
 
-    .screen-frame h3 {
-      margin: 16px 0 8px;
-      font-size: 20px;
+    .prototype-element.tone-success {
+      border-color: rgba(21, 128, 61, 0.25);
+      background: #ecfdf3;
     }
 
-    .screen-frame p {
+    .prototype-element.tone-warning {
+      border-color: rgba(180, 83, 9, 0.22);
+      background: #fff8d8;
+    }
+
+    .prototype-element.tone-danger {
+      border-color: rgba(190, 24, 93, 0.24);
+      background: #fff0f5;
+    }
+
+    .prototype-text strong,
+    .prototype-card strong,
+    .prototype-notice strong {
+      display: block;
+      font-size: 14px;
+      line-height: 1.25;
+    }
+
+    .prototype-text p,
+    .prototype-card p,
+    .prototype-notice p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .prototype-card small,
+    .prototype-field small {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .prototype-field-value {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #f8fafb;
+      color: #88949d;
+      font-size: 12px;
+      line-height: 1.35;
+      padding: 10px;
+    }
+
+    .prototype-field-value.has-value {
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .prototype-list ul {
+      display: grid;
+      gap: 7px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .prototype-list li {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 10px;
+      border-top: 1px solid rgba(23, 32, 38, 0.08);
+      padding-top: 7px;
+    }
+
+    .prototype-list li:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .prototype-list li strong,
+    .prototype-list li span {
+      display: block;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .prototype-list li span {
+      color: var(--muted);
+    }
+
+    .prototype-list li small {
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: #eef3f6;
+      color: #52616b;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 3px 6px;
+    }
+
+    .prototype-empty {
       margin: 0;
       color: var(--muted);
-      line-height: 1.45;
+      font-size: 12px;
+    }
+
+    .prototype-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 8px;
+    }
+
+    .prototype-tags span {
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.8);
+      color: #52616b;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 4px 7px;
+    }
+
+    .prototype-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 7px;
+      border: 0;
+      padding: 0;
+    }
+
+    .prototype-actions button {
+      min-height: 38px;
+      border-radius: 10px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 850;
+      pointer-events: none;
+    }
+
+    .prototype-action-primary {
+      border: 1px solid var(--teal);
+      background: var(--teal);
+      color: #ffffff;
+    }
+
+    .prototype-action-secondary {
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: var(--ink);
+    }
+
+    .prototype-progress > div:first-child {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 11px;
+    }
+
+    .prototype-progress-track {
+      height: 7px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(23, 32, 38, 0.1);
+      margin-top: 8px;
+    }
+
+    .prototype-progress-track span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--teal);
+    }
+
+    .prototype-navigation {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      gap: 4px;
+      border-top: 1px solid var(--line);
+      margin-top: auto;
+      padding-top: 10px;
+    }
+
+    .prototype-navigation span {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 750;
+    }
+
+    .prototype-navigation span.is-active {
+      color: var(--teal);
     }
 
     .design-swatches {
@@ -2367,29 +2601,143 @@
           {
             "title": "Entry point",
             "state": "Draft",
-            "body": "First screen or moment where the user starts the workflow.",
+            "step": "1 of 3",
+            "device": "mobile",
+            "eyebrow": "Discovery",
+            "body": "Capture enough context to start a focused product decision.",
             "x": 80,
-            "y": 240
+            "y": 240,
+            "elements": [
+              {
+                "type": "text",
+                "eyebrow": "Current task",
+                "title": "Describe the product idea",
+                "body": "Keep the first input short. The interview will clarify missing detail.",
+                "tone": "accent"
+              },
+              {
+                "type": "field",
+                "label": "Product idea",
+                "placeholder": "What should exist, for whom, and why?"
+              },
+              {
+                "type": "list",
+                "title": "What the interview will clarify",
+                "items": [
+                  { "title": "Primary user", "meta": "Required" },
+                  { "title": "Painful workflow", "meta": "Required" },
+                  { "title": "Decision and success signal", "meta": "Required" }
+                ]
+              },
+              {
+                "type": "actions",
+                "primary": "Start discovery",
+                "secondary": "Use existing brief"
+              }
+            ],
+            "navigation": [
+              { "label": "Idea", "active": true },
+              { "label": "Evidence" },
+              { "label": "Decision" }
+            ]
           },
           {
             "title": "Core action",
             "state": "Draft",
-            "body": "The highest-value user action or AI-assisted step.",
+            "step": "2 of 3",
+            "device": "mobile",
+            "eyebrow": "Synthesis",
+            "body": "Turn interview answers and evidence into an explicit product decision.",
             "x": 460,
-            "y": 240
+            "y": 240,
+            "elements": [
+              {
+                "type": "progress",
+                "title": "Decision pack completeness",
+                "value": 55,
+                "displayValue": "4 of 7 inputs"
+              },
+              {
+                "type": "field",
+                "label": "Primary user",
+                "value": "Role and moment of use"
+              },
+              {
+                "type": "card",
+                "eyebrow": "Painful moment",
+                "title": "Workflow and current workaround",
+                "body": "Show the concrete trigger, action, friction, and desired outcome.",
+                "tags": ["User", "Workflow"],
+                "tone": "accent"
+              },
+              {
+                "type": "notice",
+                "title": "Evidence check",
+                "body": "Unsupported external claims remain marked Needs validation.",
+                "tone": "warning"
+              },
+              {
+                "type": "actions",
+                "primary": "Generate decision pack",
+                "secondary": "Review assumptions"
+              }
+            ],
+            "navigation": [
+              { "label": "Idea" },
+              { "label": "Evidence", "active": true },
+              { "label": "Decision" }
+            ]
           },
           {
             "title": "Output",
             "state": "Draft",
-            "body": "The artifact, decision, recommendation, or visual result.",
+            "step": "3 of 3",
+            "device": "mobile",
+            "eyebrow": "Decision",
+            "body": "Review the recommendation, confidence, evidence, and next validation action.",
             "x": 840,
-            "y": 240
+            "y": 240,
+            "elements": [
+              {
+                "type": "notice",
+                "title": "Recommendation ready for review",
+                "body": "Proceed, pause, or validate further with confidence stated explicitly.",
+                "tone": "success"
+              },
+              {
+                "type": "list",
+                "title": "Generated artifacts",
+                "items": [
+                  { "title": "Decision pack", "meta": "Ready" },
+                  { "title": "User journey", "meta": "Ready" },
+                  { "title": "Prototype direction", "meta": "Draft" }
+                ],
+                "tone": "neutral"
+              },
+              {
+                "type": "card",
+                "eyebrow": "Evidence snapshot",
+                "title": "Confidence remains visible",
+                "body": "Source-backed claims, assumptions, and validation gaps stay separate.",
+                "tags": ["Evidence", "Risk"]
+              },
+              {
+                "type": "actions",
+                "primary": "Open board",
+                "secondary": "Review before sharing"
+              }
+            ],
+            "navigation": [
+              { "label": "Idea" },
+              { "label": "Evidence" },
+              { "label": "Decision", "active": true }
+            ]
           }
         ],
         "notes": [
-          { "title": "Open question", "body": "What must the prototype prove first?", "x": 230, "y": 700, "tone": "yellow" },
-          { "title": "Iteration rule", "body": "Change one scenario at a time and keep evidence labels visible.", "x": 560, "y": 690, "tone": "blue" },
-          { "title": "Decision", "body": "Ready when the team can explain the workflow without extra narration.", "x": 890, "y": 700, "tone": "pink" }
+          { "title": "Open question", "body": "What must the prototype prove first?", "x": 230, "y": 860, "tone": "yellow" },
+          { "title": "Iteration rule", "body": "Change one scenario at a time and keep evidence labels visible.", "x": 560, "y": 850, "tone": "blue" },
+          { "title": "Decision", "body": "Ready when the team can explain the workflow without extra narration.", "x": 890, "y": 860, "tone": "pink" }
         ]
       },
       {
@@ -2429,7 +2777,7 @@
         "summary": "Use this page as a Canva-like 16:9 story deck for the product decision, research backup, user pain, prototype direction, risks, and validation plan.",
         "audience": "Product stakeholders",
         "decision": "Decide whether to proceed, pause, or validate further.",
-        "prompt": "Use $flashtotype-presentation-generator for this Flashtotype project.\n\nRead `.flashtotype/skills/flashtotype-presentation-generator/SKILL.md` and follow it as the primary workflow. Create or update `flashtotype-workspace/current/user-editable/presentation.md` from the existing Flashtotype artifacts: `flashtotype-brief.md`, `decision-pack.md`, `evidence.json`, `user-journey.md`, `prototype.md`, `Design.md`, and `flashtotype-library.md`. Build a static 16:9 stakeholder slide story with evidence labels, source notes, speaker notes, generated image prompts, local visual asset references, top assumptions, validation gaps, and next actions. If image generation is available, save slide images under `flashtotype-workspace/current/output/assets/`; otherwise keep prompt-only visual placeholders. Regenerate the `presentation` page data inside `flashtotype-workspace/current/output/index.html` without adding a backend, build step, package manager, or network dependency.",
+        "prompt": "Use $flash-present to create or refresh the stakeholder presentation from this Flashtotype decision pack. Preserve evidence labels, source notes, speaker notes, local visual assets, assumptions, validation gaps, and the static presentation page.",
         "slides": [
           {
             "eyebrow": "01",
@@ -2569,6 +2917,51 @@
         "title": "Flashtotype Library",
         "summary": "Installed skills, active workflow modules, and reusable PO/PM frameworks available in this project.",
         "skills": [
+          {
+            "name": "flash-onboard",
+            "type": "Project command skill",
+            "status": "Active",
+            "path": ".agents/skills/flash-onboard/SKILL.md",
+            "description": "Starts or resumes the guided Flashtotype discovery interview and first complete decision-pack run.",
+            "usedFor": ["Project onboarding", "Discovery interview", "First decision pack", "Resume incomplete runs"],
+            "prompt": "Use $flash-onboard to start or resume this project's guided Flashtotype product discovery workflow."
+          },
+          {
+            "name": "flash-revise",
+            "type": "Project command skill",
+            "status": "Active",
+            "path": ".agents/skills/flash-revise/SKILL.md",
+            "description": "Applies a requested change to existing Flashtotype sources, evidence, dependent artifacts, and the static board.",
+            "usedFor": ["Artifact revision", "Evidence-safe updates", "Board regeneration", "Focused iteration"],
+            "prompt": "Use $flash-revise to apply my requested change to the existing Flashtotype decision pack and regenerate affected board content."
+          },
+          {
+            "name": "flash-present",
+            "type": "Project command skill",
+            "status": "Active",
+            "path": ".agents/skills/flash-present/SKILL.md",
+            "description": "Creates or refreshes an evidence-labeled stakeholder presentation with speaker notes and local visual assets.",
+            "usedFor": ["Stakeholder presentations", "Executive readouts", "Speaker notes", "Presentation mode"],
+            "prompt": "Use $flash-present to create or refresh the stakeholder presentation from this Flashtotype decision pack."
+          },
+          {
+            "name": "flash-research",
+            "type": "Project command skill",
+            "status": "Active",
+            "path": ".agents/skills/flash-research/SKILL.md",
+            "description": "Runs a bounded evidence pass and updates the source ledger plus only the affected decision artifacts.",
+            "usedFor": ["Competitor research", "Market evidence", "Pricing signals", "Technical feasibility", "Risk research"],
+            "prompt": "Use $flash-research to research my requested product question and update the evidence ledger and affected Flashtotype artifacts."
+          },
+          {
+            "name": "flash-review",
+            "type": "Project command skill",
+            "status": "Active",
+            "path": ".agents/skills/flash-review/SKILL.md",
+            "description": "Audits evidence quality, contradictions, completeness, output integrity, and stakeholder sharing readiness without editing by default.",
+            "usedFor": ["Sharing readiness", "Evidence audit", "Contradiction checks", "Quality gate"],
+            "prompt": "Use $flash-review to audit this Flashtotype decision pack for evidence gaps, contradictions, completeness, and sharing readiness."
+          },
           {
             "name": "flashtotype-product-sidekick",
             "type": "Installed skill",

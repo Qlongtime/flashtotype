@@ -27,7 +27,11 @@ They do not need existing research, code, designs, product docs, or a prototype.
    Recommended prompt:
 
    ```text
-   Use the Flashtotype repository to install the Flashtotype PM/PO sidekick into this project. Keep generated work private by default, then interview me and create a decision pack.
+   Use the Flashtotype repository at https://github.com/Qlongtime/flashtotype.git to install the Flashtotype PM/PO sidekick into this project.
+
+   First, access the repository at that URL (by cloning it to a temporary directory or fetching the files) and read its "AGENTS.md" file to learn how Flashtotype works. Follow the installation guidelines in "AGENTS.md" to set up the workspace folders, copy the agent skills and board templates, and update our target .gitignore. Keep all generated work private by default.
+
+   Do not stop after installation and do not ask me to restart Codex before onboarding. In this same conversation, read `.flashtotype/skills/flash-onboard/SKILL.md` directly and begin the product interview.
    ```
 
 3. Flashtotype creates the local workspace.
@@ -35,12 +39,26 @@ They do not need existing research, code, designs, product docs, or a prototype.
    Key folders:
 
    ```text
+   .agents/skills/
    .flashtotype/
+   flashtotype-workspace/current/START-HERE.md
    flashtotype-workspace/current/user-editable/
    flashtotype-workspace/current/output/
    ```
 
-4. The agent interviews the user.
+4. The installing agent starts the guided workflow immediately.
+
+   The agent reads `.flashtotype/skills/flash-onboard/SKILL.md` directly and asks the first product questions in the installation conversation. The user should not need to restart or enter another command.
+
+   If the user later reopens the project, invoke:
+
+   ```text
+   $flash-onboard
+   ```
+
+   The recovery prompt is also stored in `flashtotype-workspace/current/START-HERE.md`. If the skill is not visible in `/skills`, ask Codex to read `.flashtotype/skills/flash-onboard/SKILL.md` directly. Restarting is optional.
+
+5. The agent interviews the user.
 
    The interview should cover:
 
@@ -53,7 +71,7 @@ They do not need existing research, code, designs, product docs, or a prototype.
    - Known competitors, substitutes, or references.
    - Technical preferences or forbidden approaches.
 
-5. Flashtotype creates the first working source files.
+6. Flashtotype creates the first working source files.
 
    These live in:
 
@@ -74,7 +92,7 @@ They do not need existing research, code, designs, product docs, or a prototype.
    flashtotype-library.md
    ```
 
-6. The agent performs the research pass.
+7. The agent performs the research pass.
 
    The agent investigates the market, competitors, substitutes, risks, user pain, and technical feasibility when browsing or source material is available.
 
@@ -92,7 +110,7 @@ They do not need existing research, code, designs, product docs, or a prototype.
    evidence.json
    ```
 
-7. The agent creates the product strategy package.
+8. The agent creates the product strategy package.
 
    The package should include:
 
@@ -105,7 +123,7 @@ They do not need existing research, code, designs, product docs, or a prototype.
    - Top assumptions and validation gaps.
    - Next validation actions.
 
-8. The agent creates the user journey.
+9. The agent creates the user journey.
 
    The user journey should show:
 
@@ -115,7 +133,7 @@ They do not need existing research, code, designs, product docs, or a prototype.
    - What output or value the user receives.
    - What the team learns next.
 
-9. The agent creates the prototype direction.
+10. The agent creates the prototype direction.
 
    The prototype source should define:
 
@@ -126,7 +144,7 @@ They do not need existing research, code, designs, product docs, or a prototype.
    - Output or decision result.
    - Edge cases and open questions.
 
-10. The agent creates the design direction.
+11. The agent creates the design direction.
 
     The design source should define:
 
@@ -136,7 +154,7 @@ They do not need existing research, code, designs, product docs, or a prototype.
     - Core components.
     - Layout patterns.
 
-11. The agent generates the static HTML board.
+12. The agent generates the static HTML board.
 
     Output path:
 
@@ -153,11 +171,11 @@ They do not need existing research, code, designs, product docs, or a prototype.
     - Flashtotype library.
     - Presentation mode.
 
-12. The user reviews the Homepage.
+13. The user reviews the Homepage.
 
     Homepage overview cards show concise summaries by default. Each overview card includes a read-full control that opens embedded Markdown from the relevant source section.
 
-13. The user opens Presentation mode.
+14. The user opens Presentation mode.
 
     Presentation mode turns the decision pack into a stakeholder story:
 
@@ -170,19 +188,18 @@ They do not need existing research, code, designs, product docs, or a prototype.
     - Risks and assumptions.
     - Validation plan.
 
-14. The user iterates with Codex.
+15. The user iterates with Codex.
 
-    Example follow-up prompts:
+    Choose the command by job:
 
     ```text
-    Make the prototype focus on onboarding.
-    Add competitor research for the accounting software market.
-    Turn this into a CFO-facing presentation.
-    Make the recommendation more skeptical.
-    Add validation questions for user interviews.
+    Use $flash-revise to make the prototype focus on onboarding.
+    Use $flash-research to add competitor evidence for the accounting software market.
+    Use $flash-present to turn this into a CFO-facing presentation.
+    Use $flash-review to check whether this decision pack is ready to share.
     ```
 
-15. The agent updates source files and regenerates the board.
+16. The agent updates source files and regenerates the board.
 
     The editable source files remain the source of truth. The output HTML is regenerated from them.
 
