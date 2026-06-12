@@ -534,7 +534,6 @@
     }
 
     .mode-return-button {
-      margin-bottom: 12px;
       background: #ffffff;
       color: var(--ink);
       border: 1px solid var(--line);
@@ -1353,7 +1352,7 @@
 
     .presentation-hero {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 320px auto;
+      grid-template-columns: minmax(0, 1fr) 320px;
       gap: 20px;
       align-items: start;
       margin-bottom: 18px;
@@ -1389,14 +1388,18 @@
 
     .presentation-actions {
       display: flex;
-      justify-content: flex-end;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+      margin-bottom: 12px;
     }
 
     .present-button {
       display: inline-flex;
       align-items: center;
       gap: 9px;
-      min-height: 44px;
+      min-height: 42px;
       border: 0;
       border-radius: var(--radius);
       background: var(--blue);
@@ -1404,6 +1407,7 @@
       cursor: pointer;
       font-size: 14px;
       font-weight: 900;
+      margin-left: auto;
       padding: 0 16px;
       white-space: nowrap;
     }
@@ -1954,10 +1958,6 @@
 
       .overview-header .mode-switch-button {
         justify-self: start;
-      }
-
-      .presentation-actions {
-        justify-content: flex-start;
       }
 
       .codex-bridge-fields {

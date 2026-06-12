@@ -604,10 +604,16 @@
     const slides = Array.isArray(page.slides) ? page.slides : [];
     return `
       <div class="page-frame is-presentation">
-        <button class="mode-switch-button mode-return-button" type="button" data-page-target="home" aria-label="Return to overview mode">
-          <span aria-hidden="true">&lt;</span>
-          Overview mode
-        </button>
+        <div class="presentation-actions">
+          <button class="mode-switch-button mode-return-button" type="button" data-page-target="home" aria-label="Return to overview mode">
+            <span aria-hidden="true">&lt;</span>
+            Overview mode
+          </button>
+          <button class="present-button" type="button" data-present-deck aria-label="Present slide deck">
+            <span aria-hidden="true"></span>
+            Present
+          </button>
+        </div>
         ${sourceStrip(page)}
         <section class="presentation-hero">
           <div>
@@ -623,12 +629,6 @@
               <span>Decision</span>
               <strong>${escapeHtml(page.decision || "Decision needed")}</strong>
             </div>
-          </div>
-          <div class="presentation-actions">
-            <button class="present-button" type="button" data-present-deck aria-label="Present slide deck">
-              <span aria-hidden="true"></span>
-              Present
-            </button>
           </div>
         </section>
         ${page.prompt ? renderSkillPrompt({ prompt: page.prompt }) : ""}
