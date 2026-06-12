@@ -18,6 +18,7 @@ scripts/
 ```
 
 - `agent/` is for files agents copy and use as operating instructions or the master board template.
+- `agent/board-template/flashtotype-codex-bridge.mjs` and `start-flashtotype-bridge.*` are optional localhost helpers copied with the static board template.
 - `user-workspace-template/` is the starter workspace users and agents edit during PM/PO work.
 - `docs/` explains public behavior and contracts.
 - `scripts/` contains lightweight validation.
@@ -32,6 +33,12 @@ flashtotype-workspace/
   current/
     user-editable/
     output/
+      index.html
+      flashtotype.js
+      flashtotype-codex-bridge.mjs
+      start-flashtotype-bridge.ps1
+      start-flashtotype-bridge.cmd
+      logo.png
       assets/
 ```
 

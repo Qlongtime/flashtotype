@@ -22,6 +22,9 @@ Generated output lives in `flashtotype-workspace/current/output/`:
 
 - `output/index.html`: static Miro-inspired board users open in a browser.
 - `output/flashtotype.js`: reusable renderer.
+- `output/flashtotype-codex-bridge.mjs`: optional user-started localhost helper for sending board prompts to local Codex.
+- `output/start-flashtotype-bridge.ps1`: optional Windows-friendly start script that checks the lowest local prerequisites and launches the bridge with the board-generated token.
+- `output/start-flashtotype-bridge.cmd`: optional wrapper for launching the PowerShell start script.
 - `output/logo.png`: Flashtotype header logo asset used by the static board.
 - `output/assets/`: generated local assets, including presentation slide images.
 
@@ -42,9 +45,17 @@ Use this top-level shape:
   "status": "",
   "updatedAt": "",
   "sourceFiles": [],
+  "codexBridge": {
+    "enabled": true,
+    "url": "http://127.0.0.1:4777",
+    "defaultProvider": "exec",
+    "defaultSandbox": "read-only"
+  },
   "pages": []
 }
 ```
+
+`codexBridge` is optional. If present, keep `url` loopback-only. The board must still open directly from disk and preserve editable/copyable prompts when the bridge is not running. The rendered prompt UI should keep the fixed control prompt open/read-only, place an optional user request drawer below it, merge both prompts on `Run prompt`, and show a copyable start command if the bridge is offline.
 
 The `pages` array must include:
 
@@ -55,7 +66,18 @@ The `pages` array must include:
 - `presentation`: internal static stakeholder slide story from `presentation.md`, opened from the Homepage Presentation mode button instead of the project page rail.
 - `library`: installed skills, active workflow modules, and Flashtotype framework suggestions from `flashtotype-library.md`.
 
-Keep `flashtotype.js` generic. Do not add network dependencies or a build step.
+The `home` page should include a `blocks` array for product overview cards. Each block should show summarized content on the board and provide embedded full Markdown for the read-full modal:
+
+- `title`: overview card title.
+- `body`: short summary shown on the card.
+- `items`: short bullet summary shown on the card.
+- `sourceFile`: source Markdown file path, such as `user-editable/decision-pack.md`.
+- `sourceSection`: optional source heading or section name.
+- `fullMarkdown`: Markdown content copied or synthesized from that source section.
+
+Do not fetch local Markdown files from the browser at runtime. The HTML must open directly from disk, so full content needed by the modal must be embedded in the board JSON.
+
+Keep `flashtotype.js` generic. Do not add required network dependencies or a build step. The optional Codex bridge must remain a local-only, user-started helper and must not expose `danger-full-access` from the board UI.
 
 The `library` page should include a `skills` array listing installed skills and active workflow modules used by the project.
 
@@ -64,7 +86,7 @@ The `presentation` page should include:
 - `audience`
 - `decision`
 - `hiddenFromMenu`: `true`, so the page is available as Presentation mode but not listed in the project page rail.
-- `prompt`: the copyable prompt users can click in static HTML.
+- `prompt`: the fixed agent control prompt users can inspect in static HTML, copy with their added request, and optionally send to the local Codex bridge.
 - `slides`: an array of 16:9 slide cards with `eyebrow`, `title`, `body`, `bullets`, `visual`, `evidenceLabel`, `sourceNote`, and `speakerNotes`.
 
 Each presentation slide `visual` object may include:
@@ -87,7 +109,7 @@ Each `skills` item should include:
 - `path`
 - `description`
 - `usedFor`
-- `prompt`: the real agent prompt users can expand, inspect, and copy to confirm or reuse the skill/module workflow.
+- `prompt`: the real fixed agent prompt users can expand, copy with their added request, and optionally send to the local Codex bridge to confirm or reuse the skill/module workflow.
 
 ## Final Answer
 

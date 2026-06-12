@@ -20,7 +20,7 @@ Create decision-led presentation stories from Flashtotype research. Be concise, 
 7. If image generation fails or is unavailable, keep the `visual.prompt`, set `visual.status` to `prompt-only`, leave `visual.src` blank, and continue generating the deck.
 8. Update the `presentation` page data inside `flashtotype-workspace/current/output/index.html`.
 9. Keep the presentation page hidden from the project page rail and reachable from the Homepage `Presentation mode` button, with an `Overview mode` button on the presentation page.
-10. Keep `flashtotype.js` generic. Do not add a backend, build step, package manager, runtime network dependency, Canva API, PPTX dependency, or Figma dependency for v1.
+10. Keep `flashtotype.js` generic. Do not add a required backend, build step, package manager, runtime network dependency, Canva API, PPTX dependency, or Figma dependency for v1. The optional local Codex bridge is allowed only as a user-started localhost helper; the page must still work without it.
 
 ## Slide Spine
 
@@ -82,7 +82,7 @@ The generated board data should include a page object like:
 
 Supported `visual.layout` values are `split-right`, `split-left`, `full-bleed`, and `none`. Use only local relative paths in `visual.src`; do not use external URLs, absolute paths, or embedded data URLs.
 
-The `prompt` value is the copyable agent prompt users click from the static HTML board. Static local HTML cannot invoke an agent directly. The rendered board should show a `Presentation mode` button on the Homepage, keep the presentation page out of the project page rail, show an `Overview mode` button on the presentation page, and include a `Present` button that opens the static fullscreen presenter.
+The `prompt` value is the fixed agent control prompt users inspect from the static HTML board. The rendered board should keep that fixed prompt open, place optional user instructions in a collapsed drawer below it, copy the merged prompt, or click `Run prompt`; if the optional local Codex bridge is offline, the board shows a copyable localhost start command, and if it is online, the board sends the merged prompt with a page-generated token. The rendered board should show a `Presentation mode` button on the Homepage, keep the presentation page out of the project page rail, show an `Overview mode` button on the presentation page, and include a `Present` button that opens the static fullscreen presenter.
 
 ## Optional Export Paths
 

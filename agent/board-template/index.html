@@ -407,10 +407,42 @@
       min-height: 130px;
     }
 
+    .tile-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .read-full-button {
+      display: inline-grid;
+      flex: 0 0 auto;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #f7fafb;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .read-full-button:hover,
+    .read-full-button:focus-visible {
+      border-color: var(--teal);
+      color: var(--teal);
+      outline: none;
+    }
+
     .tile h2,
     .tile h3 {
       margin: 0 0 10px;
       line-height: 1.2;
+    }
+
+    .tile-header h2 {
+      margin: 0;
     }
 
     .tile h2 {
@@ -864,6 +896,43 @@
       background: #f7fafb;
     }
 
+    .prompt-control {
+      margin-top: 12px;
+    }
+
+    .prompt-compose {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fbfcfd;
+      padding: 12px;
+    }
+
+    .prompt-compose > summary {
+      color: var(--muted);
+    }
+
+    .prompt-compose[open] > summary {
+      color: var(--ink);
+    }
+
+    .prompt-compose label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .prompt-compose-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
     .prompt-toolbar {
       display: flex;
       align-items: center;
@@ -934,6 +1003,352 @@
       line-height: 1.5;
       overflow-wrap: anywhere;
       white-space: pre-wrap;
+    }
+
+    .prompt-input {
+      display: block;
+      width: 100%;
+      min-height: 112px;
+      max-height: 260px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      color: var(--ink);
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      padding: 12px;
+    }
+
+    .prompt-input:focus {
+      outline: 2px solid var(--blue);
+      outline-offset: -2px;
+    }
+
+    .codex-bridge-panel {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fbfcfd;
+      padding: 12px;
+    }
+
+    .codex-bridge-panel[hidden] {
+      display: none;
+    }
+
+    .codex-bridge-status {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .codex-bridge-fields {
+      display: grid;
+      grid-template-columns: minmax(130px, 0.8fr) minmax(150px, 0.8fr);
+      gap: 10px;
+    }
+
+    .codex-bridge-fields label {
+      display: grid;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .codex-bridge-fields input,
+    .codex-bridge-fields select {
+      width: 100%;
+      min-height: 36px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      color: var(--ink);
+      font: inherit;
+      font-size: 13px;
+      padding: 0 9px;
+      text-transform: none;
+    }
+
+    .codex-bridge-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .codex-send-button,
+    .codex-cancel-button {
+      min-height: 36px;
+      border: 0;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 900;
+      padding: 0 12px;
+    }
+
+    .codex-send-button {
+      background: var(--blue);
+      color: #ffffff;
+    }
+
+    .codex-send-button:hover {
+      background: #1d4ed8;
+    }
+
+    .codex-send-button:disabled {
+      cursor: default;
+      opacity: 0.52;
+    }
+
+    .codex-cancel-button {
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: var(--ink);
+    }
+
+    .codex-output {
+      max-height: 240px;
+      overflow: auto;
+      margin: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      color: var(--ink);
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      padding: 10px;
+      white-space: pre-wrap;
+    }
+
+    .bridge-modal {
+      position: fixed;
+      z-index: 80;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(23, 32, 38, 0.46);
+      padding: 24px;
+    }
+
+    .bridge-modal.is-active {
+      display: flex;
+    }
+
+    .content-modal {
+      position: fixed;
+      z-index: 90;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(23, 32, 38, 0.46);
+      padding: 24px;
+    }
+
+    .content-modal.is-active {
+      display: flex;
+    }
+
+    .content-dialog {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      width: min(860px, 100%);
+      max-height: min(760px, calc(100vh - 48px));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .content-dialog-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: start;
+      border-bottom: 1px solid var(--line);
+      padding: 18px 20px;
+    }
+
+    .content-dialog-header h2 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.2;
+    }
+
+    .content-source {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .content-close {
+      display: inline-grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .content-close:hover,
+    .content-close:focus-visible {
+      border-color: var(--teal);
+      color: var(--teal);
+      outline: none;
+    }
+
+    .markdown-content {
+      overflow: auto;
+      padding: 22px 24px 28px;
+    }
+
+    .markdown-content h2,
+    .markdown-content h3,
+    .markdown-content h4,
+    .markdown-content h5 {
+      margin: 22px 0 10px;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+
+    .markdown-content h2:first-child,
+    .markdown-content h3:first-child,
+    .markdown-content h4:first-child,
+    .markdown-content h5:first-child {
+      margin-top: 0;
+    }
+
+    .markdown-content p,
+    .markdown-content li,
+    .markdown-content blockquote {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .markdown-content p,
+    .markdown-content ul,
+    .markdown-content ol,
+    .markdown-content blockquote,
+    .markdown-content pre {
+      margin: 0 0 14px;
+    }
+
+    .markdown-content ul,
+    .markdown-content ol {
+      padding-left: 22px;
+    }
+
+    .markdown-content code {
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: #f7fafb;
+      color: var(--ink);
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 0.92em;
+      padding: 1px 4px;
+    }
+
+    .markdown-content pre {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #f7fafb;
+      padding: 12px;
+    }
+
+    .markdown-content pre code {
+      border: 0;
+      background: transparent;
+      padding: 0;
+    }
+
+    .markdown-content blockquote {
+      border-left: 3px solid var(--teal);
+      padding-left: 12px;
+    }
+
+    .markdown-content a {
+      color: var(--blue);
+      font-weight: 850;
+    }
+
+    .bridge-dialog {
+      width: min(720px, 100%);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .bridge-dialog h2 {
+      margin: 0 0 8px;
+      font-size: 22px;
+    }
+
+    .bridge-dialog p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .bridge-command {
+      display: block;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #f7fafb;
+      color: var(--ink);
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      margin: 0 0 14px;
+      padding: 12px;
+      white-space: pre-wrap;
+    }
+
+    .bridge-dialog-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .bridge-dialog-actions button {
+      min-height: 38px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 900;
+      padding: 0 12px;
+    }
+
+    .bridge-dialog-actions .primary {
+      border: 0;
+      background: var(--blue);
+      color: #ffffff;
+    }
+
+    .bridge-dialog-actions .secondary {
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: var(--ink);
     }
 
     .presentation-hero {
@@ -1545,6 +1960,10 @@
         justify-content: flex-start;
       }
 
+      .codex-bridge-fields {
+        grid-template-columns: 1fr;
+      }
+
       .page-frame.is-presentation {
         width: 680px;
       }
@@ -1620,6 +2039,10 @@
       .present-button {
         min-height: 40px;
         padding: 0 14px;
+      }
+
+      .prompt-input {
+        min-height: 104px;
       }
 
       .presentation-deck {
@@ -1799,6 +2222,32 @@
     </div>
   </section>
 
+  <section class="content-modal" id="content-modal" aria-hidden="true" aria-label="Read full content">
+    <div class="content-dialog" role="dialog" aria-modal="true" aria-labelledby="content-modal-title">
+      <div class="content-dialog-header">
+        <div>
+          <h2 id="content-modal-title">Section</h2>
+          <p class="content-source" id="content-modal-source"></p>
+        </div>
+        <button class="content-close" type="button" data-close-content-modal aria-label="Close full content">-</button>
+      </div>
+      <div class="markdown-content" id="content-modal-body"></div>
+    </div>
+  </section>
+
+  <section class="bridge-modal" id="codex-bridge-modal" aria-hidden="true" aria-label="Connect local Codex">
+    <div class="bridge-dialog" role="dialog" aria-modal="true" aria-labelledby="codex-bridge-title">
+      <h2 id="codex-bridge-title">Connect local Codex</h2>
+      <p>Run this command in a terminal on your computer, keep that terminal open, then check the connection. The helper listens only on localhost and uses this page-generated token.</p>
+      <code class="bridge-command" id="codex-bridge-command"></code>
+      <div class="bridge-dialog-actions">
+        <button class="primary" type="button" data-copy-bridge-command>Copy command</button>
+        <button class="secondary" type="button" data-check-bridge>Check connection</button>
+        <button class="secondary" type="button" data-close-bridge-modal>Close</button>
+      </div>
+    </div>
+  </section>
+
   <script type="application/json" id="flashtotype-data">
   {
     "projectName": "Example Product",
@@ -1815,6 +2264,12 @@
       "user-editable/presentation.md",
       "user-editable/flashtotype-library.md"
     ],
+    "codexBridge": {
+      "enabled": true,
+      "url": "http://127.0.0.1:4777",
+      "defaultProvider": "exec",
+      "defaultSandbox": "read-only"
+    },
     "pages": [
       {
         "id": "home",
@@ -1833,22 +2288,34 @@
           {
             "title": "Background idea",
             "body": "Replace this with the background from flashtotype-brief.md.",
-            "items": ["What changed in the market or workflow?", "Why should the team care now?"]
+            "items": ["What changed in the market or workflow?", "Why should the team care now?"],
+            "sourceFile": "user-editable/flashtotype-brief.md",
+            "sourceSection": "Product thesis",
+            "fullMarkdown": "## Background idea\n\nReplace this with the full product background from `flashtotype-brief.md`.\n\n### What to include\n\n- Product thesis and current belief.\n- Market, workflow, or team context that created the opportunity.\n- Why the problem matters now.\n\n### Evidence posture\n\nLabel claims as `Source-backed`, `Assumption`, or `Needs validation` in the source document."
           },
           {
             "title": "User problem and pain",
             "body": "Summarize the painful workflow and current workaround.",
-            "items": ["Primary persona", "Current workaround", "Urgency signal"]
+            "items": ["Primary persona", "Current workaround", "Urgency signal"],
+            "sourceFile": "user-editable/flashtotype-brief.md",
+            "sourceSection": "Pain and user",
+            "fullMarkdown": "## User problem and pain\n\nReplace this with the full user problem section from `flashtotype-brief.md`.\n\n### What to include\n\n- Primary user and buyer if different.\n- Painful workflow or moment of use.\n- Current workaround and its cost.\n- Urgency signal or reason this is worth solving now.\n\n### Validation gap\n\nKeep unproven persona and urgency claims labeled as `Needs validation`."
           },
           {
             "title": "Research backup",
             "body": "Summarize evidence from evidence.json and decision-pack.md.",
-            "items": ["Cited sources", "Known gaps", "Confidence"]
+            "items": ["Cited sources", "Known gaps", "Confidence"],
+            "sourceFile": "user-editable/decision-pack.md",
+            "sourceSection": "Evidence summary",
+            "fullMarkdown": "## Research backup\n\nReplace this with the full research backup section from `decision-pack.md` and the claim ledger in `evidence.json`.\n\n### What to include\n\n- Strongest source-backed claims.\n- Key assumptions and validation gaps.\n- Confidence level and why.\n- Source notes that explain what each cited source supports.\n\n### Evidence rule\n\nDo not turn external claims into facts unless they are backed by a source record in `evidence.json`."
           },
           {
             "title": "Recommendation",
             "body": "State the current PM/PO recommendation and what would change it.",
-            "items": ["Proceed, pause, or research more", "Top validation action"]
+            "items": ["Proceed, pause, or research more", "Top validation action"],
+            "sourceFile": "user-editable/decision-pack.md",
+            "sourceSection": "Recommendation",
+            "fullMarkdown": "## Recommendation\n\nReplace this with the full recommendation section from `decision-pack.md`.\n\n### What to include\n\n- Current recommendation: proceed, pause, or validate further.\n- Confidence level.\n- Top assumptions that could change the recommendation.\n- Next 3 to 5 validation actions.\n\n### Decision quality\n\nMake the tradeoff explicit enough that a team can challenge it without needing extra narration."
           }
         ],
         "evidence": [

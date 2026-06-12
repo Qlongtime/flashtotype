@@ -29,6 +29,9 @@ Use the current project root as the target unless the user names another path.
    - `user-workspace-template/current/` to `flashtotype-workspace/current/`
    - `.flashtotype/board-template/index.html` to `flashtotype-workspace/current/output/index.html`
    - `.flashtotype/board-template/flashtotype.js` to `flashtotype-workspace/current/output/flashtotype.js`
+   - `.flashtotype/board-template/flashtotype-codex-bridge.mjs` to `flashtotype-workspace/current/output/flashtotype-codex-bridge.mjs`
+   - `.flashtotype/board-template/start-flashtotype-bridge.ps1` to `flashtotype-workspace/current/output/start-flashtotype-bridge.ps1`
+   - `.flashtotype/board-template/start-flashtotype-bridge.cmd` to `flashtotype-workspace/current/output/start-flashtotype-bridge.cmd`
    - `.flashtotype/board-template/logo.png` to `flashtotype-workspace/current/output/logo.png`
    - Keep `flashtotype-workspace/current/output/assets/` for generated presentation images and local run assets.
 5. Update the target `.gitignore` without removing existing entries:
@@ -99,9 +102,22 @@ The board must include these page ids:
 - `presentation`
 - `library`
 
+Homepage overview cards should stay concise. For each Homepage `blocks` item, include a short `body` and `items` summary plus `sourceFile`, optional `sourceSection`, and `fullMarkdown` copied or synthesized from the relevant Markdown source section. The static renderer uses `fullMarkdown` for the read-full modal; do not make the browser fetch local Markdown files at runtime.
+
 The `presentation` page is an internal mode page. Do not list it in the project page rail; the Homepage should open it with a `Presentation mode` control, and the Presentation page should return with an `Overview mode` control.
 
-The HTML must open directly from disk. Do not add a backend, build step, package manager, or network dependency.
+The HTML must open directly from disk. Do not add a required backend, build step, package manager, or runtime network dependency. The optional local Codex bridge is a user-started localhost helper only; the board must still work without it through editable/copyable prompts.
+
+The board prompt UX should keep the fixed agent control prompt open/read-only, place the optional user request drawer below it, merge both prompts on `Run prompt`, and automatically check whether the local bridge is connected. If the bridge is offline, show the user a copyable command using `start-flashtotype-bridge.ps1`; do not require manual token copying.
+
+When including the optional `codexBridge` board config, keep it local-only:
+
+- `enabled`: default `true`
+- `url`: default `http://127.0.0.1:4777`
+- `defaultProvider`: default `exec`
+- `defaultSandbox`: default `read-only`
+
+Never expose `danger-full-access` from the static board UI.
 
 Generated presentation images must be saved under `flashtotype-workspace/current/output/assets/` and referenced from the embedded board JSON with local relative paths such as `assets/presentation-slide-01.png`. If image generation is unavailable, preserve the image prompt in the slide `visual.prompt` and render a prompt-only placeholder.
 

@@ -39,6 +39,9 @@ const requiredFiles = [
   "user-workspace-template/current/output/assets/README.md",
   "agent/board-template/index.html",
   "agent/board-template/flashtotype.js",
+  "agent/board-template/flashtotype-codex-bridge.mjs",
+  "agent/board-template/start-flashtotype-bridge.ps1",
+  "agent/board-template/start-flashtotype-bridge.cmd",
   "agent/board-template/logo.png"
 ];
 const forbiddenRootPaths = [
@@ -62,6 +65,17 @@ function isLocalRelativePath(value) {
   if (/^[a-z]:[\\/]/i.test(src)) return false;
   if (src.startsWith("/") || src.startsWith("\\") || src.includes("..")) return false;
   return true;
+}
+
+function isLoopbackHttpUrl(value) {
+  if (typeof value !== "string") return false;
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:"
+      && ["127.0.0.1", "localhost", "::1", "[::1]"].includes(url.hostname);
+  } catch {
+    return false;
+  }
 }
 
 for (const file of requiredFiles) {
@@ -134,6 +148,8 @@ if (failures.length === 0) {
     failures.push("HTML template must include the presenter overlay.");
   }
   const renderer = read("agent/board-template/flashtotype.js");
+  const bridge = read("agent/board-template/flashtotype-codex-bridge.mjs");
+  const startScript = read("agent/board-template/start-flashtotype-bridge.ps1");
   if (!html.includes("data-present-deck") && !renderer.includes("data-present-deck")) {
     failures.push("HTML template or renderer must include a data-present-deck trigger.");
   }
@@ -150,6 +166,33 @@ if (failures.length === 0) {
     if (!renderer.includes(marker)) {
       failures.push(`flashtotype.js must include presenter/render marker: ${marker}.`);
     }
+  }
+  for (const marker of ["checkBridgeHealth", "data-send-codex", "data-prompt-addon", "data-prompt-fixed", "codex-bridge-modal", "start-flashtotype-bridge.ps1", "workspace-write", "Run prompt", "Optional user request", "data-read-full", "renderMarkdown", "content-modal"]) {
+    if (!renderer.includes(marker)) {
+      failures.push(`flashtotype.js must include local Codex bridge marker: ${marker}.`);
+    }
+  }
+  if (renderer.includes("danger-full-access")) {
+    failures.push("flashtotype.js must not expose danger-full-access in the board UI.");
+  }
+  for (const marker of ["LOOPBACK_HOST = \"127.0.0.1\"", "/health", "/runs", "X-Flashtotype-Token", "timingSafeEqual", "app-server", "approval_policy"]) {
+    if (!bridge.includes(marker)) {
+      failures.push(`flashtotype-codex-bridge.mjs must include bridge safety/API marker: ${marker}.`);
+    }
+  }
+  if (bridge.includes("danger-full-access")) {
+    failures.push("flashtotype-codex-bridge.mjs must not allow danger-full-access.");
+  }
+  for (const marker of ["Get-Command node", "Get-Command codex", "flashtotype-codex-bridge.mjs", "--token", "--codex-bin", "Resolve-DefaultCwd"]) {
+    if (!startScript.includes(marker)) {
+      failures.push(`start-flashtotype-bridge.ps1 must include onboarding bridge marker: ${marker}.`);
+    }
+  }
+  if (!html.includes('id="codex-bridge-modal"') || !html.includes('id="codex-bridge-command"')) {
+    failures.push("HTML template must include the local Codex connection modal.");
+  }
+  if (!html.includes('id="content-modal"') || !html.includes('id="content-modal-body"')) {
+    failures.push("HTML template must include the read-full content modal.");
   }
 
   const jsonMatch = html.match(/<script type="application\/json" id="flashtotype-data">([\s\S]*?)<\/script>/);
@@ -197,6 +240,22 @@ if (failures.length === 0) {
         }
       }
       const libraryPage = (boardData.pages || []).find((page) => page.id === "library");
+      const homePage = (boardData.pages || []).find((page) => page.id === "home");
+      if (!homePage || !Array.isArray(homePage.blocks) || homePage.blocks.length === 0) {
+        failures.push("Home page must include summary blocks.");
+      } else {
+        homePage.blocks.forEach((block, index) => {
+          if (!String(block.body || "").trim()) {
+            failures.push(`Home block ${index + 1} must include a short body summary.`);
+          }
+          if (!String(block.sourceFile || "").trim()) {
+            failures.push(`Home block ${index + 1} must include sourceFile for the read-full modal.`);
+          }
+          if (!String(block.fullMarkdown || block.markdown || "").trim()) {
+            failures.push(`Home block ${index + 1} must include fullMarkdown for the read-full modal.`);
+          }
+        });
+      }
       const librarySkills = libraryPage?.skills || [];
       if (!Array.isArray(librarySkills) || librarySkills.length === 0) {
         failures.push("Library page must include installed skills in a skills array.");
@@ -213,6 +272,17 @@ if (failures.length === 0) {
       }
       if (!Array.isArray(boardData.sourceFiles) || boardData.sourceFiles.length === 0) {
         failures.push("Embedded board data must include sourceFiles.");
+      }
+      if (boardData.codexBridge) {
+        if (!isLoopbackHttpUrl(boardData.codexBridge.url || "")) {
+          failures.push("Embedded codexBridge.url must be an HTTP loopback URL.");
+        }
+        if (!["exec", "app-server"].includes(boardData.codexBridge.defaultProvider)) {
+          failures.push("Embedded codexBridge.defaultProvider must be exec or app-server.");
+        }
+        if (!["read-only", "workspace-write"].includes(boardData.codexBridge.defaultSandbox)) {
+          failures.push("Embedded codexBridge.defaultSandbox must be read-only or workspace-write.");
+        }
       }
     } catch (error) {
       failures.push(`Embedded HTML data must be valid JSON: ${error.message}`);

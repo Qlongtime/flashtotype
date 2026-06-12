@@ -22,6 +22,9 @@ Generated output lives in `flashtotype-workspace/current/output/`:
 
 - `output/index.html`: static visual board page users open in a browser.
 - `output/flashtotype.js`: generic renderer for the page.
+- `output/flashtotype-codex-bridge.mjs`: optional user-started localhost helper for sending board prompts to local Codex.
+- `output/start-flashtotype-bridge.ps1`: optional Windows-friendly start script that checks the lowest local prerequisites and launches the bridge with the board-generated token.
+- `output/start-flashtotype-bridge.cmd`: optional wrapper for launching the PowerShell start script.
 - `output/logo.png`: Flashtotype header logo asset used by the static board.
 - `output/assets/`: generated local assets, including presentation slide images.
 
@@ -86,14 +89,34 @@ The embedded JSON must include:
 - `sourceFiles`
 - `pages`
 
+The embedded JSON may include `codexBridge`. If omitted, the renderer uses these defaults:
+
+- `enabled`: `true`
+- `url`: `http://127.0.0.1:4777`
+- `defaultProvider`: `exec`
+- `defaultSandbox`: `read-only`
+
+`codexBridge.url` must be loopback-only. The bridge is optional progressive enhancement; the board must still open directly from disk and preserve editable/copyable prompts when no bridge is running. The rendered prompt UI should keep the fixed control prompt open/read-only, place an optional user request drawer below it, merge both prompts on `Run prompt`, and show a copyable start command if the bridge is offline.
+
 The `pages` array must include page objects with ids `home`, `journey`, `prototype`, `design`, `presentation`, and `library`.
+
+The `home` page should include a `blocks` array for product overview cards. Each block should show summarized content on the board and provide embedded full Markdown for the read-full modal:
+
+- `title`: overview card title.
+- `body`: short summary shown on the card.
+- `items`: short bullet summary shown on the card.
+- `sourceFile`: source Markdown file path, such as `user-editable/decision-pack.md`.
+- `sourceSection`: optional source heading or section name.
+- `fullMarkdown`: Markdown content copied or synthesized from that source section.
+
+Do not fetch local Markdown files from the browser at runtime. The HTML must open directly from disk, so full content needed by the modal must be embedded in the board JSON.
 
 The `presentation` page should include:
 
 - `audience`
 - `decision`
 - `hiddenFromMenu`: `true`, so the page is available as Presentation mode but not listed in the project page rail.
-- `prompt`: the copyable prompt users can click in static HTML.
+- `prompt`: the fixed agent control prompt users can inspect in static HTML, copy with their added request, and optionally send to the local Codex bridge.
 - `slides`: an array of 16:9 slide cards with `eyebrow`, `title`, `body`, `bullets`, `visual`, `evidenceLabel`, `sourceNote`, and `speakerNotes`.
 
 Each presentation slide `visual` object may include:
@@ -118,4 +141,4 @@ Each `skills` item should include:
 - `path`
 - `description`
 - `usedFor`
-- `prompt`: the real agent prompt users can expand, inspect, and copy to confirm or reuse the skill/module workflow.
+- `prompt`: the real fixed agent prompt users can expand, copy with their added request, and optionally send to the local Codex bridge to confirm or reuse the skill/module workflow.

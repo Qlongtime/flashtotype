@@ -7,6 +7,12 @@
   const ZOOM_MAX = 1.25;
   const WHEEL_ZOOM_STEP = 0.08;
   const VISUAL_LAYOUTS = new Set(["split-right", "split-left", "full-bleed", "none"]);
+  const CODEX_BRIDGE_DEFAULT_URL = "http://127.0.0.1:4777";
+  const CODEX_BRIDGE_HEALTH_INTERVAL_MS = 3000;
+  const CODEX_BRIDGE_FETCH_TIMEOUT_MS = 1400;
+  const CODEX_RUN_POLL_INTERVAL_MS = 1400;
+  const CODEX_BRIDGE_PROVIDERS = new Set(["exec", "app-server"]);
+  const CODEX_BRIDGE_SANDBOXES = new Set(["read-only", "workspace-write"]);
   const PAN_EXCLUDED_SELECTOR = [
     "a",
     "button",
@@ -35,6 +41,7 @@
   };
 
   const DEFAULT_ICON = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+  const READ_FULL_ICON = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>`;
 
   const state = {
     activePageId: "",
@@ -57,12 +64,22 @@
     ownsFullscreen: false
   };
 
+  const codexBridge = {
+    config: null,
+    online: false,
+    health: null,
+    token: "",
+    pendingPromptNode: null,
+    timer: null
+  };
+
   function readData() {
     const node = document.getElementById("flashtotype-data");
     if (!node) return { pages: [] };
     try {
       const data = JSON.parse(node.textContent);
       data.pages = Array.isArray(data.pages) ? data.pages : [];
+      data.codexBridge = normalizeCodexBridgeConfig(data.codexBridge);
       return data;
     } catch (error) {
       console.error("Invalid Flashtotype JSON data", error);
@@ -70,6 +87,7 @@
         projectName: "Invalid board data",
         subtitle: "Fix the JSON inside the flashtotype-data script tag.",
         status: "Invalid",
+        codexBridge: normalizeCodexBridgeConfig({ enabled: false }),
         sourceFiles: [],
         pages: []
       };
@@ -120,6 +138,131 @@
     return `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
   }
 
+  function safeHref(value) {
+    const href = String(value || "").trim();
+    if (!href) return "";
+    if (/^(https?:|mailto:)/i.test(href)) return href;
+    if (/^[./#][^<>"']*$/.test(href)) return href;
+    return "";
+  }
+
+  function renderInlineMarkdown(value) {
+    let text = escapeHtml(value);
+    text = text.replace(/`([^`]+)`/g, "<code>$1</code>");
+    text = text.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    text = text.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match, label, href) => {
+      const safe = safeHref(href);
+      return safe ? `<a href="${escapeHtml(safe)}" target="_blank" rel="noreferrer">${label}</a>` : label;
+    });
+    return text;
+  }
+
+  function renderMarkdown(markdown) {
+    const lines = String(markdown || "").replace(/\r\n/g, "\n").split("\n");
+    const html = [];
+    let paragraph = [];
+    let listItems = [];
+    let ordered = false;
+    let quoteLines = [];
+    let codeLines = [];
+    let inCode = false;
+
+    const flushParagraph = () => {
+      if (!paragraph.length) return;
+      html.push(`<p>${renderInlineMarkdown(paragraph.join(" "))}</p>`);
+      paragraph = [];
+    };
+    const flushList = () => {
+      if (!listItems.length) return;
+      const tag = ordered ? "ol" : "ul";
+      html.push(`<${tag}>${listItems.map((item) => `<li>${renderInlineMarkdown(item)}</li>`).join("")}</${tag}>`);
+      listItems = [];
+    };
+    const flushQuote = () => {
+      if (!quoteLines.length) return;
+      html.push(`<blockquote>${quoteLines.map((line) => `<p>${renderInlineMarkdown(line)}</p>`).join("")}</blockquote>`);
+      quoteLines = [];
+    };
+    const flushBlocks = () => {
+      flushParagraph();
+      flushList();
+      flushQuote();
+    };
+
+    lines.forEach((line) => {
+      const trimmed = line.trim();
+      if (/^```/.test(trimmed)) {
+        if (inCode) {
+          html.push(`<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+          codeLines = [];
+          inCode = false;
+        } else {
+          flushBlocks();
+          inCode = true;
+        }
+        return;
+      }
+      if (inCode) {
+        codeLines.push(line);
+        return;
+      }
+      if (!trimmed) {
+        flushBlocks();
+        return;
+      }
+      const headingMatch = trimmed.match(/^(#{1,4})\s+(.+)$/);
+      if (headingMatch) {
+        flushBlocks();
+        const level = Math.min(headingMatch[1].length + 1, 5);
+        html.push(`<h${level}>${renderInlineMarkdown(headingMatch[2])}</h${level}>`);
+        return;
+      }
+      const unorderedMatch = trimmed.match(/^[-*]\s+(.+)$/);
+      const orderedMatch = trimmed.match(/^\d+[.)]\s+(.+)$/);
+      if (unorderedMatch || orderedMatch) {
+        flushParagraph();
+        flushQuote();
+        const nextOrdered = Boolean(orderedMatch);
+        if (listItems.length && ordered !== nextOrdered) flushList();
+        ordered = nextOrdered;
+        listItems.push((orderedMatch || unorderedMatch)[1]);
+        return;
+      }
+      const quoteMatch = trimmed.match(/^>\s?(.+)$/);
+      if (quoteMatch) {
+        flushParagraph();
+        flushList();
+        quoteLines.push(quoteMatch[1]);
+        return;
+      }
+      flushList();
+      flushQuote();
+      paragraph.push(trimmed);
+    });
+
+    if (inCode) {
+      html.push(`<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+    }
+    flushBlocks();
+    return html.join("") || '<p class="empty">No full content added yet.</p>';
+  }
+
+  function blockMarkdown(block) {
+    const fullMarkdown = String(block.fullMarkdown || block.markdown || "").trim();
+    if (fullMarkdown) return fullMarkdown;
+    const lines = [`## ${block.title || "Overview section"}`];
+    if (block.body) lines.push("", block.body);
+    if (Array.isArray(block.items) && block.items.length) {
+      lines.push("", ...block.items.map((item) => `- ${item}`));
+    }
+    return lines.join("\n");
+  }
+
+  function blockSourceLabel(block) {
+    return [block.sourceFile, block.sourceSection].filter(Boolean).join(" - ");
+  }
+
   function isLocalRelativePath(value) {
     const src = String(value || "").trim();
     if (!src) return false;
@@ -128,6 +271,38 @@
     if (/^[a-z]:[\\/]/i.test(src)) return false;
     if (src.startsWith("/") || src.startsWith("\\") || src.includes("..")) return false;
     return true;
+  }
+
+  function normalizeBridgeProvider(value) {
+    const provider = String(value || "exec").trim();
+    return CODEX_BRIDGE_PROVIDERS.has(provider) ? provider : "exec";
+  }
+
+  function normalizeBridgeSandbox(value) {
+    const sandbox = String(value || "read-only").trim();
+    return CODEX_BRIDGE_SANDBOXES.has(sandbox) ? sandbox : "read-only";
+  }
+
+  function isLoopbackBridgeUrl(value) {
+    try {
+      const url = new URL(String(value || CODEX_BRIDGE_DEFAULT_URL));
+      return url.protocol === "http:"
+        && ["127.0.0.1", "localhost", "::1", "[::1]"].includes(url.hostname);
+    } catch {
+      return false;
+    }
+  }
+
+  function normalizeCodexBridgeConfig(rawConfig) {
+    const raw = rawConfig && typeof rawConfig === "object" ? rawConfig : {};
+    const requestedUrl = String(raw.url || CODEX_BRIDGE_DEFAULT_URL).trim();
+    const safeUrl = isLoopbackBridgeUrl(requestedUrl) ? requestedUrl : CODEX_BRIDGE_DEFAULT_URL;
+    return {
+      enabled: raw.enabled !== false,
+      url: safeUrl.replace(/\/+$/, ""),
+      defaultProvider: normalizeBridgeProvider(raw.defaultProvider),
+      defaultSandbox: normalizeBridgeSandbox(raw.defaultSandbox)
+    };
   }
 
   function normalizeVisual(visual) {
@@ -188,9 +363,10 @@
 
   function renderPageMenu(data) {
     const listNode = byId("page-list");
+    const highlightedPageId = state.activePageId === "presentation" ? "home" : state.activePageId;
     const visiblePages = data.pages.filter((page) => !page.hiddenFromMenu && !MENU_EXCLUDED_PAGE_IDS.has(page.id));
     listNode.innerHTML = visiblePages.map((page) => `
-      <button class="page-button" type="button" data-page-id="${escapeHtml(page.id)}" aria-current="${page.id === state.activePageId ? "page" : "false"}">
+      <button class="page-button" type="button" data-page-id="${escapeHtml(page.id)}" aria-current="${page.id === highlightedPageId ? "page" : "false"}">
         <span class="page-index">${PAGE_ICONS[page.id] || DEFAULT_ICON}</span>
         <span>
           <span class="page-label">${escapeHtml(page.label || page.title || page.id)}</span>
@@ -245,9 +421,14 @@
           </div>
           ${renderMetricRow(page.metrics)}
           <div class="board-grid">
-            ${blocks.map((block) => `
+            ${blocks.map((block, index) => `
               <article class="tile span-6">
-                <h2>${escapeHtml(block.title)}</h2>
+                <div class="tile-header">
+                  <h2>${escapeHtml(block.title)}</h2>
+                  <button class="read-full-button" type="button" data-read-full="${index}" aria-label="Read full ${escapeHtml(block.title || "section")}" title="Read full section">
+                    ${READ_FULL_ICON}
+                  </button>
+                </div>
                 <p>${escapeHtml(block.body)}</p>
                 ${list(block.items)}
               </article>
@@ -460,18 +641,54 @@
 
   function renderSkillPrompt(skill) {
     if (!skill.prompt) return "";
+    const config = codexBridge.config || normalizeCodexBridgeConfig();
+    const defaultProvider = normalizeBridgeProvider(config.defaultProvider);
+    const defaultSandbox = normalizeBridgeSandbox(config.defaultSandbox);
     return `
-      <div class="skill-prompt">
+      <div class="skill-prompt" data-codex-prompt>
         <div class="prompt-toolbar">
           <span>Agent prompt</span>
-          <button class="copy-prompt-button" type="button" data-copy-prompt aria-label="Copy agent prompt" title="Copy agent prompt"></button>
+          <button class="copy-prompt-button" type="button" data-copy-prompt aria-label="Copy merged agent prompt" title="Copy merged agent prompt"></button>
         </div>
-        <details>
-          <summary>Inspect prompt</summary>
+        <details class="prompt-control" open>
+          <summary>Agent control prompt</summary>
           <div class="prompt-panel">
-            <pre class="prompt-code"><code>${escapeHtml(skill.prompt)}</code></pre>
+            <pre class="prompt-code" data-prompt-fixed><code>${escapeHtml(skill.prompt)}</code></pre>
           </div>
         </details>
+        <details class="prompt-compose">
+          <summary>Optional user request</summary>
+          <label>
+            <span>Additional instructions</span>
+            <textarea class="prompt-input" data-prompt-addon aria-label="Add optional instructions to the fixed agent prompt" placeholder="Describe anything extra you want Flashtotype to run, update, research, or validate."></textarea>
+          </label>
+        </details>
+        ${config.enabled ? `
+          <div class="prompt-compose-actions">
+            <button class="codex-send-button" type="button" data-send-codex>Run prompt</button>
+            <button class="codex-cancel-button" type="button" data-cancel-codex hidden>Cancel</button>
+          </div>
+        ` : ""}
+        ${config.enabled ? `<div class="codex-bridge-panel" data-codex-bridge-panel>
+          <div class="codex-bridge-status" data-codex-status>Local Codex bridge offline</div>
+          <div class="codex-bridge-fields">
+            <label>
+              <span>Provider</span>
+              <select data-codex-provider>
+                <option value="exec"${defaultProvider === "exec" ? " selected" : ""}>codex exec</option>
+                <option value="app-server"${defaultProvider === "app-server" ? " selected" : ""}>app-server</option>
+              </select>
+            </label>
+            <label>
+              <span>Sandbox</span>
+              <select data-codex-sandbox>
+                <option value="read-only"${defaultSandbox === "read-only" ? " selected" : ""}>read-only</option>
+                <option value="workspace-write"${defaultSandbox === "workspace-write" ? " selected" : ""}>workspace-write</option>
+              </select>
+            </label>
+          </div>
+          <pre class="codex-output" data-codex-output hidden></pre>
+        </div>` : ""}
       </div>
     `;
   }
@@ -535,6 +752,7 @@
     else if (page.type === "library") stage.innerHTML = renderLibrary(page);
     else stage.innerHTML = renderFallback(page);
     renderPageMenu(window.FLASHTOTYPE_DATA);
+    refreshCodexBridgePanels();
   }
 
   function setPage(pageId) {
@@ -592,8 +810,16 @@
 
   function setCopyState(button, copied) {
     button.classList.toggle("is-copied", copied);
-    button.setAttribute("aria-label", copied ? "Agent prompt copied" : "Copy agent prompt");
-    button.title = copied ? "Copied" : "Copy agent prompt";
+    button.setAttribute("aria-label", copied ? "Merged agent prompt copied" : "Copy merged agent prompt");
+    button.title = copied ? "Copied" : "Copy merged agent prompt";
+  }
+
+  function mergedPromptForNode(promptNode) {
+    const fixedPrompt = String(promptNode?.querySelector("[data-prompt-fixed]")?.textContent || "").trim();
+    const addon = String(promptNode?.querySelector("[data-prompt-addon]")?.value || "").trim();
+    if (!fixedPrompt) return addon;
+    if (!addon) return fixedPrompt;
+    return `${fixedPrompt}\n\nAdditional user request:\n${addon}`;
   }
 
   function setupPromptCopy() {
@@ -602,8 +828,7 @@
       const button = event.target.closest("[data-copy-prompt]");
       if (!button) return;
       const prompt = button.closest(".skill-prompt");
-      const code = prompt?.querySelector(".prompt-code");
-      const text = code?.textContent || "";
+      const text = mergedPromptForNode(prompt);
       if (!text.trim()) return;
 
       try {
@@ -614,6 +839,405 @@
         console.error("Could not copy Flashtotype prompt", error);
         button.title = "Copy failed";
       }
+    });
+  }
+
+  function bridgeUrl(path) {
+    const base = `${codexBridge.config.url}/`;
+    return new URL(path.replace(/^\/+/, ""), base).toString();
+  }
+
+  function createBridgeToken() {
+    const bytes = new Uint8Array(24);
+    if (window.crypto?.getRandomValues) {
+      window.crypto.getRandomValues(bytes);
+    } else {
+      for (let index = 0; index < bytes.length; index += 1) {
+        bytes[index] = Math.floor(Math.random() * 256);
+      }
+    }
+    let binary = "";
+    bytes.forEach((byte) => {
+      binary += String.fromCharCode(byte);
+    });
+    return window.btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
+  }
+
+  function storageKey() {
+    const project = window.FLASHTOTYPE_DATA?.projectName || "project";
+    return `flashtotype:${project}:codex-bridge-token`;
+  }
+
+  function getBridgeToken() {
+    if (codexBridge.token) return codexBridge.token;
+    try {
+      const stored = window.sessionStorage?.getItem(storageKey());
+      if (stored) {
+        codexBridge.token = stored;
+        return stored;
+      }
+    } catch {}
+    codexBridge.token = createBridgeToken();
+    try {
+      window.sessionStorage?.setItem(storageKey(), codexBridge.token);
+    } catch {}
+    return codexBridge.token;
+  }
+
+  function quotePowerShell(value) {
+    return `'${String(value || "").replaceAll("'", "''")}'`;
+  }
+
+  function quoteShell(value) {
+    return `'${String(value || "").replaceAll("'", "'\\''")}'`;
+  }
+
+  function outputDirectoryPath() {
+    if (window.location.protocol !== "file:") return "";
+    let pathname = decodeURIComponent(window.location.pathname || "");
+    if (/^\/[a-z]:\//i.test(pathname)) pathname = pathname.slice(1);
+    const isWindowsPath = /^[a-z]:\//i.test(pathname);
+    const separator = isWindowsPath ? "\\" : "/";
+    const normalized = isWindowsPath ? pathname.replaceAll("/", "\\") : pathname;
+    const index = normalized.lastIndexOf(separator);
+    return index >= 0 ? normalized.slice(0, index) : "";
+  }
+
+  function bridgeStartCommand() {
+    const token = getBridgeToken();
+    const outputDir = outputDirectoryPath();
+    if (outputDir && /^[a-z]:\\/i.test(outputDir)) {
+      const scriptPath = `${outputDir}\\start-flashtotype-bridge.ps1`;
+      return `powershell -NoProfile -ExecutionPolicy Bypass -File ${quotePowerShell(scriptPath)} -Token ${quotePowerShell(token)}`;
+    }
+    if (outputDir) {
+      return `cd ${quoteShell(outputDir)} && node ./flashtotype-codex-bridge.mjs --token ${quoteShell(token)}`;
+    }
+    return `node ./flashtotype-codex-bridge.mjs --token ${quoteShell(token)}`;
+  }
+
+  async function bridgeFetch(path, options = {}) {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), options.timeout || CODEX_BRIDGE_FETCH_TIMEOUT_MS);
+    try {
+      const response = await fetch(bridgeUrl(path), {
+        cache: "no-store",
+        ...options,
+        signal: controller.signal
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(payload.error || `Bridge request failed with ${response.status}.`);
+      }
+      return payload;
+    } finally {
+      window.clearTimeout(timeout);
+    }
+  }
+
+  function bridgeHeaders(token) {
+    return {
+      "Content-Type": "application/json",
+      "X-Flashtotype-Token": token
+    };
+  }
+
+  function panelDefaults() {
+    const health = codexBridge.health || {};
+    return {
+      provider: normalizeBridgeProvider(health.defaultProvider || codexBridge.config.defaultProvider),
+      sandbox: normalizeBridgeSandbox(health.defaultSandbox || codexBridge.config.defaultSandbox)
+    };
+  }
+
+  function refreshCodexBridgePanels() {
+    if (!codexBridge.config) return;
+    const panels = document.querySelectorAll("[data-codex-bridge-panel]");
+    panels.forEach((panel) => {
+      panel.hidden = !codexBridge.config.enabled;
+      const defaults = panelDefaults();
+      const status = panel.querySelector("[data-codex-status]");
+      const provider = panel.querySelector("[data-codex-provider]");
+      const sandbox = panel.querySelector("[data-codex-sandbox]");
+      if (!panel.dataset.codexDefaultsReady) {
+        if (provider) provider.value = defaults.provider;
+        if (sandbox) sandbox.value = defaults.sandbox;
+        panel.dataset.codexDefaultsReady = "true";
+      }
+      if (status) {
+        status.textContent = codexBridge.online
+          ? `Local Codex bridge online: ${defaults.provider}, ${defaults.sandbox}`
+          : "Local Codex bridge offline. Run prompt will show the start command.";
+      }
+    });
+  }
+
+  async function checkBridgeHealth() {
+    if (!codexBridge.config?.enabled) return;
+    try {
+      const health = await bridgeFetch("/health", { method: "GET" });
+      codexBridge.online = Boolean(health.ok);
+      codexBridge.health = health;
+    } catch {
+      codexBridge.online = false;
+      codexBridge.health = null;
+    }
+    refreshCodexBridgePanels();
+  }
+
+  function openBridgeSetupModal(promptNode) {
+    codexBridge.pendingPromptNode = promptNode || null;
+    const modal = byId("codex-bridge-modal");
+    const command = byId("codex-bridge-command");
+    if (!modal || !command) return;
+    command.textContent = bridgeStartCommand();
+    modal.classList.add("is-active");
+    modal.setAttribute("aria-hidden", "false");
+    const copyButton = modal.querySelector("[data-copy-bridge-command]");
+    if (copyButton) copyButton.focus({ preventScroll: true });
+  }
+
+  function closeBridgeSetupModal() {
+    const modal = byId("codex-bridge-modal");
+    if (!modal) return;
+    modal.classList.remove("is-active");
+    modal.setAttribute("aria-hidden", "true");
+  }
+
+  async function copyBridgeCommand(button) {
+    const command = byId("codex-bridge-command")?.textContent || "";
+    if (!command.trim()) return;
+    try {
+      await copyText(command);
+      button.textContent = "Copied";
+      window.setTimeout(() => {
+        button.textContent = "Copy command";
+      }, 1400);
+    } catch {
+      button.textContent = "Copy failed";
+    }
+  }
+
+  async function checkBridgeFromModal() {
+    await checkBridgeHealth();
+    if (!codexBridge.online) return;
+    closeBridgeSetupModal();
+    const pending = codexBridge.pendingPromptNode;
+    codexBridge.pendingPromptNode = null;
+    if (pending) {
+      const button = pending.querySelector("[data-send-codex]");
+      if (button) sendPromptToCodex(button);
+    }
+  }
+
+  function setCodexOutput(promptNode, text, hidden = false) {
+    const output = promptNode.querySelector("[data-codex-output]");
+    if (!output) return;
+    output.hidden = hidden || !text;
+    output.textContent = text || "";
+  }
+
+  function setCodexStatus(promptNode, text) {
+    const status = promptNode.querySelector("[data-codex-status]");
+    if (status) status.textContent = text;
+  }
+
+  function setCodexRunning(promptNode, running, runId = "") {
+    promptNode.dataset.codexRunId = runId;
+    promptNode.querySelectorAll("[data-send-codex]").forEach((button) => {
+      button.disabled = running;
+    });
+    promptNode.querySelectorAll("[data-cancel-codex]").forEach((button) => {
+      button.hidden = !running;
+    });
+  }
+
+  function summarizeRun(run) {
+    if (run.finalMessage) return run.finalMessage;
+    if (run.error) return run.error;
+    const latest = Array.isArray(run.events) ? run.events.slice(-4) : [];
+    return latest.map((event) => {
+      if (event.text) return event.text;
+      if (event.event?.type) return event.event.type;
+      if (event.event?.method) return event.event.method;
+      return "";
+    }).filter(Boolean).join("\n");
+  }
+
+  async function pollCodexRun(promptNode, runId, token) {
+    try {
+      const run = await bridgeFetch(`/runs/${encodeURIComponent(runId)}`, {
+        method: "GET",
+        headers: bridgeHeaders(token),
+        timeout: 5000
+      });
+      setCodexStatus(promptNode, `Codex run ${run.status}: ${run.provider}, ${run.sandbox}`);
+      setCodexOutput(promptNode, summarizeRun(run));
+      if (run.status === "queued" || run.status === "running") {
+        window.setTimeout(() => pollCodexRun(promptNode, runId, token), CODEX_RUN_POLL_INTERVAL_MS);
+      } else {
+        setCodexRunning(promptNode, false);
+      }
+    } catch (error) {
+      setCodexStatus(promptNode, "Codex run status unavailable");
+      setCodexOutput(promptNode, error.message || "Could not read Codex run status.");
+      setCodexRunning(promptNode, false);
+    }
+  }
+
+  async function sendPromptToCodex(button) {
+    const promptNode = button.closest("[data-codex-prompt]");
+    if (!promptNode) return;
+    const providerInput = promptNode.querySelector("[data-codex-provider]");
+    const sandboxInput = promptNode.querySelector("[data-codex-sandbox]");
+    const promptText = mergedPromptForNode(promptNode);
+    const token = getBridgeToken();
+    if (!promptText) {
+      setCodexStatus(promptNode, "Prompt is empty");
+      return;
+    }
+    if (!codexBridge.online) {
+      setCodexStatus(promptNode, "Local Codex bridge offline");
+      openBridgeSetupModal(promptNode);
+      return;
+    }
+
+    setCodexRunning(promptNode, true);
+    setCodexOutput(promptNode, "");
+    setCodexStatus(promptNode, "Sending prompt to Codex");
+
+    try {
+      const run = await bridgeFetch("/runs", {
+        method: "POST",
+        headers: bridgeHeaders(token),
+        body: JSON.stringify({
+          prompt: promptText,
+          provider: normalizeBridgeProvider(providerInput?.value),
+          sandbox: normalizeBridgeSandbox(sandboxInput?.value)
+        }),
+        timeout: 5000
+      });
+      setCodexStatus(promptNode, `Codex run ${run.status}: ${run.provider}, ${run.sandbox}`);
+      setCodexRunning(promptNode, true, run.id);
+      pollCodexRun(promptNode, run.id, token);
+    } catch (error) {
+      setCodexStatus(promptNode, "Codex run failed to start");
+      setCodexOutput(promptNode, error.message || "Could not start Codex run.");
+      setCodexRunning(promptNode, false);
+    }
+  }
+
+  async function cancelCodexRun(button) {
+    const promptNode = button.closest("[data-codex-prompt]");
+    const runId = promptNode?.dataset.codexRunId;
+    const token = getBridgeToken();
+    if (!promptNode || !runId || !token) return;
+    try {
+      const run = await bridgeFetch(`/runs/${encodeURIComponent(runId)}/cancel`, {
+        method: "POST",
+        headers: bridgeHeaders(token),
+        body: "{}",
+        timeout: 5000
+      });
+      setCodexStatus(promptNode, `Codex run ${run.status}`);
+      setCodexOutput(promptNode, summarizeRun(run));
+    } catch (error) {
+      setCodexStatus(promptNode, "Cancel failed");
+      setCodexOutput(promptNode, error.message || "Could not cancel Codex run.");
+    } finally {
+      setCodexRunning(promptNode, false);
+    }
+  }
+
+  function setupCodexBridge() {
+    if (!codexBridge.config?.enabled) return;
+    getBridgeToken();
+    document.addEventListener("click", (event) => {
+      if (!(event.target instanceof Element)) return;
+      const sendButton = event.target.closest("[data-send-codex]");
+      if (sendButton) {
+        sendPromptToCodex(sendButton);
+        return;
+      }
+      const cancelButton = event.target.closest("[data-cancel-codex]");
+      if (cancelButton) {
+        cancelCodexRun(cancelButton);
+        return;
+      }
+      const copyBridgeButton = event.target.closest("[data-copy-bridge-command]");
+      if (copyBridgeButton) {
+        copyBridgeCommand(copyBridgeButton);
+        return;
+      }
+      if (event.target.closest("[data-check-bridge]")) {
+        checkBridgeFromModal();
+        return;
+      }
+      if (event.target.closest("[data-close-bridge-modal]")) {
+        closeBridgeSetupModal();
+      }
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      const modal = byId("codex-bridge-modal");
+      if (modal?.classList.contains("is-active")) closeBridgeSetupModal();
+    });
+    checkBridgeHealth();
+    codexBridge.timer = window.setInterval(checkBridgeHealth, CODEX_BRIDGE_HEALTH_INTERVAL_MS);
+  }
+
+  function activePage() {
+    return window.FLASHTOTYPE_DATA?.pages?.find((item) => item.id === state.activePageId);
+  }
+
+  function openContentModal(blockIndex) {
+    const page = activePage();
+    const block = page?.type === "home" && Array.isArray(page.blocks) ? page.blocks[blockIndex] : null;
+    if (!block) return;
+    const modal = byId("content-modal");
+    const title = byId("content-modal-title");
+    const source = byId("content-modal-source");
+    const body = byId("content-modal-body");
+    if (!modal || !title || !source || !body) return;
+    title.textContent = block.title || "Overview section";
+    const sourceLabel = blockSourceLabel(block);
+    source.textContent = sourceLabel || "Embedded board content";
+    source.hidden = !sourceLabel;
+    body.innerHTML = renderMarkdown(blockMarkdown(block));
+    modal.classList.add("is-active");
+    modal.setAttribute("aria-hidden", "false");
+    const closeButton = modal.querySelector("[data-close-content-modal]");
+    if (closeButton) closeButton.focus({ preventScroll: true });
+  }
+
+  function closeContentModal() {
+    const modal = byId("content-modal");
+    if (!modal) return;
+    modal.classList.remove("is-active");
+    modal.setAttribute("aria-hidden", "true");
+  }
+
+  function setupContentModal() {
+    document.addEventListener("click", (event) => {
+      if (!(event.target instanceof Element)) return;
+      const readButton = event.target.closest("[data-read-full]");
+      if (readButton) {
+        openContentModal(Number(readButton.getAttribute("data-read-full")));
+        return;
+      }
+      if (event.target.closest("[data-close-content-modal]")) {
+        closeContentModal();
+        return;
+      }
+      const modal = byId("content-modal");
+      if (modal?.classList.contains("is-active") && event.target === modal) {
+        closeContentModal();
+      }
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      const modal = byId("content-modal");
+      if (modal?.classList.contains("is-active")) closeContentModal();
     });
   }
 
@@ -852,6 +1476,7 @@
   function init() {
     const data = readData();
     window.FLASHTOTYPE_DATA = data;
+    codexBridge.config = data.codexBridge || normalizeCodexBridgeConfig();
     renderHeader(data);
     collapseRailForNarrowViewport();
     window.addEventListener("resize", collapseRailForNarrowViewport);
@@ -871,6 +1496,8 @@
     setupPan();
     setupWheelZoom();
     setupPromptCopy();
+    setupCodexBridge();
+    setupContentModal();
     setupModeSwitching();
     setupPresenter();
 
