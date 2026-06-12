@@ -14,9 +14,10 @@ The installing agent must:
 
 - Read the source repository `AGENTS.md`.
 - Preserve any existing target project files.
-- Copy the Flashtotype skill and board template into `.flashtotype/`.
+- Copy the Flashtotype skills and board template into `.flashtotype/`.
 - Create `flashtotype-workspace/current/user-editable/` for user-editable PM/PO source files.
 - Create `flashtotype-workspace/current/output/` for regenerated output users can open.
+- Create `flashtotype-workspace/current/output/assets/` for generated local slide images and other run assets.
 - Add `flashtotype-workspace/` to `.gitignore`.
 - Add a project-local `AGENTS.md` section for future agents.
 
@@ -24,7 +25,9 @@ The installing agent must:
 
 ```text
 .flashtotype/
-  skills/flashtotype-product-sidekick/
+  skills/
+    flashtotype-product-sidekick/
+    flashtotype-presentation-generator/
   board-template/
 flashtotype-workspace/
   current/
@@ -35,6 +38,7 @@ flashtotype-workspace/
       user-journey.md
       prototype.md
       Design.md
+      presentation.md
       flashtotype-library.md
       references/
       data/
@@ -43,6 +47,7 @@ flashtotype-workspace/
       index.html
       flashtotype.js
       logo.png
+      assets/
 ```
 
-`flashtotype-workspace/` is private by default. Users should edit files under `user-editable/`. Users should open `output/index.html` to see the board. Agents should regenerate files under `output/` from the user-editable sources.
+`flashtotype-workspace/` is private by default. Users should edit files under `user-editable/`. Users should open `output/index.html` to see the board. Agents should regenerate files under `output/` from the user-editable sources, and save generated presentation images under `output/assets/`.

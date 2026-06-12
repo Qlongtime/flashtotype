@@ -7,6 +7,7 @@ Use this file as the source for the `Flashtotype library` board page.
 | Name | Type | Path | Used For | Status |
 | --- | --- | --- | --- | --- |
 | flashtotype-product-sidekick | Installed skill | `.flashtotype/skills/flashtotype-product-sidekick/SKILL.md` | Product discovery, evidence-backed research, persona and risk synthesis, board generation | Active |
+| flashtotype-presentation-generator | Installed skill | `.flashtotype/skills/flashtotype-presentation-generator/SKILL.md` | Static stakeholder slide stories, local generated slide visuals, evidence-labeled presentation pages, speaker notes | Active |
 | safe-run-rules | Required workflow module | `.flashtotype/skills/flashtotype-product-sidekick/references/safe-run-rules.md` | Safe iteration, checkpoints, verification, handoff | Active |
 | interview-flow | Required workflow module | `.flashtotype/skills/flashtotype-product-sidekick/references/interview-flow.md` | PM/PO grilling questions, product clarity, assumption discovery | Active |
 | evidence-rules | Required workflow module | `.flashtotype/skills/flashtotype-product-sidekick/references/evidence-rules.md` | Claim labels, source quality, confidence control | Active |
@@ -22,6 +23,14 @@ Agents should mirror these prompts into the `skills[].prompt` fields on the boar
 Use Flashtotype as the PM/PO sidekick for this project.
 
 First read `.flashtotype/skills/flashtotype-product-sidekick/SKILL.md` and follow it as the primary workflow. Interview me before generating artifacts. Produce product, market, persona, and tech/risk angles. Label every important claim as `Source-backed`, `Assumption`, or `Needs validation`. Update `flashtotype-workspace/current/user-editable/` source files and regenerate `flashtotype-workspace/current/output/index.html` as a static board.
+```
+
+### flashtotype-presentation-generator
+
+```text
+Use $flashtotype-presentation-generator for this Flashtotype project.
+
+Read `.flashtotype/skills/flashtotype-presentation-generator/SKILL.md` and follow it as the primary workflow. Create or update `flashtotype-workspace/current/user-editable/presentation.md` from the existing Flashtotype artifacts: `flashtotype-brief.md`, `decision-pack.md`, `evidence.json`, `user-journey.md`, `prototype.md`, `Design.md`, and `flashtotype-library.md`. Build a static 16:9 stakeholder slide story with evidence labels, source notes, speaker notes, generated image prompts, local visual asset references, top assumptions, validation gaps, and next actions. If image generation is available, save slide images under `flashtotype-workspace/current/output/assets/`; otherwise keep prompt-only visual placeholders. Regenerate the `presentation` page data inside `flashtotype-workspace/current/output/index.html` without adding a backend, build step, package manager, or network dependency.
 ```
 
 ### safe-run-rules
@@ -53,8 +62,18 @@ Do not invent citations. Use `Source-backed` only when a matching source record 
 ```text
 Before updating the visual board, read `.flashtotype/skills/flashtotype-product-sidekick/references/output-contract.md`.
 
-Keep source docs in `flashtotype-workspace/current/user-editable/`, generated files in `flashtotype-workspace/current/output/`, and update the `flashtotype-data` JSON in `output/index.html` with all five pages: home, journey, prototype, design, and library. Keep `flashtotype.js` generic and require no backend or build step.
+Keep source docs in `flashtotype-workspace/current/user-editable/`, generated files in `flashtotype-workspace/current/output/`, generated slide images in `flashtotype-workspace/current/output/assets/`, and update the `flashtotype-data` JSON in `output/index.html` with all six pages: home, journey, prototype, design, presentation, and library. Keep `flashtotype.js` generic and require no backend or build step.
 ```
+
+## Optional Presentation Export Paths
+
+These are informational references only. Flashtotype v1 does not install or depend on them.
+
+| Option | Use When | Notes |
+| --- | --- | --- |
+| OpenAI `$slides` | The user's Codex environment includes the slides skill and they want editable PPTX output. | Optional follow-up after the static Flashtotype deck exists. |
+| Marp | The user wants Markdown-based export to HTML, PDF, or PowerPoint. | Requires separate Marp tooling. |
+| Public PPTX skills | The user wants third-party editable deck generators such as presentation-skill or SlideSpeak. | May require dependencies, accounts, APIs, or extra setup. |
 
 ## Suggested Frameworks
 
@@ -63,6 +82,7 @@ Keep source docs in `flashtotype-workspace/current/user-editable/`, generated fi
 | Evidence labels | Claims need confidence clarity. | Source-backed, Assumption, Needs validation |
 | Success metric trio | The team needs measurement discipline. | User behavior metric, business metric, guardrail metric |
 | Prototype scenario | The idea is still abstract. | One workflow that proves the painful moment |
+| Presentation story | The team needs a stakeholder readout. | Static 16:9 story deck with evidence labels, local slide visuals, speaker notes, and presenter mode |
 | Risk review | Feasibility or compliance is uncertain. | Technical, data, delivery, and adoption risks |
 | Team narrative | The team needs alignment. | Why, who, how, next decision |
 

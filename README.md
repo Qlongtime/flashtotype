@@ -1,6 +1,6 @@
 # Flashtotype
 
-Flashtotype is a lightweight PM/PO agent toolkit for turning early product ideas into evidence-labeled decision packs and static HTML prototypes.
+Flashtotype is a lightweight PM/PO agent toolkit for turning early product ideas into evidence-labeled decision packs, static HTML prototypes, and presentation-ready stakeholder slide stories.
 
 It is designed for a simple workflow: give this repository link to your coding agent and ask it to install Flashtotype into your project. The agent sets up the PM/PO sidekick skill, private workspace, evidence rules, and static output templates.
 
@@ -14,9 +14,9 @@ Use the Flashtotype repository to install the Flashtotype PM/PO sidekick into th
 
 The agent should read `AGENTS.md` first. It will create:
 
-- `.flashtotype/` with the portable agent-only skill and generated-output templates.
+- `.flashtotype/` with portable agent-only skills and generated-output templates.
 - `flashtotype-workspace/current/user-editable/` for PO/PM source files, reference docs, design notes, CSVs, and assets.
-- `flashtotype-workspace/current/output/` for the HTML board users can open in a browser.
+- `flashtotype-workspace/current/output/` for the HTML board users can open in a browser, plus local generated presentation images under `output/assets/`.
 - A `.gitignore` entry so generated work is private by default.
 - A project-local `AGENTS.md` section so future agents know how to run the workflow.
 
@@ -33,14 +33,16 @@ The canonical source of truth is:
 
 - `flashtotype-brief.md` for the human-readable decision pack.
 - `evidence.json` for source URLs, access dates, confidence, and claim labels.
+- `presentation.md` for the stakeholder slide story.
 
 The visual output is a static HTML briefing page:
 
 - `index.html`
 - `flashtotype.js`
 - `logo.png`
+- `assets/` for generated slide images and other local run assets
 
-The page renders a Miro-inspired board with Homepage, User journey flow, Prototype, Design system, and Flashtotype library pages.
+The page renders a Miro-inspired board with Homepage, User journey flow, Prototype, Design system, and Flashtotype library rail pages. The Homepage includes a Presentation mode button that opens the internal Presentation page with 16:9 slide cards, generated-image prompts, local image assets, and a fullscreen presenter mode.
 
 No backend, database, package manager, or build step is required.
 
@@ -58,6 +60,7 @@ Market and technology claims should include source URL, access date, confidence,
 
 - `AGENTS.md`: universal agent entrypoint and bootstrap instructions.
 - `agent/skills/flashtotype-product-sidekick/`: agent-only PM/PO workflow skill.
+- `agent/skills/flashtotype-presentation-generator/`: agent-only presentation generator skill.
 - `agent/board-template/`: master static board template used to generate user output.
 - `user-workspace-template/current/user-editable/`: user-editable source templates for a Flashtotype run.
 - `docs/`: public usage, evidence, and output contract docs.

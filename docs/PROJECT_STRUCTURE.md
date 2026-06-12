@@ -11,6 +11,8 @@ agent/
 user-workspace-template/
   current/
     user-editable/
+    output/
+      assets/
 docs/
 scripts/
 ```
@@ -30,6 +32,7 @@ flashtotype-workspace/
   current/
     user-editable/
     output/
+      assets/
 ```
 
 ## What Users Should Edit
@@ -42,6 +45,7 @@ Use `flashtotype-workspace/current/user-editable/` for:
 - `user-journey.md`
 - `prototype.md`
 - `Design.md`
+- `presentation.md`
 - `flashtotype-library.md`
 - `references/`
 - `data/`
@@ -54,4 +58,4 @@ Avoid manual edits in:
 - `.flashtotype/`
 - `flashtotype-workspace/current/output/`
 
-If the generated board looks wrong, update the source files under `user-editable/` and ask the agent to regenerate the board.
+Generated presentation images live under `flashtotype-workspace/current/output/assets/`. If the generated board or slide images look wrong, update the source files under `user-editable/` and ask the agent to regenerate the board.

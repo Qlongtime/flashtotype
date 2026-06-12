@@ -12,11 +12,13 @@ Before editing, inspect the current run:
 - `flashtotype-workspace/current/user-editable/user-journey.md`
 - `flashtotype-workspace/current/user-editable/prototype.md`
 - `flashtotype-workspace/current/user-editable/Design.md`
+- `flashtotype-workspace/current/user-editable/presentation.md`
 - `flashtotype-workspace/current/user-editable/flashtotype-library.md`
 - `flashtotype-workspace/current/user-editable/references/`
 - `flashtotype-workspace/current/user-editable/data/`
 - `flashtotype-workspace/current/user-editable/assets/`
 - `flashtotype-workspace/current/output/index.html`
+- `flashtotype-workspace/current/output/assets/`
 
 If the target project has private handoff docs, read the active handoff first. Prefer one current handoff over broad history scanning. Do not read old history files unless the current state is unclear.
 
@@ -68,7 +70,10 @@ Check these before final handoff:
 - Private generated research remains under `flashtotype-workspace/`.
 - `decision-pack.md` matches the recommendation and evidence in `flashtotype-brief.md`.
 - `output/index.html` contains valid embedded JSON in the `flashtotype-data` script tag.
-- Embedded board data includes `home`, `journey`, `prototype`, `design`, and `library` pages.
+- Embedded board data includes `home`, `journey`, `prototype`, `design`, `presentation`, and `library` pages.
+- The project page rail excludes Presentation; Home has a `Presentation mode` control and Presentation has an `Overview mode` return control.
+- Presentation slide visuals use local relative paths only, and prompt-only slides preserve their image prompts.
+- The Presentation page includes a working `Present` control for fullscreen or overlay presenter mode.
 - The static HTML opens without a server and does not require network dependencies.
 - Text remains readable on mobile and desktop widths.
 

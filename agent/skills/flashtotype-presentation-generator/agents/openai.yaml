@@ -1,0 +1,4 @@
+interface:
+  display_name: "Flashtotype Presentation Generator"
+  short_description: "Turn Flashtotype research into a static story deck."
+  default_prompt: "Use $flashtotype-presentation-generator to turn this Flashtotype research into a stakeholder presentation with local slide visuals."

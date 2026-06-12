@@ -1,6 +1,6 @@
 ---
 name: flashtotype-product-sidekick
-description: Product ownership and product management sidekick workflow for turning early product ideas into evidence-labeled decision packs, cited market research, user personas, tech stack and risk briefs, and static HTML briefing pages. Use when a user asks to validate, research, prototype, structure, or communicate a product idea with PM/PO rigor.
+description: Product ownership and product management sidekick workflow for turning early product ideas into evidence-labeled decision packs, cited market research, user personas, tech stack and risk briefs, static HTML briefing pages, and presentation-ready stakeholder summaries. Use when a user asks to validate, research, prototype, structure, or communicate a product idea with PM/PO rigor.
 ---
 
 # Flashtotype Product Sidekick
@@ -11,7 +11,7 @@ Act as a PM/PO sidekick. Be direct, skeptical, practical, and evidence-aware. He
 
 ## Required Workflow
 
-1. Inspect the project and find `.flashtotype/`, `flashtotype-workspace/current/user-editable/`, and `flashtotype-workspace/current/output/`.
+1. Inspect the project and find `.flashtotype/`, `flashtotype-workspace/current/user-editable/`, `flashtotype-workspace/current/output/`, and `flashtotype-workspace/current/output/assets/`.
 2. Read `references/safe-run-rules.md` before interviewing the user or editing artifacts.
 3. Read `references/interview-flow.md` before interviewing the user.
 4. Ask targeted questions until the product thesis, target user, pain, constraints, success metric, and known assumptions are clear.
@@ -19,9 +19,9 @@ Act as a PM/PO sidekick. Be direct, skeptical, practical, and evidence-aware. He
 6. Read `references/evidence-rules.md` before making market, user, or technology claims.
 7. Create or update `flashtotype-workspace/current/user-editable/evidence.json`.
 8. Create or update `flashtotype-workspace/current/user-editable/decision-pack.md`.
-9. Create or update `flashtotype-workspace/current/user-editable/user-journey.md`, `prototype.md`, `Design.md`, and `flashtotype-library.md`.
+9. Create or update `flashtotype-workspace/current/user-editable/user-journey.md`, `prototype.md`, `Design.md`, `presentation.md`, and `flashtotype-library.md`.
 10. Read `references/output-contract.md` before updating the HTML.
-11. Update `flashtotype-workspace/current/output/index.html` board data and keep `flashtotype.js` generic.
+11. Update `flashtotype-workspace/current/output/index.html` board data, save generated presentation images under `flashtotype-workspace/current/output/assets/` when used, and keep `flashtotype.js` generic.
 
 ## Four Angles
 
@@ -49,7 +49,8 @@ End each run with:
 - Recommendation and confidence level.
 - Decision pack path.
 - HTML path.
-- Board pages generated: Homepage, User journey flow, Prototype, Design system, Flashtotype library.
+- Generated presentation image path or prompt-only fallback status when a deck was updated.
+- Board pages generated: Homepage, User journey flow, Prototype, Design system, Presentation, Flashtotype library.
 - Evidence count by label.
 - Top assumptions and validation gaps.
 - Next 3 to 5 validation actions.

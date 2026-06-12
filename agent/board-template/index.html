@@ -340,6 +340,10 @@
       width: 1540px;
     }
 
+    .page-frame.is-presentation {
+      width: 1100px;
+    }
+
     .source-strip {
       display: flex;
       align-items: center;
@@ -454,6 +458,59 @@
 
     .notion-sheet .board-title {
       font-size: 40px;
+    }
+
+    .overview-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: start;
+      margin-bottom: 8px;
+    }
+
+    .overview-header .board-title {
+      margin-bottom: 14px;
+    }
+
+    .overview-header .board-summary {
+      margin-bottom: 0;
+    }
+
+    .mode-switch-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      border: 0;
+      border-radius: var(--radius);
+      background: var(--blue);
+      color: #ffffff;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 900;
+      padding: 0 14px;
+      white-space: nowrap;
+    }
+
+    .mode-switch-button:hover {
+      background: #1d4ed8;
+    }
+
+    .mode-switch-button svg {
+      flex: 0 0 auto;
+    }
+
+    .mode-return-button {
+      margin-bottom: 12px;
+      background: #ffffff;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      box-shadow: 0 8px 24px rgba(23, 32, 38, 0.08);
+    }
+
+    .mode-return-button:hover {
+      background: #eef3f6;
     }
 
     .metric-row {
@@ -754,6 +811,16 @@
       padding-top: 12px;
     }
 
+    .is-presentation > .skill-prompt {
+      max-width: 760px;
+      margin: 0 0 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      box-shadow: 0 8px 24px rgba(23, 32, 38, 0.08);
+      padding: 14px;
+    }
+
     .skill-prompt summary {
       display: flex;
       align-items: center;
@@ -869,6 +936,547 @@
       white-space: pre-wrap;
     }
 
+    .presentation-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px auto;
+      gap: 20px;
+      align-items: start;
+      margin-bottom: 18px;
+    }
+
+    .presentation-meta {
+      display: grid;
+      gap: 10px;
+    }
+
+    .presentation-meta div {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      box-shadow: 0 8px 24px rgba(23, 32, 38, 0.08);
+      padding: 14px;
+    }
+
+    .presentation-meta span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .presentation-meta strong {
+      display: block;
+      margin-top: 5px;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .presentation-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .present-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 44px;
+      border: 0;
+      border-radius: var(--radius);
+      background: var(--blue);
+      color: #ffffff;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 900;
+      padding: 0 16px;
+      white-space: nowrap;
+    }
+
+    .present-button span {
+      width: 0;
+      height: 0;
+      border-top: 7px solid transparent;
+      border-bottom: 7px solid transparent;
+      border-left: 11px solid currentColor;
+    }
+
+    .present-button:hover {
+      background: #1d4ed8;
+    }
+
+    .presentation-deck {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+      align-items: start;
+    }
+
+    .slide-card {
+      position: relative;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: 14px;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(135deg, rgba(15, 118, 110, 0.08), transparent 42%),
+        #ffffff;
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .slide-content {
+      display: grid;
+      min-width: 0;
+      min-height: 0;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .slide-card.has-visual .slide-content {
+      grid-template-columns: minmax(0, 1fr) minmax(150px, 0.88fr);
+    }
+
+    .slide-card.slide-visual-split-left .slide-content {
+      grid-template-columns: minmax(150px, 0.88fr) minmax(0, 1fr);
+    }
+
+    .slide-card.slide-visual-split-left .slide-visual {
+      order: 0;
+    }
+
+    .slide-card.slide-visual-split-left .slide-body {
+      order: 1;
+    }
+
+    .slide-card.slide-visual-split-right .slide-body {
+      order: 0;
+    }
+
+    .slide-card.slide-visual-split-right .slide-visual {
+      order: 1;
+    }
+
+    .slide-card.slide-visual-full-bleed .slide-visual {
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      border: 0;
+      border-radius: 0;
+    }
+
+    .slide-card.slide-visual-full-bleed .slide-content {
+      display: block;
+    }
+
+    .slide-card.slide-visual-full-bleed .slide-kicker,
+    .slide-card.slide-visual-full-bleed .slide-body,
+    .slide-card.slide-visual-full-bleed .slide-footer {
+      position: relative;
+      z-index: 1;
+    }
+
+    .slide-card.slide-visual-full-bleed .slide-body {
+      max-width: 58%;
+      border: 1px solid rgba(216, 224, 231, 0.72);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 10px 24px rgba(23, 32, 38, 0.12);
+      padding: 16px;
+    }
+
+    .slide-card.slide-visual-full-bleed .slide-footer {
+      width: fit-content;
+      max-width: 100%;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 5px 10px;
+    }
+
+    .slide-kicker {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .slide-visual {
+      position: relative;
+      display: flex;
+      min-width: 0;
+      min-height: 0;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #eef3f6;
+    }
+
+    .slide-visual img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      object-fit: cover;
+    }
+
+    .slide-visual figcaption {
+      position: absolute;
+      left: 10px;
+      bottom: 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.88);
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 850;
+      padding: 5px 8px;
+    }
+
+    .visual-placeholder {
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px;
+    }
+
+    .visual-placeholder span {
+      color: var(--teal);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .visual-placeholder p {
+      display: -webkit-box;
+      margin: 0;
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 6;
+    }
+
+    .slide-card.slide-visual-full-bleed .visual-placeholder {
+      align-items: flex-end;
+      justify-content: center;
+      background:
+        linear-gradient(135deg, rgba(15, 118, 110, 0.28), rgba(37, 99, 235, 0.24)),
+        #172026;
+    }
+
+    .slide-card.slide-visual-full-bleed .visual-placeholder span {
+      color: #ffffff;
+    }
+
+    .slide-card.slide-visual-full-bleed .visual-placeholder p {
+      max-width: 38%;
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--muted);
+      padding: 10px;
+      -webkit-line-clamp: 5;
+    }
+
+    .slide-body {
+      min-width: 0;
+      align-self: center;
+    }
+
+    .slide-body h2 {
+      margin: 0 0 12px;
+      font-size: 29px;
+      line-height: 1.05;
+      overflow-wrap: anywhere;
+    }
+
+    .slide-body p,
+    .slide-body li {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .slide-body p {
+      margin: 0 0 12px;
+    }
+
+    .slide-body ul {
+      display: grid;
+      gap: 7px;
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .slide-footer {
+      min-height: 20px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 750;
+      overflow-wrap: anywhere;
+    }
+
+    .speaker-notes {
+      position: absolute;
+      right: 14px;
+      bottom: 12px;
+      max-width: calc(100% - 28px);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.94);
+    }
+
+    .speaker-notes summary {
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 900;
+      list-style: none;
+      padding: 7px 9px;
+    }
+
+    .speaker-notes summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .speaker-notes p {
+      max-height: 120px;
+      overflow: auto;
+      margin: 0;
+      padding: 0 9px 9px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .presenter-overlay {
+      position: fixed;
+      z-index: 100;
+      inset: 0;
+      display: none;
+      background: #0b1014;
+      color: #ffffff;
+      padding: 24px;
+    }
+
+    .presenter-overlay.is-active {
+      display: grid;
+    }
+
+    .presenter-shell {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      gap: 16px;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .presenter-slide {
+      display: grid;
+      place-items: center;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .presenter-frame {
+      position: relative;
+      display: grid;
+      align-items: center;
+      width: min(100%, 1440px, 145vh);
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      border-radius: var(--radius);
+      background:
+        linear-gradient(135deg, rgba(15, 118, 110, 0.08), transparent 44%),
+        #ffffff;
+      color: var(--ink);
+      box-shadow: 0 22px 72px rgba(0, 0, 0, 0.42);
+      padding: 56px;
+    }
+
+    .presenter-frame.has-visual.presenter-visual-split-right,
+    .presenter-frame.has-visual.presenter-visual-split-left {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+      gap: 42px;
+    }
+
+    .presenter-frame.has-visual.presenter-visual-split-left {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+    }
+
+    .presenter-content {
+      position: relative;
+      z-index: 1;
+      min-width: 0;
+    }
+
+    .presenter-content span {
+      display: block;
+      margin-bottom: 18px;
+      color: var(--teal);
+      font-size: 15px;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    .presenter-content h1 {
+      max-width: 820px;
+      margin: 0 0 20px;
+      font-size: 48px;
+      line-height: 1.04;
+      overflow-wrap: anywhere;
+    }
+
+    .presenter-content p,
+    .presenter-content li {
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 22px;
+      line-height: 1.42;
+    }
+
+    .presenter-content p {
+      margin: 0 0 22px;
+    }
+
+    .presenter-content ul {
+      display: grid;
+      gap: 11px;
+      margin: 0;
+      padding-left: 24px;
+    }
+
+    .presenter-visual {
+      position: relative;
+      display: flex;
+      min-width: 0;
+      min-height: 0;
+      height: 100%;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #eef3f6;
+    }
+
+    .presenter-visual img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .presenter-visual-full-bleed {
+      padding: 0;
+    }
+
+    .presenter-visual-full-bleed .presenter-visual {
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      border: 0;
+      border-radius: 0;
+    }
+
+    .presenter-visual-full-bleed .presenter-content {
+      align-self: end;
+      max-width: 720px;
+      margin: 56px;
+      border: 1px solid rgba(216, 224, 231, 0.74);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 18px 44px rgba(23, 32, 38, 0.22);
+      padding: 34px;
+    }
+
+    .presenter-visual.visual-placeholder {
+      justify-content: center;
+      gap: 12px;
+      padding: 24px;
+    }
+
+    .presenter-visual.visual-placeholder span {
+      color: var(--teal);
+      font-size: 13px;
+    }
+
+    .presenter-visual.visual-placeholder p {
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.45;
+      -webkit-line-clamp: 8;
+    }
+
+    .presenter-visual-full-bleed .visual-placeholder {
+      align-items: flex-end;
+      justify-content: center;
+      padding: 56px;
+      background:
+        linear-gradient(135deg, rgba(15, 118, 110, 0.34), rgba(37, 99, 235, 0.28)),
+        #172026;
+    }
+
+    .presenter-visual-full-bleed .visual-placeholder span {
+      color: #ffffff;
+    }
+
+    .presenter-visual-full-bleed .visual-placeholder p {
+      max-width: 38%;
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--muted);
+      padding: 16px;
+    }
+
+    .presenter-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .presenter-button,
+    .presenter-close {
+      min-height: 42px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 850;
+      padding: 0 14px;
+    }
+
+    .presenter-button {
+      width: 48px;
+      padding: 0;
+    }
+
+    .presenter-button:hover,
+    .presenter-close:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .presenter-button:disabled {
+      cursor: default;
+      opacity: 0.38;
+    }
+
+    .presenter-counter {
+      min-width: 76px;
+      color: rgba(255, 255, 255, 0.84);
+      font-size: 14px;
+      font-weight: 850;
+      text-align: center;
+    }
+
     .zoom-controls {
       position: fixed;
       z-index: 21;
@@ -919,6 +1527,54 @@
       .page-rail {
         top: 70px;
       }
+
+      .presentation-hero,
+      .presentation-deck {
+        grid-template-columns: 1fr;
+      }
+
+      .overview-header {
+        grid-template-columns: 1fr;
+      }
+
+      .overview-header .mode-switch-button {
+        justify-self: start;
+      }
+
+      .presentation-actions {
+        justify-content: flex-start;
+      }
+
+      .page-frame.is-presentation {
+        width: 680px;
+      }
+
+      .presenter-overlay {
+        padding: 14px;
+      }
+
+      .presenter-frame {
+        padding: 34px;
+      }
+
+      .presenter-frame.has-visual.presenter-visual-split-right,
+      .presenter-frame.has-visual.presenter-visual-split-left {
+        gap: 24px;
+      }
+
+      .presenter-content h1 {
+        font-size: 34px;
+      }
+
+      .presenter-content p,
+      .presenter-content li {
+        font-size: 18px;
+      }
+
+      .presenter-visual-full-bleed .presenter-content {
+        margin: 32px;
+        padding: 24px;
+      }
     }
 
     @media (max-width: 560px) {
@@ -932,6 +1588,165 @@
 
       .board-viewport {
         padding-top: 88px;
+      }
+
+      .page-frame.is-presentation {
+        width: calc(100vw - 56px);
+      }
+
+      .is-presentation .board-title {
+        font-size: 31px;
+        line-height: 1.08;
+      }
+
+      .is-presentation .board-summary {
+        font-size: 15px;
+        line-height: 1.45;
+      }
+
+      .mode-switch-button {
+        min-height: 40px;
+        font-size: 13px;
+      }
+
+      .presentation-hero {
+        gap: 12px;
+      }
+
+      .presentation-meta div {
+        padding: 12px;
+      }
+
+      .present-button {
+        min-height: 40px;
+        padding: 0 14px;
+      }
+
+      .presentation-deck {
+        gap: 14px;
+      }
+
+      .slide-card {
+        gap: 8px;
+        padding: 14px;
+      }
+
+      .slide-card.has-visual .slide-content,
+      .slide-card.slide-visual-split-left .slide-content {
+        grid-template-columns: minmax(0, 1fr) minmax(96px, 0.82fr);
+        gap: 8px;
+      }
+
+      .slide-card.slide-visual-split-left .slide-content {
+        grid-template-columns: minmax(96px, 0.82fr) minmax(0, 1fr);
+      }
+
+      .slide-kicker {
+        font-size: 9px;
+      }
+
+      .slide-body h2 {
+        margin-bottom: 6px;
+        font-size: 18px;
+      }
+
+      .slide-body p,
+      .slide-body li {
+        font-size: 10px;
+        line-height: 1.3;
+      }
+
+      .slide-body p {
+        margin-bottom: 6px;
+      }
+
+      .slide-body ul {
+        gap: 3px;
+        padding-left: 13px;
+      }
+
+      .slide-footer {
+        min-height: 0;
+        font-size: 8px;
+      }
+
+      .visual-placeholder {
+        gap: 5px;
+        padding: 8px;
+      }
+
+      .visual-placeholder span {
+        font-size: 8px;
+      }
+
+      .visual-placeholder p {
+        font-size: 8px;
+        line-height: 1.25;
+        -webkit-line-clamp: 4;
+      }
+
+      .slide-card.slide-visual-full-bleed .slide-body {
+        max-width: 58%;
+        padding: 9px;
+      }
+
+      .slide-card.slide-visual-full-bleed .visual-placeholder p {
+        max-width: 38%;
+        padding: 7px;
+        -webkit-line-clamp: 4;
+      }
+
+      .speaker-notes {
+        right: 8px;
+        bottom: 8px;
+      }
+
+      .speaker-notes summary {
+        font-size: 9px;
+        padding: 5px 6px;
+      }
+
+      .presenter-frame.has-visual.presenter-visual-split-right,
+      .presenter-frame.has-visual.presenter-visual-split-left {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .presenter-frame {
+        padding: 22px;
+      }
+
+      .presenter-visual {
+        max-height: 150px;
+      }
+
+      .presenter-content span {
+        margin-bottom: 8px;
+        font-size: 12px;
+      }
+
+      .presenter-content h1 {
+        margin-bottom: 10px;
+        font-size: 26px;
+      }
+
+      .presenter-content p,
+      .presenter-content li {
+        font-size: 14px;
+        line-height: 1.35;
+      }
+
+      .presenter-content p {
+        margin-bottom: 10px;
+      }
+
+      .presenter-visual-full-bleed .presenter-content {
+        margin: 18px;
+        padding: 18px;
+      }
+
+      .presenter-controls {
+        flex-wrap: wrap;
       }
     }
   </style>
@@ -972,6 +1787,18 @@
     <button class="control-button" type="button" id="zoom-in" aria-label="Zoom in">+</button>
   </section>
 
+  <section class="presenter-overlay" id="presenter-overlay" aria-hidden="true" aria-label="Presentation mode">
+    <div class="presenter-shell">
+      <div class="presenter-slide" id="presenter-slide" aria-live="polite"></div>
+      <div class="presenter-controls" aria-label="Presentation controls">
+        <button class="presenter-button" type="button" data-present-prev aria-label="Previous slide">&lt;</button>
+        <span class="presenter-counter" id="presenter-counter">1 / 1</span>
+        <button class="presenter-button" type="button" data-present-next aria-label="Next slide">&gt;</button>
+        <button class="presenter-close" type="button" data-present-close>Close</button>
+      </div>
+    </div>
+  </section>
+
   <script type="application/json" id="flashtotype-data">
   {
     "projectName": "Example Product",
@@ -985,6 +1812,7 @@
       "user-editable/user-journey.md",
       "user-editable/prototype.md",
       "user-editable/Design.md",
+      "user-editable/presentation.md",
       "user-editable/flashtotype-library.md"
     ],
     "pages": [
@@ -1125,6 +1953,148 @@
         ]
       },
       {
+        "id": "presentation",
+        "label": "Presentation",
+        "type": "presentation",
+        "hiddenFromMenu": true,
+        "sourceFiles": ["user-editable/presentation.md", "user-editable/decision-pack.md", "user-editable/flashtotype-brief.md", "user-editable/evidence.json"],
+        "title": "Stakeholder Presentation",
+        "summary": "Use this page as a Canva-like 16:9 story deck for the product decision, research backup, user pain, prototype direction, risks, and validation plan.",
+        "audience": "Product stakeholders",
+        "decision": "Decide whether to proceed, pause, or validate further.",
+        "prompt": "Use $flashtotype-presentation-generator for this Flashtotype project.\n\nRead `.flashtotype/skills/flashtotype-presentation-generator/SKILL.md` and follow it as the primary workflow. Create or update `flashtotype-workspace/current/user-editable/presentation.md` from the existing Flashtotype artifacts: `flashtotype-brief.md`, `decision-pack.md`, `evidence.json`, `user-journey.md`, `prototype.md`, `Design.md`, and `flashtotype-library.md`. Build a static 16:9 stakeholder slide story with evidence labels, source notes, speaker notes, generated image prompts, local visual asset references, top assumptions, validation gaps, and next actions. If image generation is available, save slide images under `flashtotype-workspace/current/output/assets/`; otherwise keep prompt-only visual placeholders. Regenerate the `presentation` page data inside `flashtotype-workspace/current/output/index.html` without adding a backend, build step, package manager, or network dependency.",
+        "slides": [
+          {
+            "eyebrow": "01",
+            "title": "Decision Snapshot",
+            "body": "State the product idea, audience, decision needed, and recommendation.",
+            "bullets": ["Product thesis", "Recommendation", "Confidence level"],
+            "visual": {
+              "layout": "split-right",
+              "prompt": "Create a clean product decision dashboard illustration based only on the Flashtotype decision pack: a strategic workspace, evidence cards, and a clear proceed-pause-validate decision moment. No logos, no fake metrics, no readable UI text.",
+              "src": "",
+              "alt": "Conceptual decision dashboard with evidence cards.",
+              "status": "prompt-only"
+            },
+            "evidenceLabel": "Needs validation",
+            "sourceNote": "Source: decision-pack.md and flashtotype-brief.md",
+            "speakerNotes": "Open with the decision the team must make and what evidence is still weak."
+          },
+          {
+            "eyebrow": "02",
+            "title": "User Pain",
+            "body": "Explain the painful workflow, current workaround, and urgency signal.",
+            "bullets": ["Primary persona", "Current workaround", "Why this matters now"],
+            "visual": {
+              "layout": "full-bleed",
+              "prompt": "Create a realistic but anonymous scene of a product user struggling with fragmented notes, spreadsheets, and handoffs. Base the mood on the user pain in flashtotype-brief.md. No brands, no private data, no readable screen text.",
+              "src": "",
+              "alt": "Anonymous user dealing with a fragmented workflow.",
+              "status": "prompt-only"
+            },
+            "evidenceLabel": "Needs validation",
+            "sourceNote": "Source: flashtotype-brief.md",
+            "speakerNotes": "Anchor the story in the user's repeated moment of friction."
+          },
+          {
+            "eyebrow": "03",
+            "title": "Research Backup",
+            "body": "Summarize the strongest source-backed claims and the most important gaps.",
+            "bullets": ["Cited sources", "Confidence", "Open gaps"],
+            "visual": {
+              "layout": "split-left",
+              "prompt": "Create an evidence review board visual with source cards, confidence markers, and validation gaps inspired by evidence.json. Use abstract labels and shapes only; do not invent source names, numbers, charts, or readable citations.",
+              "src": "",
+              "alt": "Evidence board with source cards and validation gaps.",
+              "status": "prompt-only"
+            },
+            "evidenceLabel": "Needs validation",
+            "sourceNote": "Source: evidence.json",
+            "speakerNotes": "Separate what is known from what still needs validation."
+          },
+          {
+            "eyebrow": "04",
+            "title": "Primary Persona",
+            "body": "Show who has the pain, their job to be done, adoption trigger, and objections.",
+            "bullets": ["Role and context", "Job to be done", "Adoption trigger"],
+            "visual": {
+              "layout": "split-right",
+              "prompt": "Create an anonymous primary persona scene that reflects the role, job-to-be-done, adoption trigger, and objections in flashtotype-brief.md. Keep it professional and specific to the workflow, without identifiable people, logos, or readable text.",
+              "src": "",
+              "alt": "Anonymous persona in their workflow context.",
+              "status": "prompt-only"
+            },
+            "evidenceLabel": "Needs validation",
+            "sourceNote": "Source: flashtotype-brief.md",
+            "speakerNotes": "Connect persona details to the buying or usage moment."
+          },
+          {
+            "eyebrow": "05",
+            "title": "Proposed Workflow",
+            "body": "Walk through the proposed user flow and system response.",
+            "bullets": ["Entry point", "Core action", "Output"],
+            "visual": {
+              "layout": "split-left",
+              "prompt": "Create a clean workflow illustration based on user-journey.md and prototype.md: entry point, core user action, system response, and output. Use simple diagrammatic forms without readable labels, invented screens, or unsupported claims.",
+              "src": "",
+              "alt": "Conceptual workflow from entry point to output.",
+              "status": "prompt-only"
+            },
+            "evidenceLabel": "Assumption",
+            "sourceNote": "Source: user-journey.md and prototype.md",
+            "speakerNotes": "Explain how the workflow changes the current workaround."
+          },
+          {
+            "eyebrow": "06",
+            "title": "Prototype Story",
+            "body": "Describe the smallest prototype scenario that can prove the painful moment.",
+            "bullets": ["First scenario", "What it proves", "What it does not prove"],
+            "visual": {
+              "layout": "split-right",
+              "prompt": "Create a prototype review scene based on prototype.md, showing a simple product flow being evaluated against one painful user moment. Avoid detailed fake UI text, brand marks, and unsupported feature detail.",
+              "src": "",
+              "alt": "Prototype review scene focused on a user pain moment.",
+              "status": "prompt-only"
+            },
+            "evidenceLabel": "Assumption",
+            "sourceNote": "Source: prototype.md",
+            "speakerNotes": "Keep this focused on what the prototype must prove first."
+          },
+          {
+            "eyebrow": "07",
+            "title": "Risks And Assumptions",
+            "body": "List the top delivery, data, adoption, market, or compliance risks.",
+            "bullets": ["Highest-risk assumption", "Validation gap", "Mitigation"],
+            "visual": {
+              "layout": "full-bleed",
+              "prompt": "Create an abstract risk and assumption map inspired by decision-pack.md and evidence.json. Show uncertainty, dependencies, and mitigation paths visually without fake data, charts, or readable labels.",
+              "src": "",
+              "alt": "Abstract risk map with assumptions and mitigation paths.",
+              "status": "prompt-only"
+            },
+            "evidenceLabel": "Needs validation",
+            "sourceNote": "Source: decision-pack.md and evidence.json",
+            "speakerNotes": "Make clear what would change the recommendation."
+          },
+          {
+            "eyebrow": "08",
+            "title": "Validation Plan",
+            "body": "List the next 3 to 5 validation actions and the success metric.",
+            "bullets": ["User interview", "Source-backed research", "Prototype review"],
+            "visual": {
+              "layout": "split-right",
+              "prompt": "Create a validation roadmap visual based on the next actions in decision-pack.md: interviews, research, prototype review, and a decision checkpoint. Use milestone shapes and neutral workspace imagery; no invented dates, metrics, or readable text.",
+              "src": "",
+              "alt": "Validation roadmap with research and prototype review milestones.",
+              "status": "prompt-only"
+            },
+            "evidenceLabel": "Assumption",
+            "sourceNote": "Source: decision-pack.md",
+            "speakerNotes": "Close by asking for the next decision or research commitment."
+          }
+        ]
+      },
+      {
         "id": "library",
         "label": "Flashtotype library",
         "type": "library",
@@ -1140,6 +2110,15 @@
             "description": "Turns product ideas into evidence-labeled decision packs, research summaries, personas, tech/risk briefs, and visual board output.",
             "usedFor": ["Product discovery", "Evidence-backed research", "Persona and risk synthesis", "Board generation"],
             "prompt": "Use Flashtotype as the PM/PO sidekick for this project.\n\nFirst read `.flashtotype/skills/flashtotype-product-sidekick/SKILL.md` and follow it as the primary workflow. Interview me before generating artifacts. Produce product, market, persona, and tech/risk angles. Label every important claim as `Source-backed`, `Assumption`, or `Needs validation`. Update `flashtotype-workspace/current/user-editable/` source files and regenerate `flashtotype-workspace/current/output/index.html` as a static board."
+          },
+          {
+            "name": "flashtotype-presentation-generator",
+            "type": "Installed skill",
+            "status": "Active",
+            "path": ".flashtotype/skills/flashtotype-presentation-generator/SKILL.md",
+            "description": "Turns Flashtotype research artifacts into a static, evidence-labeled 16:9 stakeholder slide story with local generated slide visuals and speaker notes.",
+            "usedFor": ["Stakeholder decks", "Data storytelling", "Local slide visuals", "Evidence-labeled slides", "Presentation page generation"],
+            "prompt": "Use $flashtotype-presentation-generator for this Flashtotype project.\n\nRead `.flashtotype/skills/flashtotype-presentation-generator/SKILL.md` and follow it as the primary workflow. Create or update `flashtotype-workspace/current/user-editable/presentation.md` from the existing Flashtotype artifacts: `flashtotype-brief.md`, `decision-pack.md`, `evidence.json`, `user-journey.md`, `prototype.md`, `Design.md`, and `flashtotype-library.md`. Build a static 16:9 stakeholder slide story with evidence labels, source notes, speaker notes, generated image prompts, local visual asset references, top assumptions, validation gaps, and next actions. If image generation is available, save slide images under `flashtotype-workspace/current/output/assets/`; otherwise keep prompt-only visual placeholders. Regenerate the `presentation` page data inside `flashtotype-workspace/current/output/index.html` without adding a backend, build step, package manager, or network dependency."
           },
           {
             "name": "safe-run-rules",
@@ -1175,7 +2154,7 @@
             "path": ".flashtotype/skills/flashtotype-product-sidekick/references/output-contract.md",
             "description": "Defines the board data shape and required output files.",
             "usedFor": ["HTML board data", "Artifact structure", "Final handoff"],
-            "prompt": "Before updating the visual board, read `.flashtotype/skills/flashtotype-product-sidekick/references/output-contract.md`.\n\nKeep source docs in `flashtotype-workspace/current/user-editable/`, generated files in `flashtotype-workspace/current/output/`, and update the `flashtotype-data` JSON in `output/index.html` with all five pages: home, journey, prototype, design, and library. Keep `flashtotype.js` generic and require no backend or build step."
+            "prompt": "Before updating the visual board, read `.flashtotype/skills/flashtotype-product-sidekick/references/output-contract.md`.\n\nKeep source docs in `flashtotype-workspace/current/user-editable/`, generated files in `flashtotype-workspace/current/output/`, generated slide images in `flashtotype-workspace/current/output/assets/`, and update the `flashtotype-data` JSON in `output/index.html` with all six pages: home, journey, prototype, design, presentation, and library. Keep `flashtotype.js` generic and require no backend or build step."
           }
         ],
         "items": [
@@ -1195,9 +2174,19 @@
             "tags": ["Prototype", "UX"]
           },
           {
+            "title": "Presentation story",
+            "body": "Turn the homepage backup into a stakeholder deck with evidence labels, local slide visuals, source notes, speaker notes, presenter mode, and validation asks.",
+            "tags": ["Slides", "Story", "Decision"]
+          },
+          {
             "title": "Design system starter",
             "body": "Start with a calm, readable theme, then import project-specific tokens from Design.md.",
             "tags": ["Theme", "UI"]
+          },
+          {
+            "title": "Optional export paths",
+            "body": "Use OpenAI slides, Marp, Figma Slides, Canva, SlideSpeak, or other PPTX skills only as follow-up exports after the static Flashtotype deck exists.",
+            "tags": ["Optional", "Export", "PPTX"]
           },
           {
             "title": "Risk review",

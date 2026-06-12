@@ -1,7 +1,12 @@
 (function () {
-  const REQUIRED_PAGE_IDS = ["home", "journey", "prototype", "design", "library"];
+  const REQUIRED_PAGE_IDS = ["home", "journey", "prototype", "design", "presentation", "library"];
+  const MENU_EXCLUDED_PAGE_IDS = new Set(["presentation"]);
   const RIGHT_MOUSE_BUTTON = 2;
   const RIGHT_MOUSE_BUTTON_MASK = 2;
+  const ZOOM_MIN = 0.55;
+  const ZOOM_MAX = 1.25;
+  const WHEEL_ZOOM_STEP = 0.08;
+  const VISUAL_LAYOUTS = new Set(["split-right", "split-left", "full-bleed", "none"]);
   const PAN_EXCLUDED_SELECTOR = [
     "a",
     "button",
@@ -11,6 +16,7 @@
     "[role='button']",
     ".page-rail",
     ".topbar",
+    ".presenter-overlay",
     ".zoom-controls"
   ].join(",");
   const labelClass = {
@@ -24,6 +30,7 @@
     journey: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="5" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M6 7.5V12a4 4 0 0 0 4 4h4a4 4 0 0 1 4 4v1.5"/></svg>`,
     prototype: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="15" x="2" y="4" rx="2"/><line x1="2" x2="22" y1="9" y2="9"/><line x1="6" x2="6" y1="6.5" y2="6.5" stroke-width="3"/><line x1="10" x2="10" y1="6.5" y2="6.5" stroke-width="3"/></svg>`,
     design: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 12 12 17 22 12"/><polyline points="2 17 12 22 22 17"/></svg>`,
+    presentation: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="12" x="3" y="4" rx="2"/><path d="M12 16v4"/><path d="M8 20h8"/><path d="m8 10 3 3 5-6"/></svg>`,
     library: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/><path d="M6 14h10"/></svg>`
   };
 
@@ -41,6 +48,13 @@
     startY: 0,
     scrollLeft: 0,
     scrollTop: 0
+  };
+
+  const presenter = {
+    active: false,
+    slides: [],
+    index: 0,
+    ownsFullscreen: false
   };
 
   function readData() {
@@ -101,6 +115,66 @@
     return `<${tag}>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</${tag}>`;
   }
 
+  function plainList(items) {
+    if (!Array.isArray(items) || items.length === 0) return "";
+    return `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+  }
+
+  function isLocalRelativePath(value) {
+    const src = String(value || "").trim();
+    if (!src) return false;
+    if (/^(https?:)?\/\//i.test(src)) return false;
+    if (/^(data|file|javascript):/i.test(src)) return false;
+    if (/^[a-z]:[\\/]/i.test(src)) return false;
+    if (src.startsWith("/") || src.startsWith("\\") || src.includes("..")) return false;
+    return true;
+  }
+
+  function normalizeVisual(visual) {
+    const raw = visual && typeof visual === "object" ? visual : {};
+    const prompt = String(raw.prompt || "").trim();
+    const src = isLocalRelativePath(raw.src) ? String(raw.src).trim() : "";
+    const requestedLayout = String(raw.layout || "").trim();
+    const layout = VISUAL_LAYOUTS.has(requestedLayout)
+      ? requestedLayout
+      : (src || prompt ? "split-right" : "none");
+    return {
+      layout,
+      prompt,
+      src,
+      alt: String(raw.alt || "").trim(),
+      status: String(raw.status || (src ? "generated" : (prompt ? "prompt-only" : "none"))).trim()
+    };
+  }
+
+  function visualClass(visual, prefix) {
+    const hasVisual = visual.layout !== "none" && (visual.src || visual.prompt);
+    return [
+      hasVisual ? "has-visual" : "is-text-only",
+      `${prefix}-visual-${visual.layout}`
+    ].join(" ");
+  }
+
+  function renderSlideVisual(visual, mode) {
+    if (visual.layout === "none" || (!visual.src && !visual.prompt)) return "";
+    const status = visual.status === "generated" ? "Generated visual" : "Image prompt";
+    const alt = visual.alt || "Slide visual";
+    if (visual.src) {
+      return `
+        <figure class="${mode}-visual">
+          <img src="${escapeHtml(visual.src)}" alt="${escapeHtml(alt)}">
+          ${mode === "slide" ? `<figcaption>${escapeHtml(status)}</figcaption>` : ""}
+        </figure>
+      `;
+    }
+    return `
+      <div class="${mode}-visual visual-placeholder" role="img" aria-label="${escapeHtml(alt)}">
+        <span>${escapeHtml(status)}</span>
+        <p>${escapeHtml(visual.prompt || "No image prompt added yet.")}</p>
+      </div>
+    `;
+  }
+
   function sourceStrip(page) {
     const files = page.sourceFiles || window.FLASHTOTYPE_DATA.sourceFiles || [];
     const chips = files.map((file) => `<span class="source-chip">${escapeHtml(file)}</span>`).join("");
@@ -114,7 +188,8 @@
 
   function renderPageMenu(data) {
     const listNode = byId("page-list");
-    listNode.innerHTML = data.pages.map((page, index) => `
+    const visiblePages = data.pages.filter((page) => !page.hiddenFromMenu && !MENU_EXCLUDED_PAGE_IDS.has(page.id));
+    listNode.innerHTML = visiblePages.map((page) => `
       <button class="page-button" type="button" data-page-id="${escapeHtml(page.id)}" aria-current="${page.id === state.activePageId ? "page" : "false"}">
         <span class="page-index">${PAGE_ICONS[page.id] || DEFAULT_ICON}</span>
         <span>
@@ -158,8 +233,16 @@
       <div class="page-frame is-home">
         ${sourceStrip(page)}
         <section class="notion-sheet">
-          <h1 class="board-title">${escapeHtml(page.title || "Project Overview")}</h1>
-          <p class="board-summary">${escapeHtml(page.summary || "")}</p>
+          <div class="overview-header">
+            <div>
+              <h1 class="board-title">${escapeHtml(page.title || "Project Overview")}</h1>
+              <p class="board-summary">${escapeHtml(page.summary || "")}</p>
+            </div>
+            <button class="mode-switch-button" type="button" data-page-target="presentation" aria-label="Open presentation mode">
+              <span aria-hidden="true">${PAGE_ICONS.presentation}</span>
+              Presentation mode
+            </button>
+          </div>
           ${renderMetricRow(page.metrics)}
           <div class="board-grid">
             ${blocks.map((block) => `
@@ -306,6 +389,75 @@
     `;
   }
 
+  function renderBoardSlide(slide) {
+    const visual = normalizeVisual(slide.visual);
+    const visualMarkup = renderSlideVisual(visual, "slide");
+    return `
+      <article class="slide-card ${visualClass(visual, "slide")}">
+        <div class="slide-kicker">
+          <span>${escapeHtml(slide.eyebrow || "")}</span>
+          ${badge(slide.evidenceLabel)}
+        </div>
+        <div class="slide-content">
+          ${visualMarkup}
+          <div class="slide-body">
+            <h2>${escapeHtml(slide.title || "Untitled slide")}</h2>
+            <p>${escapeHtml(slide.body || "")}</p>
+            ${list(slide.bullets)}
+          </div>
+        </div>
+        <footer class="slide-footer">
+          <span>${escapeHtml(slide.sourceNote || "No source note added.")}</span>
+        </footer>
+        ${slide.speakerNotes ? `
+          <details class="speaker-notes">
+            <summary>Speaker notes</summary>
+            <p>${escapeHtml(slide.speakerNotes)}</p>
+          </details>
+        ` : ""}
+      </article>
+    `;
+  }
+
+  function renderPresentation(page) {
+    const slides = Array.isArray(page.slides) ? page.slides : [];
+    return `
+      <div class="page-frame is-presentation">
+        <button class="mode-switch-button mode-return-button" type="button" data-page-target="home" aria-label="Return to overview mode">
+          <span aria-hidden="true">&lt;</span>
+          Overview mode
+        </button>
+        ${sourceStrip(page)}
+        <section class="presentation-hero">
+          <div>
+            <h1 class="board-title">${escapeHtml(page.title || "Stakeholder Presentation")}</h1>
+            <p class="board-summary">${escapeHtml(page.summary || "")}</p>
+          </div>
+          <div class="presentation-meta" aria-label="Presentation metadata">
+            <div>
+              <span>Audience</span>
+              <strong>${escapeHtml(page.audience || "Stakeholders")}</strong>
+            </div>
+            <div>
+              <span>Decision</span>
+              <strong>${escapeHtml(page.decision || "Decision needed")}</strong>
+            </div>
+          </div>
+          <div class="presentation-actions">
+            <button class="present-button" type="button" data-present-deck aria-label="Present slide deck">
+              <span aria-hidden="true"></span>
+              Present
+            </button>
+          </div>
+        </section>
+        ${page.prompt ? renderSkillPrompt({ prompt: page.prompt }) : ""}
+        <section class="presentation-deck" aria-label="Presentation slides">
+          ${slides.length ? slides.map(renderBoardSlide).join("") : '<p class="empty">No slides added yet.</p>'}
+        </section>
+      </div>
+    `;
+  }
+
   function renderSkillPrompt(skill) {
     if (!skill.prompt) return "";
     return `
@@ -379,6 +531,7 @@
     else if (page.type === "journey") stage.innerHTML = renderJourney(page);
     else if (page.type === "prototype") stage.innerHTML = renderPrototype(page);
     else if (page.type === "design") stage.innerHTML = renderDesign(page);
+    else if (page.type === "presentation") stage.innerHTML = renderPresentation(page);
     else if (page.type === "library") stage.innerHTML = renderLibrary(page);
     else stage.innerHTML = renderFallback(page);
     renderPageMenu(window.FLASHTOTYPE_DATA);
@@ -394,9 +547,24 @@
   }
 
   function setZoom(nextZoom) {
-    state.zoom = Math.min(1.25, Math.max(0.55, nextZoom));
+    state.zoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, nextZoom));
     byId("board-stage").style.transform = `scale(${state.zoom})`;
     byId("zoom-label").textContent = `${Math.round(state.zoom * 100)}%`;
+    return state.zoom;
+  }
+
+  function isNarrowViewport() {
+    return window.matchMedia("(max-width: 560px)").matches
+      || window.innerWidth <= 560
+      || document.documentElement.clientWidth <= 560
+      || window.screen.width <= 560;
+  }
+
+  function collapseRailForNarrowViewport() {
+    const rail = byId("page-rail");
+    if (rail && isNarrowViewport()) {
+      rail.classList.add("is-collapsed");
+    }
   }
 
   async function copyText(text) {
@@ -445,6 +613,148 @@
       } catch (error) {
         console.error("Could not copy Flashtotype prompt", error);
         button.title = "Copy failed";
+      }
+    });
+  }
+
+  function setupModeSwitching() {
+    document.addEventListener("click", (event) => {
+      if (!(event.target instanceof Element)) return;
+      const button = event.target.closest("[data-page-target]");
+      if (!button) return;
+      const pageId = button.getAttribute("data-page-target");
+      if (!pageId) return;
+      setPage(pageId);
+      collapseRailForNarrowViewport();
+    });
+  }
+
+  function activePresentationSlides() {
+    const page = window.FLASHTOTYPE_DATA.pages.find((item) => item.id === state.activePageId);
+    if (!page || page.type !== "presentation") return [];
+    return Array.isArray(page.slides) ? page.slides : [];
+  }
+
+  function renderPresenterSlide(slide) {
+    const visual = normalizeVisual(slide.visual);
+    return `
+      <article class="presenter-frame ${visualClass(visual, "presenter")}">
+        ${visual.layout === "full-bleed" ? renderSlideVisual(visual, "presenter") : ""}
+        ${visual.layout === "split-left" ? renderSlideVisual(visual, "presenter") : ""}
+        <div class="presenter-content">
+          <span>${escapeHtml(slide.eyebrow || "")}</span>
+          <h1>${escapeHtml(slide.title || "Untitled slide")}</h1>
+          <p>${escapeHtml(slide.body || "")}</p>
+          ${plainList(slide.bullets)}
+        </div>
+        ${visual.layout === "split-right" ? renderSlideVisual(visual, "presenter") : ""}
+      </article>
+    `;
+  }
+
+  function setPresenterSlide(index) {
+    if (!presenter.active || presenter.slides.length === 0) return;
+    presenter.index = Math.min(Math.max(index, 0), presenter.slides.length - 1);
+    const slide = presenter.slides[presenter.index];
+    const slideNode = byId("presenter-slide");
+    const counterNode = byId("presenter-counter");
+    if (slideNode) slideNode.innerHTML = renderPresenterSlide(slide);
+    if (counterNode) counterNode.textContent = `${presenter.index + 1} / ${presenter.slides.length}`;
+    document.querySelectorAll("[data-present-prev]").forEach((button) => {
+      button.disabled = presenter.index === 0;
+    });
+    document.querySelectorAll("[data-present-next]").forEach((button) => {
+      button.disabled = presenter.index === presenter.slides.length - 1;
+    });
+  }
+
+  async function openPresenter(slides, startIndex) {
+    const overlay = byId("presenter-overlay");
+    if (!overlay || !Array.isArray(slides) || slides.length === 0) return;
+    presenter.active = true;
+    presenter.slides = slides;
+    presenter.index = 0;
+    presenter.ownsFullscreen = false;
+    overlay.classList.add("is-active");
+    overlay.setAttribute("aria-hidden", "false");
+    setPresenterSlide(startIndex || 0);
+
+    const closeButton = overlay.querySelector("[data-present-close]");
+    if (closeButton) closeButton.focus({ preventScroll: true });
+
+    try {
+      if (overlay.requestFullscreen && !document.fullscreenElement) {
+        await overlay.requestFullscreen();
+        presenter.ownsFullscreen = document.fullscreenElement === overlay;
+      }
+    } catch (error) {
+      presenter.ownsFullscreen = false;
+    }
+  }
+
+  function closePresenter(options = {}) {
+    const overlay = byId("presenter-overlay");
+    if (!overlay) return;
+    overlay.classList.remove("is-active");
+    overlay.setAttribute("aria-hidden", "true");
+    presenter.active = false;
+    presenter.slides = [];
+    presenter.index = 0;
+    if (!options.fromFullscreenChange && presenter.ownsFullscreen && document.fullscreenElement) {
+      document.exitFullscreen?.().catch(() => {});
+    }
+    presenter.ownsFullscreen = false;
+  }
+
+  function movePresenter(delta) {
+    setPresenterSlide(presenter.index + delta);
+  }
+
+  function setupPresenter() {
+    document.addEventListener("click", (event) => {
+      if (!(event.target instanceof Element)) return;
+      if (event.target.closest("[data-present-deck]")) {
+        openPresenter(activePresentationSlides(), 0);
+        return;
+      }
+      if (event.target.closest("[data-present-close]")) {
+        closePresenter();
+        return;
+      }
+      if (event.target.closest("[data-present-prev]")) {
+        movePresenter(-1);
+        return;
+      }
+      if (event.target.closest("[data-present-next]")) {
+        movePresenter(1);
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (!presenter.active) return;
+      const key = event.key;
+      if (key === "ArrowRight" || key === " " || key === "PageDown") {
+        event.preventDefault();
+        movePresenter(1);
+      } else if (key === "ArrowLeft" || key === "PageUp") {
+        event.preventDefault();
+        movePresenter(-1);
+      } else if (key === "Home") {
+        event.preventDefault();
+        setPresenterSlide(0);
+      } else if (key === "End") {
+        event.preventDefault();
+        setPresenterSlide(presenter.slides.length - 1);
+      } else if (key === "Escape") {
+        event.preventDefault();
+        closePresenter();
+      }
+    });
+
+    document.addEventListener("fullscreenchange", () => {
+      const overlay = byId("presenter-overlay");
+      if (presenter.active && presenter.ownsFullscreen && document.fullscreenElement !== overlay) {
+        closePresenter({ fromFullscreenChange: true });
       }
     });
   }
@@ -510,6 +820,30 @@
     });
   }
 
+  function setupWheelZoom() {
+    const viewport = byId("board-viewport");
+    if (!viewport || viewport.dataset.wheelZoomReady === "true") return;
+    viewport.dataset.wheelZoomReady = "true";
+
+    viewport.addEventListener("wheel", (event) => {
+      if (!event.ctrlKey) return;
+      event.preventDefault();
+
+      const previousZoom = state.zoom;
+      const direction = event.deltaY < 0 ? 1 : -1;
+      const nextZoom = setZoom(previousZoom + (direction * WHEEL_ZOOM_STEP));
+      if (nextZoom === previousZoom) return;
+
+      const rect = viewport.getBoundingClientRect();
+      const pointerX = event.clientX - rect.left;
+      const pointerY = event.clientY - rect.top;
+      const zoomRatio = nextZoom / previousZoom;
+
+      viewport.scrollLeft = ((viewport.scrollLeft + pointerX) * zoomRatio) - pointerX;
+      viewport.scrollTop = ((viewport.scrollTop + pointerY) * zoomRatio) - pointerY;
+    }, { passive: false });
+  }
+
   function ensureRequiredPages(data) {
     const ids = new Set(data.pages.map((page) => page.id));
     return REQUIRED_PAGE_IDS.every((id) => ids.has(id));
@@ -519,6 +853,8 @@
     const data = readData();
     window.FLASHTOTYPE_DATA = data;
     renderHeader(data);
+    collapseRailForNarrowViewport();
+    window.addEventListener("resize", collapseRailForNarrowViewport);
 
     if (!ensureRequiredPages(data)) {
       console.warn("Flashtotype board is missing one or more recommended pages:", REQUIRED_PAGE_IDS);
@@ -533,7 +869,10 @@
     setZoom(1);
     setPage(state.activePageId);
     setupPan();
+    setupWheelZoom();
     setupPromptCopy();
+    setupModeSwitching();
+    setupPresenter();
 
     byId("menu-toggle").addEventListener("click", () => {
       byId("page-rail").classList.toggle("is-collapsed");
