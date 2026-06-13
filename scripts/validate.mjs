@@ -68,7 +68,7 @@ const allowedPrototypeElementTypes = new Set(["text", "field", "list", "card", "
 const commandNames = ["flash-onboard", "flash-revise", "flash-present", "flash-research", "flash-review"];
 
 function read(relativePath) {
-  return readFileSync(join(root, relativePath), "utf8");
+  return readFileSync(join(root, relativePath), "utf8").replace(/\r\n/g, "\n");
 }
 
 function isLocalRelativePath(value) {
