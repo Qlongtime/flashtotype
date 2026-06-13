@@ -24,16 +24,18 @@ Create decision-led presentation stories from Flashtotype research. Be concise, 
 
 ## Slide Spine
 
-Use this default order unless the user asks for another audience or length:
+Use this default 10-slide order unless the user asks for another audience or length. Keep the first opening slide and final thank-you slide by default so presentation mode has a clear start and close:
 
-1. Title and decision needed.
-2. User pain and current workaround.
-3. Research backup and confidence.
-4. Primary persona and moment of use.
-5. Proposed workflow.
-6. Prototype story.
-7. Risks, assumptions, and validation gaps.
-8. Recommended next validation plan.
+1. Opening title, audience context, and session purpose.
+2. Decision snapshot and recommendation.
+3. User pain and current workaround.
+4. Research backup and confidence.
+5. Primary persona and moment of use.
+6. Proposed workflow.
+7. Prototype story.
+8. Risks, assumptions, and validation gaps.
+9. Recommended next validation plan.
+10. Thank you, decision ask, and next contact.
 
 ## Evidence Rules
 
@@ -81,6 +83,8 @@ The generated board data should include a page object like:
 ```
 
 Supported `visual.layout` values are `split-right`, `split-left`, `full-bleed`, and `none`. Use only local relative paths in `visual.src`; do not use external URLs, absolute paths, or embedded data URLs.
+
+Default generated decks should include slide `01` as an opening page and the final slide as a thank-you or decision-close page. If a user requests a shorter deck, preserve those two boundary slides and compress the middle story first.
 
 The `prompt` value is the fixed agent control prompt users inspect from the static HTML board. The rendered board should keep that fixed prompt open, place optional user instructions in a collapsed drawer below it, copy the merged prompt, or click `Run prompt`; if the optional local Codex bridge is offline, the board shows a copyable localhost start command, and if it is online, the board sends the merged prompt with a page-generated token. The rendered board should show a `Presentation mode` button on the Homepage, keep the presentation page out of the project page rail, show an `Overview mode` button on the presentation page, and include a `Present` button that opens the static fullscreen presenter.
 

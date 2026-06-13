@@ -21,6 +21,8 @@ User-editable source files live in `flashtotype-workspace/current/user-editable/
 Generated output lives in `flashtotype-workspace/current/output/`:
 
 - `output/index.html`: static Miro-inspired board users open in a browser.
+- `output/markdown-it.min.js`: bundled local Markdown renderer for full-content modals and Markdown-heavy artifacts.
+- `output/markdown-it.LICENSE.txt`: upstream MIT license for the bundled Markdown renderer.
 - `output/flashtotype.js`: reusable renderer.
 - `output/flashtotype-codex-bridge.mjs`: optional user-started localhost helper for sending board prompts to local Codex.
 - `output/start-flashtotype-bridge.ps1`: optional Windows-friendly start script that checks the lowest local prerequisites and launches the bridge with the board-generated token.
@@ -66,6 +68,8 @@ The `pages` array must include:
 - `presentation`: internal static stakeholder slide story from `presentation.md`, opened from the Homepage Presentation mode button instead of the project page rail.
 - `library`: installed skills, active workflow modules, and Flashtotype framework suggestions from `flashtotype-library.md`.
 
+The renderer also supports `intro` as an optional Flashtotype-owned introduction page. Keep it hidden from the project page rail. If omitted from embedded board data, `flashtotype.js` injects a default intro page at runtime.
+
 The `prototype` page must contain product-specific screens rather than generic skeletons. Each screen should include `title`, `state`, `body`, `x`, `y`, `device`, and a non-empty `elements` array.
 
 Supported `elements[].type` values are `text`, `field`, `list`, `card`, `notice`, `actions`, and `progress`. Use real product copy, field values or placeholders, lists, states, evidence or safety notices, actions, and outcomes from `prototype.md`. Supported tones are `neutral`, `accent`, `success`, `warning`, and `danger`.
@@ -81,7 +85,7 @@ The `home` page should include a `blocks` array for product overview cards. Each
 
 Do not fetch local Markdown files from the browser at runtime. The HTML must open directly from disk, so full content needed by the modal must be embedded in the board JSON.
 
-Keep `flashtotype.js` generic. Do not add required network dependencies or a build step. The optional Codex bridge must remain a local-only, user-started helper and must not expose `danger-full-access` from the board UI.
+Keep `flashtotype.js` generic. Do not add required network dependencies or a build step. Load `markdown-it.min.js` locally for Markdown rendering and keep raw HTML disabled. The optional Codex bridge must remain a local-only, user-started helper and must not expose `danger-full-access` from the board UI.
 
 The `library` page should include a `skills` array listing installed skills and active workflow modules used by the project.
 
@@ -92,6 +96,8 @@ The `presentation` page should include:
 - `hiddenFromMenu`: `true`, so the page is available as Presentation mode but not listed in the project page rail.
 - `prompt`: the fixed agent control prompt users can inspect in static HTML, copy with their added request, and optionally send to the local Codex bridge.
 - `slides`: an array of 16:9 slide cards with `eyebrow`, `title`, `body`, `bullets`, `visual`, `evidenceLabel`, `sourceNote`, and `speakerNotes`.
+
+Default generated decks should use a 10-slide decision story that starts with an opening title/context slide and ends with a thank-you or decision-close slide. If a user asks for another deck length, preserve those first and last boundary slides by default and compress the middle story.
 
 Each presentation slide `visual` object may include:
 

@@ -19,6 +19,7 @@ scripts/
 ```
 
 - `agent/` is for files agents copy and use as operating instructions or the master board template.
+- `agent/board-template/markdown-it.min.js` is the bundled local Markdown renderer copied with the static board template, with `markdown-it.LICENSE.txt` beside it.
 - `agent/board-template/flashtotype-codex-bridge.mjs` and `start-flashtotype-bridge.*` are optional localhost helpers copied with the static board template.
 - `user-workspace-template/` is the starter workspace users and agents edit during PM/PO work.
 - `docs/` explains public behavior and contracts.
@@ -52,6 +53,8 @@ flashtotype-workspace/
     user-editable/
     output/
       index.html
+      markdown-it.min.js
+      markdown-it.LICENSE.txt
       flashtotype.js
       flashtotype-codex-bridge.mjs
       start-flashtotype-bridge.ps1

@@ -3,7 +3,8 @@ import { createServer } from "node:http";
 import { randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
 import { spawn } from "node:child_process";
 import { createInterface } from "node:readline";
-import { resolve } from "node:path";
+import { existsSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
 
 const BRIDGE_NAME = "flashtotype-codex-bridge";
 const BRIDGE_VERSION = 1;
@@ -317,15 +318,16 @@ function startExecRun(run) {
     'approval_policy="never"',
     "--cd",
     run.cwd,
-    run.prompt
+    "-"
   ];
   const invocation = codexInvocation(args);
   const child = spawn(invocation.command, invocation.args, {
     cwd: run.cwd,
     windowsHide: true,
-    stdio: ["ignore", "pipe", "pipe"]
+    stdio: ["pipe", "pipe", "pipe"]
   });
   run.child = child;
+  child.stdin.end(run.prompt);
 
   readJsonLines(child.stdout, (event) => {
     pushEvent(run, { stream: "stdout", event });
@@ -431,6 +433,15 @@ function startAppServerRun(run) {
 
 function codexInvocation(args) {
   if (process.platform === "win32" && /\.ps1$/i.test(options.codexBin)) {
+    const binDir = dirname(options.codexBin);
+    const codexJs = join(binDir, "node_modules", "@openai", "codex", "bin", "codex.js");
+    const localNode = join(binDir, "node.exe");
+    if (existsSync(codexJs)) {
+      return {
+        command: existsSync(localNode) ? localNode : "node.exe",
+        args: [codexJs, ...args]
+      };
+    }
     return {
       command: "powershell.exe",
       args: ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", options.codexBin, ...args]

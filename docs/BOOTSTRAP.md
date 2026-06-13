@@ -24,6 +24,7 @@ The installing agent must:
 - Create `flashtotype-workspace/current/output/` for regenerated output users can open.
 - Create `flashtotype-workspace/current/START-HERE.md` as the persistent recovery guide.
 - Create `flashtotype-workspace/current/output/assets/` for generated local slide images and other run assets.
+- Copy `markdown-it.min.js` and `markdown-it.LICENSE.txt` beside the generated HTML as the local Markdown renderer and upstream license.
 - Copy `flashtotype-codex-bridge.mjs`, `start-flashtotype-bridge.ps1`, and `start-flashtotype-bridge.cmd` beside the generated HTML as optional local-only Codex helpers.
 - For the optional bridge, check whether `node` and `codex` are available when practical, then report missing prerequisites instead of adding a package manager or required backend.
 - Add `flashtotype-workspace/` to `.gitignore`.
@@ -81,6 +82,8 @@ flashtotype-workspace/
       assets/
     output/
       index.html
+      markdown-it.min.js
+      markdown-it.LICENSE.txt
       flashtotype.js
       flashtotype-codex-bridge.mjs
       start-flashtotype-bridge.ps1

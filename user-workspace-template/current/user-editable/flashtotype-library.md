@@ -37,7 +37,7 @@ Use $flash-revise to apply my requested change to the existing Flashtotype decis
 ### flash-present
 
 ```text
-Use $flash-present to create or refresh the stakeholder presentation from this Flashtotype decision pack.
+Use $flash-present to create or refresh the stakeholder presentation from this Flashtotype decision pack with the default opening and thank-you slides.
 ```
 
 ### flash-research
@@ -65,7 +65,7 @@ First read `.flashtotype/skills/flashtotype-product-sidekick/SKILL.md` and follo
 ```text
 Use $flashtotype-presentation-generator for this Flashtotype project.
 
-Read `.flashtotype/skills/flashtotype-presentation-generator/SKILL.md` and follow it as the primary workflow. Create or update `flashtotype-workspace/current/user-editable/presentation.md` from the existing Flashtotype artifacts: `flashtotype-brief.md`, `decision-pack.md`, `evidence.json`, `user-journey.md`, `prototype.md`, `Design.md`, and `flashtotype-library.md`. Build a static 16:9 stakeholder slide story with evidence labels, source notes, speaker notes, generated image prompts, local visual asset references, top assumptions, validation gaps, and next actions. If image generation is available, save slide images under `flashtotype-workspace/current/output/assets/`; otherwise keep prompt-only visual placeholders. Regenerate the `presentation` page data inside `flashtotype-workspace/current/output/index.html` without adding a backend, build step, package manager, or network dependency.
+Read `.flashtotype/skills/flashtotype-presentation-generator/SKILL.md` and follow it as the primary workflow. Create or update `flashtotype-workspace/current/user-editable/presentation.md` from the existing Flashtotype artifacts: `flashtotype-brief.md`, `decision-pack.md`, `evidence.json`, `user-journey.md`, `prototype.md`, `Design.md`, and `flashtotype-library.md`. Build a static 16:9 stakeholder slide story with the default opening and thank-you slides, evidence labels, source notes, speaker notes, generated image prompts, local visual asset references, top assumptions, validation gaps, and next actions. If image generation is available, save slide images under `flashtotype-workspace/current/output/assets/`; otherwise keep prompt-only visual placeholders. Regenerate the `presentation` page data inside `flashtotype-workspace/current/output/index.html` without adding a backend, build step, package manager, or network dependency.
 ```
 
 ### safe-run-rules

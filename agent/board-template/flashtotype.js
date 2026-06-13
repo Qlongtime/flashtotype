@@ -1,6 +1,6 @@
 (function () {
   const REQUIRED_PAGE_IDS = ["home", "journey", "prototype", "design", "presentation", "library"];
-  const MENU_EXCLUDED_PAGE_IDS = new Set(["presentation"]);
+  const MENU_EXCLUDED_PAGE_IDS = new Set(["intro", "presentation"]);
   const RIGHT_MOUSE_BUTTON = 2;
   const RIGHT_MOUSE_BUTTON_MASK = 2;
   const ZOOM_MIN = 0.55;
@@ -79,6 +79,7 @@
     try {
       const data = JSON.parse(node.textContent);
       data.pages = Array.isArray(data.pages) ? data.pages : [];
+      ensureIntroPage(data);
       data.codexBridge = normalizeCodexBridgeConfig(data.codexBridge);
       return data;
     } catch (error) {
@@ -105,6 +106,60 @@
 
   function byId(id) {
     return document.getElementById(id);
+  }
+
+  function defaultIntroPage() {
+    return {
+      id: "intro",
+      label: "Flashtotype intro",
+      type: "intro",
+      hiddenFromMenu: true,
+      title: "Flashtotype",
+      summary: "A lightweight PM/PO agent toolkit that turns early product ideas, notes, and evidence into a team-ready decision pack, prototype direction, and stakeholder story.",
+      repoUrl: "https://github.com/Qlongtime/flashtotype",
+      steps: [
+        {
+          title: "Install the kit",
+          body: "Give your coding agent the GitHub repo link and ask it to install Flashtotype into your project workspace.",
+          command: "github.com/Qlongtime/flashtotype"
+        },
+        {
+          title: "Start discovery",
+          body: "Run the guided interview to capture thesis, target user, pain, workflow, constraints, competitors, and decision needed.",
+          command: "$flash-onboard"
+        },
+        {
+          title: "Label the evidence",
+          body: "Research and claims stay visible as Source-backed, Assumption, or Needs validation so the decision quality is clear.",
+          command: "$flash-research"
+        },
+        {
+          title: "Revise the pack",
+          body: "Use focused edits to update the brief, journey, prototype, design system, board, or stakeholder deck without losing the source trail.",
+          command: "$flash-revise"
+        },
+        {
+          title: "Present and review",
+          body: "Generate a static presentation mode, audit sharing readiness, and align the next validation actions with stakeholders.",
+          command: "$flash-present / $flash-review"
+        }
+      ],
+      actions: [
+        { label: "Continue to board", targetPage: "home", primary: true },
+        { label: "Open library", targetPage: "library", primary: false }
+      ]
+    };
+  }
+
+  function ensureIntroPage(data) {
+    if (!Array.isArray(data.pages)) data.pages = [];
+    const existing = data.pages.find((page) => page.id === "intro");
+    if (existing) {
+      existing.type = existing.type || "intro";
+      existing.hiddenFromMenu = true;
+      return;
+    }
+    data.pages.unshift(defaultIntroPage());
   }
 
   function toNumber(value, fallback) {
@@ -158,7 +213,21 @@
     return text;
   }
 
-  function renderMarkdown(markdown) {
+  function createMarkdownRenderer() {
+    if (typeof window.markdownit !== "function") return null;
+    const renderer = window.markdownit({
+      html: false,
+      linkify: true,
+      breaks: false,
+      typographer: false
+    });
+    renderer.validateLink = (href) => Boolean(safeHref(href));
+    return renderer;
+  }
+
+  const markdownRenderer = createMarkdownRenderer();
+
+  function renderFallbackMarkdown(markdown) {
     const lines = String(markdown || "").replace(/\r\n/g, "\n").split("\n");
     const html = [];
     let paragraph = [];
@@ -246,6 +315,13 @@
     }
     flushBlocks();
     return html.join("") || '<p class="empty">No full content added yet.</p>';
+  }
+
+  function renderMarkdown(markdown) {
+    const text = String(markdown || "").trim();
+    if (!text) return '<p class="empty">No full content added yet.</p>';
+    if (!markdownRenderer) return renderFallbackMarkdown(text);
+    return markdownRenderer.render(text);
   }
 
   function blockMarkdown(block) {
@@ -402,6 +478,186 @@
     `;
   }
 
+  function renderIntro(page) {
+    const steps = Array.isArray(page.steps) && page.steps.length
+      ? page.steps
+      : defaultIntroPage().steps;
+    const actions = Array.isArray(page.actions) && page.actions.length
+      ? page.actions
+      : defaultIntroPage().actions;
+    const repoUrl = safeHref(page.repoUrl || defaultIntroPage().repoUrl) || defaultIntroPage().repoUrl;
+    return `
+      <div class="page-frame is-intro">
+        <div class="home-landing intro-landing">
+          <section class="home-hero" aria-label="Flashtotype introduction">
+            <h1 class="hero-title">${escapeHtml(page.title || "Flashtotype")}</h1>
+            <p class="hero-subtitle">${escapeHtml(page.summary || "A lightweight PM/PO agent toolkit for turning early ideas into decision-ready product artifacts.")}</p>
+            <div class="hero-ctas">
+              ${actions.map((action) => {
+                const targetPage = String(action.targetPage || "home");
+                const isPrimary = action.primary !== false;
+                const attrs = isPrimary
+                  ? `data-intro-continue data-page-target="${escapeHtml(targetPage)}"`
+                  : `data-page-target="${escapeHtml(targetPage)}"`;
+                return `<button class="btn-cta ${isPrimary ? "btn-primary" : "btn-secondary"}" type="button" ${attrs}>${escapeHtml(action.label || "Continue")}</button>`;
+              }).join("")}
+              <a class="btn-cta btn-secondary" href="${escapeHtml(repoUrl)}" target="_blank" rel="noreferrer">GitHub repo</a>
+            </div>
+          </section>
+
+          <section class="mockup-container" aria-label="Flashtotype workflow preview">
+            <div class="mockup-browser">
+              <div class="mockup-header">
+                <div class="mockup-dots">
+                  <span class="mockup-dot red"></span>
+                  <span class="mockup-dot yellow"></span>
+                  <span class="mockup-dot green"></span>
+                </div>
+                <div class="mockup-url">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  github.com/Qlongtime/flashtotype
+                </div>
+              </div>
+              <div class="mockup-content">
+                <aside class="mockup-sidebar" aria-label="Preview board sections">
+                  <span class="mockup-side-label">Workspace</span>
+                  <div class="mockup-sb-item active">
+                    <span class="mockup-sb-dot"></span>
+                    <div>
+                      <strong>Decision pack</strong>
+                      <small>Home</small>
+                    </div>
+                  </div>
+                  <div class="mockup-sb-item">
+                    <span class="mockup-sb-dot"></span>
+                    <div>
+                      <strong>User journey</strong>
+                      <small>Flow map</small>
+                    </div>
+                  </div>
+                  <div class="mockup-sb-item">
+                    <span class="mockup-sb-dot"></span>
+                    <div>
+                      <strong>Prototype</strong>
+                      <small>Screen logic</small>
+                    </div>
+                  </div>
+                  <div class="mockup-sb-item">
+                    <span class="mockup-sb-dot"></span>
+                    <div>
+                      <strong>Presentation</strong>
+                      <small>Stakeholder story</small>
+                    </div>
+                  </div>
+                </aside>
+                <div class="mockup-canvas">
+                  <div class="mockup-board-header">
+                    <div>
+                      <span>AI PM/PO sidekick</span>
+                      <strong>From vague idea to decision-ready artifacts</strong>
+                    </div>
+                    <div class="mockup-status-row" aria-label="Evidence labels">
+                      <span class="status-source">Source-backed</span>
+                      <span class="status-assumption">Assumption</span>
+                      <span class="status-validation">Needs validation</span>
+                    </div>
+                  </div>
+
+                  <div class="mockup-flow-map">
+                    <article class="mockup-source-stack">
+                      <span class="mockup-section-label">Inputs</span>
+                      <div class="mockup-source-card">
+                        <strong>Product thesis</strong>
+                        <small>What we believe</small>
+                      </div>
+                      <div class="mockup-source-card">
+                        <strong>User notes</strong>
+                        <small>Pain and workaround</small>
+                      </div>
+                      <div class="mockup-source-card">
+                        <strong>Evidence links</strong>
+                        <small>Sources and gaps</small>
+                      </div>
+                    </article>
+
+                    <article class="mockup-ai-core">
+                      <span class="mockup-core-mark">FT</span>
+                      <h3>Flashtotype structures the decision</h3>
+                      <p>It turns messy input into product, market, persona, risk, and validation views.</p>
+                      <div class="mockup-confidence">
+                        <div>
+                          <span>Evidence confidence</span>
+                          <strong>Visible</strong>
+                        </div>
+                        <div class="mockup-bars" aria-hidden="true">
+                          <span class="bar-source"></span>
+                          <span class="bar-assumption"></span>
+                          <span class="bar-validation"></span>
+                        </div>
+                      </div>
+                    </article>
+
+                    <section class="mockup-artifacts" aria-label="Generated artifacts">
+                      <span class="mockup-section-label">Outputs</span>
+                      <article>
+                        <strong>Decision pack</strong>
+                        <small>Recommendation and next actions</small>
+                      </article>
+                      <article>
+                        <strong>Journey map</strong>
+                        <small>Moment of use and handoffs</small>
+                      </article>
+                      <article>
+                        <strong>Prototype board</strong>
+                        <small>Screen states to validate</small>
+                      </article>
+                      <article>
+                        <strong>Presentation</strong>
+                        <small>Opening, story, thank-you close</small>
+                      </article>
+                    </section>
+                  </div>
+
+                  <div class="mockup-validation-rail" aria-label="Decision outcome preview">
+                    <div>
+                      <span>Recommendation</span>
+                      <strong>Validate next</strong>
+                    </div>
+                    <div>
+                      <span>Top gap</span>
+                      <strong>Buyer proof</strong>
+                    </div>
+                    <div>
+                      <span>Next action</span>
+                      <strong>5 interviews</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="tutorial-section" aria-label="How to use Flashtotype">
+            <div class="tutorial-header">
+              <h2>How to use Flashtotype</h2>
+              <p>Install the kit from GitHub, run discovery with your agent, then use the generated board to decide what to build, validate, or stop.</p>
+            </div>
+            <div class="tutorial-grid">
+              ${steps.map((step, index) => `
+                <article class="tutorial-card">
+                  <span class="tutorial-num">Step ${index + 1}</span>
+                  <h3>${escapeHtml(step.title || "")}</h3>
+                  <p>${escapeHtml(step.body || "")}</p>
+                  ${step.command ? `<span class="tutorial-command">${escapeHtml(step.command)}</span>` : ""}
+                </article>
+              `).join("")}
+            </div>
+          </section>
+        </div>
+      </div>
+    `;
+  }
+
   function renderHome(page) {
     const blocks = Array.isArray(page.blocks) ? page.blocks : [];
     const evidence = Array.isArray(page.evidence) ? page.evidence : [];
@@ -455,10 +711,56 @@
     `;
   }
 
-  function nodeCenter(node) {
+  function journeyNodeBox(node) {
+    const width = toNumber(node.width, 230);
+    const height = toNumber(node.height, 116);
+    const x = toNumber(node.x, 0);
+    const y = toNumber(node.y, 0);
     return {
-      x: toNumber(node.x, 0) + 115,
-      y: toNumber(node.y, 0) + 58
+      x,
+      y,
+      width,
+      height,
+      cx: x + width / 2,
+      cy: y + height / 2
+    };
+  }
+
+  function journeyEdgeAnchor(fromNode, toNode) {
+    const from = journeyNodeBox(fromNode);
+    const to = journeyNodeBox(toNode);
+    const dx = to.cx - from.cx;
+    const dy = to.cy - from.cy;
+    const tx = dx === 0 ? Number.POSITIVE_INFINITY : (from.width / 2) / Math.abs(dx);
+    const ty = dy === 0 ? Number.POSITIVE_INFINITY : (from.height / 2) / Math.abs(dy);
+    const scale = Math.min(tx, ty);
+    return {
+      x: from.cx + dx * scale,
+      y: from.cy + dy * scale
+    };
+  }
+
+  function journeyLabelPosition(start, end, label) {
+    const dx = end.x - start.x;
+    const dy = end.y - start.y;
+    const length = Math.hypot(dx, dy) || 1;
+    const midpoint = {
+      x: (start.x + end.x) / 2,
+      y: (start.y + end.y) / 2
+    };
+    const labelWidth = Math.min(120, Math.max(44, String(label || "").length * 7 + 18));
+    const offset = 18;
+    if (Math.abs(dy) < 24) {
+      return {
+        x: midpoint.x,
+        y: midpoint.y - offset,
+        width: labelWidth
+      };
+    }
+    return {
+      x: midpoint.x + (-dy / length) * offset,
+      y: midpoint.y + (dx / length) * offset,
+      width: labelWidth
     };
   }
 
@@ -470,11 +772,17 @@
       const from = nodeMap.get(link.from);
       const to = nodeMap.get(link.to);
       if (!from || !to) return "";
-      const start = nodeCenter(from);
-      const end = nodeCenter(to);
+      const start = journeyEdgeAnchor(from, to);
+      const end = journeyEdgeAnchor(to, from);
+      const labelPosition = journeyLabelPosition(start, end, link.label);
       return `
-        <line x1="${start.x}" y1="${start.y}" x2="${end.x}" y2="${end.y}" stroke="#2f3a42" stroke-width="2" marker-end="url(#arrow)" />
-        ${link.label ? `<text x="${(start.x + end.x) / 2}" y="${(start.y + end.y) / 2 - 10}" class="svg-label">${escapeHtml(link.label)}</text>` : ""}
+        <line class="svg-link" x1="${start.x}" y1="${start.y}" x2="${end.x}" y2="${end.y}" marker-end="url(#arrow)" />
+        ${link.label ? `
+          <g class="svg-label-pill">
+            <rect class="svg-label-bg" x="${labelPosition.x - labelPosition.width / 2}" y="${labelPosition.y - 11}" width="${labelPosition.width}" height="22" rx="11"></rect>
+            <text x="${labelPosition.x}" y="${labelPosition.y}" class="svg-label">${escapeHtml(link.label)}</text>
+          </g>
+        ` : ""}
       `;
     }).join("");
 
@@ -490,11 +798,11 @@
                 <path d="M 0 0 L 10 5 L 0 10 z" fill="#2f3a42"></path>
               </marker>
             </defs>
-            <style>.svg-label{font:700 13px Inter,system-ui,sans-serif;fill:#64717b;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;}</style>
+          <style>.svg-link{stroke:#2f3a42;stroke-width:2;vector-effect:non-scaling-stroke;}.svg-label-bg{fill:#fff;stroke:#d8e0e7;stroke-width:1;}.svg-label{font:800 11px Inter,system-ui,sans-serif;fill:#64717b;text-anchor:middle;dominant-baseline:middle;}</style>
             ${svgLinks}
           </svg>
           ${nodes.map((node) => `
-            <article class="journey-node ${node.tone === "action" ? "is-action" : ""} ${node.tone === "system" ? "is-system" : ""}" style="left:${toNumber(node.x, 0)}px;top:${toNumber(node.y, 0)}px">
+            <article class="journey-node ${node.tone === "action" ? "is-action" : ""} ${node.tone === "system" ? "is-system" : ""}" style="left:${toNumber(node.x, 0)}px;top:${toNumber(node.y, 0)}px;width:${toNumber(node.width, 230)}px;min-height:${toNumber(node.height, 116)}px">
               <h3>${escapeHtml(node.title)}</h3>
               <p>${escapeHtml(node.body)}</p>
             </article>
@@ -691,7 +999,7 @@
     `;
   }
 
-  function renderBoardSlide(slide) {
+  function renderBoardSlide(slide, index) {
     const visual = normalizeVisual(slide.visual);
     const visualMarkup = renderSlideVisual(visual, "slide");
     return `
@@ -700,6 +1008,9 @@
           <span>${escapeHtml(slide.eyebrow || "")}</span>
           ${badge(slide.evidenceLabel)}
         </div>
+        <button class="slide-edit-button" type="button" data-edit-slide="${index}" aria-label="Edit slide ${escapeHtml(slide.eyebrow || "")}" title="Edit slide prompt">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+        </button>
         <div class="slide-content">
           ${visualMarkup}
           <div class="slide-body">
@@ -865,7 +1176,12 @@
   function renderPage(page) {
     if (!page) return;
     const stage = byId("board-stage");
-    if (page.type === "home") stage.innerHTML = renderHome(page);
+    const viewport = byId("board-viewport");
+    if (viewport) {
+      viewport.className = `board-viewport is-page-${page.id}`;
+    }
+    if (page.type === "intro") stage.innerHTML = renderIntro(page);
+    else if (page.type === "home") stage.innerHTML = renderHome(page);
     else if (page.type === "journey") stage.innerHTML = renderJourney(page);
     else if (page.type === "prototype") stage.innerHTML = renderPrototype(page);
     else if (page.type === "design") stage.innerHTML = renderDesign(page);
@@ -883,6 +1199,36 @@
     state.activePageId = page.id;
     window.location.hash = page.id;
     renderPage(page);
+  }
+
+  function introStorageKey() {
+    const project = String(window.FLASHTOTYPE_DATA?.projectName || "project").trim() || "project";
+    return `flashtotype:${project}:intro-dismissed:v1`;
+  }
+
+  function hasDismissedIntro() {
+    try {
+      return window.localStorage?.getItem(introStorageKey()) === "true";
+    } catch {
+      return false;
+    }
+  }
+
+  function dismissIntro() {
+    try {
+      window.localStorage?.setItem(introStorageKey(), "true");
+    } catch {}
+  }
+
+  function resolveInitialPageId(data) {
+    const requestedId = window.location.hash.replace("#", "");
+    if (data.pages.some((page) => page.id === requestedId)) return requestedId;
+    if (!requestedId && data.pages.some((page) => page.id === "intro") && !hasDismissedIntro()) {
+      return "intro";
+    }
+    return data.pages.some((page) => page.id === "home")
+      ? "home"
+      : (data.pages[0]?.id || "");
   }
 
   function setZoom(nextZoom) {
@@ -1175,14 +1521,17 @@
 
   function summarizeRun(run) {
     if (run.finalMessage) return run.finalMessage;
-    if (run.error) return run.error;
     const latest = Array.isArray(run.events) ? run.events.slice(-4) : [];
-    return latest.map((event) => {
+    const latestText = latest.map((event) => {
       if (event.text) return event.text;
       if (event.event?.type) return event.event.type;
       if (event.event?.method) return event.event.method;
       return "";
     }).filter(Boolean).join("\n");
+    if (run.error) {
+      return [run.error, latestText].filter(Boolean).join("\n\n");
+    }
+    return latestText;
   }
 
   async function pollCodexRun(promptNode, runId, token) {
@@ -1307,6 +1656,90 @@
     codexBridge.timer = window.setInterval(checkBridgeHealth, CODEX_BRIDGE_HEALTH_INTERVAL_MS);
   }
 
+  function openPromptEditorModal(slideIndex) {
+    const slides = activePresentationSlides();
+    const slide = slides[slideIndex];
+    if (!slide) return;
+
+    const modal = byId("prompt-editor-modal");
+    if (!modal) return;
+
+    // Reset layout defaults and states
+    const defaults = panelDefaults();
+    const provider = modal.querySelector("[data-codex-provider]");
+    const sandbox = modal.querySelector("[data-codex-sandbox]");
+    if (provider) provider.value = defaults.provider;
+    if (sandbox) sandbox.value = "workspace-write"; // Default to write for editing slide
+
+    // Build a path-aware prompt that works in installed projects and this source repo.
+    const fixedPrompt = `Edit slide "${slide.eyebrow || ""}: ${slide.title || ""}" in the Flashtotype presentation source.
+
+Workflow:
+1. If this is an installed project, read \`.flashtotype/skills/flashtotype-presentation-generator/SKILL.md\` and edit \`flashtotype-workspace/current/user-editable/presentation.md\`.
+2. If this is the Flashtotype source repo, read \`agent/skills/flashtotype-presentation-generator/SKILL.md\` and edit \`user-workspace-template/current/user-editable/presentation.md\`.
+3. Regenerate the matching static board JSON in \`flashtotype-workspace/current/output/index.html\` for installed projects, or \`agent/board-template/index.html\` for the source template.
+4. Preserve evidence labels, source notes, speaker notes, local visual asset paths, assumptions, and validation gaps.
+5. Do not install Flashtotype into the source repo.
+
+Original Slide Content:
+- Eyebrow: ${slide.eyebrow || ""}
+- Title: ${slide.title || ""}
+- Body: ${slide.body || ""}
+- Bullets: ${Array.isArray(slide.bullets) ? JSON.stringify(slide.bullets) : "[]"}
+- Visual Layout: ${slide.visual?.layout || "none"}
+- Visual Prompt: ${slide.visual?.prompt || ""}`;
+
+    const fixedCodeNode = modal.querySelector("[data-prompt-fixed] code");
+    if (fixedCodeNode) fixedCodeNode.textContent = fixedPrompt.trim();
+
+    const addonInput = modal.querySelector("[data-prompt-addon]");
+    if (addonInput) {
+      addonInput.value = "";
+    }
+
+    setCodexOutput(modal, "", true);
+    setCodexStatus(modal, codexBridge.online
+      ? `Local Codex bridge online: ${defaults.provider}, workspace-write`
+      : "Local Codex bridge offline. Run prompt will show the start command.");
+    setCodexRunning(modal, false);
+
+    modal.classList.add("is-active");
+    modal.setAttribute("aria-hidden", "false");
+
+    if (addonInput) addonInput.focus({ preventScroll: true });
+  }
+
+  function closePromptEditorModal() {
+    const modal = byId("prompt-editor-modal");
+    if (!modal) return;
+    modal.classList.remove("is-active");
+    modal.setAttribute("aria-hidden", "true");
+  }
+
+  function setupPromptEditorModal() {
+    document.addEventListener("click", (event) => {
+      if (!(event.target instanceof Element)) return;
+      const editButton = event.target.closest("[data-edit-slide]");
+      if (editButton) {
+        openPromptEditorModal(Number(editButton.getAttribute("data-edit-slide")));
+        return;
+      }
+      if (event.target.closest("[data-close-prompt-editor-modal]")) {
+        closePromptEditorModal();
+        return;
+      }
+      const modal = byId("prompt-editor-modal");
+      if (modal?.classList.contains("is-active") && event.target === modal) {
+        closePromptEditorModal();
+      }
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      const modal = byId("prompt-editor-modal");
+      if (modal?.classList.contains("is-active")) closePromptEditorModal();
+    });
+  }
+
   function activePage() {
     return window.FLASHTOTYPE_DATA?.pages?.find((item) => item.id === state.activePageId);
   }
@@ -1369,6 +1802,9 @@
       if (!button) return;
       const pageId = button.getAttribute("data-page-target");
       if (!pageId) return;
+      if (button.hasAttribute("data-intro-continue")) {
+        dismissIntro();
+      }
       setPage(pageId);
       collapseRailForNarrowViewport();
     });
@@ -1606,10 +2042,7 @@
       console.warn("Flashtotype board is missing one or more recommended pages:", REQUIRED_PAGE_IDS);
     }
 
-    const requestedId = window.location.hash.replace("#", "");
-    state.activePageId = data.pages.some((page) => page.id === requestedId)
-      ? requestedId
-      : (data.pages[0]?.id || "");
+    state.activePageId = resolveInitialPageId(data);
 
     renderPageMenu(data);
     setZoom(1);
@@ -1619,12 +2052,20 @@
     setupPromptCopy();
     setupCodexBridge();
     setupContentModal();
+    setupPromptEditorModal();
     setupModeSwitching();
     setupPresenter();
 
     byId("menu-toggle").addEventListener("click", () => {
       byId("page-rail").classList.toggle("is-collapsed");
     });
+    const brandButton = byId("brand-home");
+    if (brandButton) {
+      brandButton.addEventListener("click", () => {
+        setPage("intro");
+        collapseRailForNarrowViewport();
+      });
+    }
     byId("zoom-out").addEventListener("click", () => setZoom(state.zoom - 0.1));
     byId("zoom-in").addEventListener("click", () => setZoom(state.zoom + 0.1));
     byId("reset-view").addEventListener("click", () => setZoom(1));

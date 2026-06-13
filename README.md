@@ -60,6 +60,8 @@ The canonical source of truth is:
 The visual output is a static HTML briefing page:
 
 - `index.html`
+- `markdown-it.min.js`
+- `markdown-it.LICENSE.txt`
 - `flashtotype.js`
 - `flashtotype-codex-bridge.mjs`
 - `start-flashtotype-bridge.ps1`
@@ -67,7 +69,7 @@ The visual output is a static HTML briefing page:
 - `logo.png`
 - `assets/` for generated slide images and other local run assets
 
-The page renders a Miro-inspired board with Homepage, User journey flow, Prototype, Design system, and Flashtotype library rail pages. The Homepage includes a Presentation mode button that opens the internal Presentation page with 16:9 slide cards, generated-image prompts, local image assets, and a fullscreen presenter mode.
+The page renders a Miro-inspired board with a first-run Flashtotype intro, Homepage, User journey flow, Prototype, Design system, and Flashtotype library rail pages. The logo reopens the intro. The Homepage includes a Presentation mode button that opens the internal Presentation page with 16:9 slide cards, generated-image prompts, local image assets, and a fullscreen presenter mode.
 
 No backend, database, package manager, or build step is required. Users can optionally start the local Codex bridge when they want a board prompt to launch Codex on their own machine. The easiest path is to open the board, inspect the visible agent control prompt, optionally expand the user request drawer, click `Run prompt`, then copy the start command from the connection popup:
 

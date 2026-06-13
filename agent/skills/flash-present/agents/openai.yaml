@@ -1,7 +1,7 @@
 interface:
   display_name: "Flash Present"
   short_description: "Build a Flashtotype stakeholder presentation."
-  default_prompt: "Use $flash-present to create or refresh the stakeholder presentation from this Flashtotype decision pack."
+  default_prompt: "Use $flash-present to create or refresh the stakeholder presentation from this Flashtotype decision pack with the default opening and thank-you slides."
 
 policy:
   allow_implicit_invocation: true

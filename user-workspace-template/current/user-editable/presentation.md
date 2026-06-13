@@ -6,34 +6,52 @@ Use this file as the source for the `Presentation` board page.
 
 - Audience:
 - Decision needed:
-- Recommended deck length: 8 slides
+- Recommended deck length: 10 slides
 - Status: Draft
 - Generated image folder: `../output/assets/`
 
 ## Story Spine
 
-1. Title and decision needed.
-2. User pain and current workaround.
-3. Research backup and confidence.
-4. Primary persona and moment of use.
-5. Proposed workflow.
-6. Prototype story.
-7. Risks, assumptions, and validation gaps.
-8. Recommended next validation plan.
+1. Opening title and audience context.
+2. Decision snapshot and recommendation.
+3. User pain and current workaround.
+4. Research backup and confidence.
+5. Primary persona and moment of use.
+6. Proposed workflow.
+7. Prototype story.
+8. Risks, assumptions, and validation gaps.
+9. Recommended next validation plan.
+10. Thank you, decision ask, and next contact.
 
 ## Copyable Agent Prompt
 
 Agents should mirror this prompt into the `presentation.prompt` field on the board presentation page so users can copy it from the static HTML.
 
 ```text
-Use $flash-present to create or refresh the stakeholder presentation from this Flashtotype decision pack. Preserve evidence labels, source notes, speaker notes, local visual assets, assumptions, validation gaps, and the static presentation page.
+Use $flash-present to create or refresh the stakeholder presentation from this Flashtotype decision pack. Preserve the default opening and thank-you slides, evidence labels, source notes, speaker notes, local visual assets, assumptions, validation gaps, and the static presentation page.
 ```
 
 When image generation is available, generate slide visuals from the same Flashtotype sources and save final images under `flashtotype-workspace/current/output/assets/`. If image generation fails or is unavailable, keep `Visual status: prompt-only` and render the prompt placeholder instead.
 
 ## Slides
 
-### 01. Decision Snapshot
+### 01. Opening
+
+- Body: Introduce the product idea, audience, and decision context before the evidence story begins.
+- Bullets:
+  - Product or project name
+  - Audience and meeting purpose
+  - Decision needed today
+- Visual layout: full-bleed
+- Visual prompt: Create a clean opening slide visual for a product decision readout based on the Flashtotype decision pack. Show a focused stakeholder workspace with product notes, evidence cards, and a clear start-of-discussion moment. No logos, no fake metrics, no readable UI text.
+- Visual src:
+- Visual alt: Opening product decision workspace.
+- Visual status: prompt-only
+- Evidence label: Assumption
+- Source note:
+- Speaker notes: Set the room context, audience, and decision the presentation will support.
+
+### 02. Decision Snapshot
 
 - Body: State the product idea, audience, decision needed, and recommendation.
 - Bullets:
@@ -47,9 +65,9 @@ When image generation is available, generate slide visuals from the same Flashto
 - Visual status: prompt-only
 - Evidence label: Needs validation
 - Source note:
-- Speaker notes: Open with the decision the team must make and what evidence is still weak.
+- Speaker notes: Move from the opening context into the decision the team must make and what evidence is still weak.
 
-### 02. User Pain
+### 03. User Pain
 
 - Body: Explain the painful workflow, current workaround, and urgency signal.
 - Bullets:
@@ -65,7 +83,7 @@ When image generation is available, generate slide visuals from the same Flashto
 - Source note:
 - Speaker notes: Anchor the story in the user's repeated moment of friction.
 
-### 03. Research Backup
+### 04. Research Backup
 
 - Body: Summarize the strongest source-backed claims and the most important gaps.
 - Bullets:
@@ -81,7 +99,7 @@ When image generation is available, generate slide visuals from the same Flashto
 - Source note:
 - Speaker notes: Separate what is known from what still needs validation.
 
-### 04. Primary Persona
+### 05. Primary Persona
 
 - Body: Show who has the pain, their job to be done, adoption trigger, and objections.
 - Bullets:
@@ -97,7 +115,7 @@ When image generation is available, generate slide visuals from the same Flashto
 - Source note:
 - Speaker notes: Connect persona details to the buying or usage moment.
 
-### 05. Proposed Workflow
+### 06. Proposed Workflow
 
 - Body: Walk through the proposed user flow and system response.
 - Bullets:
@@ -113,7 +131,7 @@ When image generation is available, generate slide visuals from the same Flashto
 - Source note:
 - Speaker notes: Explain how the workflow changes the current workaround.
 
-### 06. Prototype Story
+### 07. Prototype Story
 
 - Body: Describe the smallest prototype scenario that can prove the painful moment.
 - Bullets:
@@ -129,7 +147,7 @@ When image generation is available, generate slide visuals from the same Flashto
 - Source note:
 - Speaker notes: Keep this focused on what the prototype must prove first.
 
-### 07. Risks And Assumptions
+### 08. Risks And Assumptions
 
 - Body: List the top delivery, data, adoption, market, or compliance risks.
 - Bullets:
@@ -145,7 +163,7 @@ When image generation is available, generate slide visuals from the same Flashto
 - Source note:
 - Speaker notes: Make clear what would change the recommendation.
 
-### 08. Validation Plan
+### 09. Validation Plan
 
 - Body: List the next 3 to 5 validation actions and the success metric.
 - Bullets:
@@ -160,3 +178,19 @@ When image generation is available, generate slide visuals from the same Flashto
 - Evidence label: Assumption
 - Source note:
 - Speaker notes: Close by asking for the next decision or research commitment.
+
+### 10. Thank You
+
+- Body: Close with appreciation, the requested decision, and the immediate next step.
+- Bullets:
+  - Thank you
+  - Decision or feedback requested
+  - Next validation commitment
+- Visual layout: full-bleed
+- Visual prompt: Create a clean closing slide visual for a product decision readout based on the Flashtotype validation plan. Show a calm stakeholder wrap-up moment with notes, next-step cards, and a clear handoff. No logos, no fake metrics, no readable UI text.
+- Visual src:
+- Visual alt: Closing stakeholder wrap-up with next-step cards.
+- Visual status: prompt-only
+- Evidence label: Assumption
+- Source note:
+- Speaker notes: Thank the audience, restate the decision ask, and confirm who owns the next validation step.

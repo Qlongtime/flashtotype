@@ -49,6 +49,8 @@ const requiredFiles = [
   "user-workspace-template/current/output/README.md",
   "user-workspace-template/current/output/assets/README.md",
   "agent/board-template/index.html",
+  "agent/board-template/markdown-it.min.js",
+  "agent/board-template/markdown-it.LICENSE.txt",
   "agent/board-template/flashtotype.js",
   "agent/board-template/flashtotype-codex-bridge.mjs",
   "agent/board-template/start-flashtotype-bridge.ps1",
@@ -175,6 +177,11 @@ if (failures.length === 0) {
   if (!presentationSkill.includes("references/data-storytelling.md")) {
     failures.push("Presentation skill workflow must require references/data-storytelling.md.");
   }
+  for (const marker of ["default 10-slide order", "Opening title, audience context", "Thank you, decision ask"]) {
+    if (!presentationSkill.includes(marker)) {
+      failures.push(`Presentation skill must preserve the default opening/closing slide spine marker: ${marker}.`);
+    }
+  }
   const presentationOpenAi = read("agent/skills/flashtotype-presentation-generator/agents/openai.yaml");
   if (!presentationOpenAi.includes("$flashtotype-presentation-generator")) {
     failures.push("Presentation skill openai.yaml must include a default prompt using $flashtotype-presentation-generator.");
@@ -201,13 +208,21 @@ if (failures.length === 0) {
   if (!html.includes('src="flashtotype.js"')) {
     failures.push("HTML template must load flashtotype.js.");
   }
+  if (!html.includes('src="markdown-it.min.js"')) {
+    failures.push("HTML template must load the bundled Markdown renderer.");
+  }
   if (!html.includes('src="logo.png"')) {
     failures.push("HTML template must use the board logo asset.");
+  }
+  if (!html.includes('id="brand-home"')) {
+    failures.push("HTML template must expose the logo as a Flashtotype intro button.");
   }
   if (!html.includes('id="presenter-overlay"')) {
     failures.push("HTML template must include the presenter overlay.");
   }
   const renderer = read("agent/board-template/flashtotype.js");
+  const markdownIt = read("agent/board-template/markdown-it.min.js");
+  const markdownItLicense = read("agent/board-template/markdown-it.LICENSE.txt");
   const bridge = read("agent/board-template/flashtotype-codex-bridge.mjs");
   const startScript = read("agent/board-template/start-flashtotype-bridge.ps1");
   if (!html.includes("data-present-deck") && !renderer.includes("data-present-deck")) {
@@ -215,6 +230,19 @@ if (failures.length === 0) {
   }
   if (!renderer.includes("MENU_EXCLUDED_PAGE_IDS") || !renderer.includes('"presentation"')) {
     failures.push("flashtotype.js must hide the presentation mode page from the project page rail.");
+  }
+  for (const marker of ["defaultIntroPage", "renderIntro", "introStorageKey", "data-intro-continue", "brand-home", '"intro"']) {
+    if (!renderer.includes(marker)) {
+      failures.push(`flashtotype.js must include intro page marker: ${marker}.`);
+    }
+  }
+  const renderIntroBody = renderer.slice(renderer.indexOf("function renderIntro"), renderer.indexOf("function renderHome"));
+  const renderHomeBody = renderer.slice(renderer.indexOf("function renderHome"), renderer.indexOf("function nodeCenter"));
+  if (!renderIntroBody.includes("home-landing") || !renderIntroBody.includes("github.com/Qlongtime/flashtotype")) {
+    failures.push("Intro renderer must own the Antigravity landing content and GitHub repository link.");
+  }
+  if (renderHomeBody.includes("home-landing") || renderHomeBody.includes("mockup-browser") || renderHomeBody.includes("tutorial-section")) {
+    failures.push("Home renderer must remain the focused board overview, not the Antigravity intro landing page.");
   }
   if (!renderer.includes('data-page-target="presentation"')) {
     failures.push("Homepage renderer must include a Presentation mode button.");
@@ -242,6 +270,17 @@ if (failures.length === 0) {
   }
   if (renderer.includes("danger-full-access")) {
     failures.push("flashtotype.js must not expose danger-full-access in the board UI.");
+  }
+  for (const marker of ["window.markdownit", "html: false", "renderFallbackMarkdown"]) {
+    if (!renderer.includes(marker)) {
+      failures.push(`flashtotype.js must include Markdown renderer marker: ${marker}.`);
+    }
+  }
+  if (!markdownIt.includes("markdown-it 14.2.0") || !markdownIt.includes("@license MIT")) {
+    failures.push("markdown-it.min.js must be the vendored MIT-licensed markdown-it browser build.");
+  }
+  if (!markdownItLicense.includes("Copyright (c) 2014 Vitaly Puzrin, Alex Kocharin")) {
+    failures.push("markdown-it.LICENSE.txt must include the upstream MIT license.");
   }
   for (const marker of ["LOOPBACK_HOST = \"127.0.0.1\"", "/health", "/runs", "X-Flashtotype-Token", "timingSafeEqual", "app-server", "approval_policy"]) {
     if (!bridge.includes(marker)) {
@@ -302,6 +341,17 @@ if (failures.length === 0) {
         if (!Array.isArray(presentationPage.slides) || presentationPage.slides.length === 0) {
           failures.push("Presentation page must include a non-empty slides array.");
         } else {
+          if (presentationPage.slides.length < 10) {
+            failures.push("Starter presentation page must include the default 10-slide flow.");
+          }
+          const firstSlide = presentationPage.slides[0] || {};
+          const lastSlide = presentationPage.slides[presentationPage.slides.length - 1] || {};
+          if (!/opening/i.test(String(firstSlide.title || ""))) {
+            failures.push("Starter presentation first slide must be the opening page.");
+          }
+          if (!/thank/i.test(String(lastSlide.title || ""))) {
+            failures.push("Starter presentation last slide must be the thank-you page.");
+          }
           presentationPage.slides.forEach((slide, index) => {
             if (!slide.visual) return;
             if (typeof slide.visual !== "object" || Array.isArray(slide.visual)) {
@@ -423,6 +473,11 @@ if (failures.length === 0) {
     if (!librarySource.includes(`| ${commandName} |`) || !librarySource.includes(`$${commandName}`)) {
       failures.push(`Starter Flashtotype library must include ${commandName} and its copyable prompt.`);
     }
+  }
+
+  const starterPresentation = read("user-workspace-template/current/user-editable/presentation.md");
+  if (/test edit/i.test(starterPresentation)) {
+    failures.push("Starter presentation must not contain temporary test-edit copy.");
   }
 }
 

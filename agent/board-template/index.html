@@ -74,6 +74,22 @@
       padding: 0 14px 0 10px;
     }
 
+    .brand-button {
+      display: inline-grid;
+      place-items: center;
+      border: 0;
+      border-radius: var(--radius);
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .brand-button:hover,
+    .brand-button:focus-visible {
+      background: #eef3f6;
+      outline: none;
+    }
+
     .menu-button,
     .control-button {
       display: inline-grid;
@@ -336,6 +352,10 @@
       width: 920px;
     }
 
+    .page-frame.is-intro {
+      width: min(1180px, 100%);
+    }
+
     .page-frame.is-canvas {
       width: 1540px;
     }
@@ -390,6 +410,145 @@
       color: var(--muted);
       font-size: 17px;
       line-height: 1.6;
+    }
+
+    .intro-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+      gap: 22px;
+      align-items: stretch;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .intro-copy {
+      padding: 44px;
+    }
+
+    .intro-eyebrow {
+      display: inline-block;
+      margin-bottom: 18px;
+      color: var(--teal);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .intro-copy h1 {
+      margin: 0 0 18px;
+      color: var(--ink);
+      font-size: 56px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .intro-copy p {
+      max-width: 560px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 19px;
+      line-height: 1.55;
+    }
+
+    .intro-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .intro-primary-action {
+      background: var(--ink);
+      color: #ffffff;
+    }
+
+    .intro-primary-action:hover {
+      background: #24323a;
+      color: #ffffff;
+    }
+
+    .intro-secondary-action {
+      background: #ffffff;
+    }
+
+    .intro-system {
+      display: grid;
+      align-content: center;
+      gap: 22px;
+      background: #f7fafb;
+      padding: 34px;
+      min-height: 360px;
+    }
+
+    .intro-system-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .intro-system-header img {
+      width: 190px;
+      height: 38px;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .intro-flow {
+      display: grid;
+      gap: 12px;
+    }
+
+    .intro-flow span {
+      display: block;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.88);
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 850;
+      padding: 14px 16px;
+      box-shadow: 0 8px 20px rgba(23, 32, 38, 0.08);
+    }
+
+    .intro-steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .intro-step {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 6px 18px rgba(23, 32, 38, 0.08);
+      padding: 20px;
+    }
+
+    .intro-step span {
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .intro-step h2 {
+      margin: 12px 0 8px;
+      color: var(--ink);
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .intro-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.55;
     }
 
     .board-grid {
@@ -652,6 +811,7 @@
 
     .connector-layer {
       position: absolute;
+      z-index: 1;
       inset: 0;
       width: 100%;
       height: 100%;
@@ -661,6 +821,7 @@
 
     .journey-node {
       position: absolute;
+      z-index: 2;
       width: 230px;
       min-height: 116px;
       border: 1px solid rgba(23, 32, 38, 0.18);
@@ -668,6 +829,7 @@
       background: var(--pink-bg);
       box-shadow: 0 8px 18px rgba(23, 32, 38, 0.16);
       padding: 14px;
+      overflow: hidden;
     }
 
     .journey-node.is-action {
@@ -682,12 +844,14 @@
       margin: 0 0 8px;
       font-size: 20px;
       line-height: 1.15;
+      overflow-wrap: anywhere;
     }
 
     .journey-node p {
       margin: 0;
       color: #3f3f46;
       line-height: 1.4;
+      overflow-wrap: anywhere;
     }
 
     .flow-label {
@@ -1362,7 +1526,7 @@
 
     .bridge-modal {
       position: fixed;
-      z-index: 80;
+      z-index: 110;
       inset: 0;
       display: none;
       align-items: center;
@@ -1479,7 +1643,8 @@
     .markdown-content ul,
     .markdown-content ol,
     .markdown-content blockquote,
-    .markdown-content pre {
+    .markdown-content pre,
+    .markdown-content table {
       margin: 0 0 14px;
     }
 
@@ -1515,6 +1680,35 @@
     .markdown-content blockquote {
       border-left: 3px solid var(--teal);
       padding-left: 12px;
+    }
+
+    .markdown-content table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      font-size: 14px;
+    }
+
+    .markdown-content th,
+    .markdown-content td {
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .markdown-content th {
+      background: #f7fafb;
+      color: var(--ink);
+      font-weight: 850;
+    }
+
+    .markdown-content tbody tr:nth-child(even) {
+      background: #fbfcfd;
     }
 
     .markdown-content a {
@@ -2194,6 +2388,19 @@
         justify-self: start;
       }
 
+      .intro-hero,
+      .intro-steps {
+        grid-template-columns: 1fr;
+      }
+
+      .intro-copy {
+        padding: 34px;
+      }
+
+      .intro-copy h1 {
+        font-size: 44px;
+      }
+
       .codex-bridge-fields {
         grid-template-columns: 1fr;
       }
@@ -2241,6 +2448,37 @@
 
       .board-viewport {
         padding-top: 88px;
+      }
+
+      .page-frame.is-intro {
+        width: calc(100vw - 56px);
+      }
+
+      .intro-copy,
+      .intro-system,
+      .intro-step {
+        padding: 18px;
+      }
+
+      .intro-copy h1 {
+        font-size: 34px;
+      }
+
+      .intro-copy p {
+        font-size: 16px;
+      }
+
+      .intro-system {
+        min-height: auto;
+      }
+
+      .intro-system-header {
+        display: grid;
+        gap: 8px;
+      }
+
+      .intro-system-header img {
+        width: 170px;
       }
 
       .page-frame.is-presentation {
@@ -2406,6 +2644,734 @@
         flex-wrap: wrap;
       }
     }
+
+    .slide-edit-button {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      display: none;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      color: var(--muted);
+      cursor: pointer;
+      z-index: 10;
+      transition: border-color 140ms ease, color 140ms ease;
+    }
+
+    .slide-edit-button:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+      background: #fcfdfe;
+    }
+
+    /* Constrain viewport and stage on specific pages */
+    .board-viewport.is-page-home .board-stage,
+    .board-viewport.is-page-intro .board-stage,
+    .board-viewport.is-page-library .board-stage,
+    .board-viewport.is-page-design .board-stage {
+      width: 100%;
+      max-width: 100%;
+      min-height: auto;
+    }
+
+    .board-viewport.is-page-home .page-frame,
+    .board-viewport.is-page-intro .page-frame,
+    .board-viewport.is-page-library .page-frame,
+    .board-viewport.is-page-design .page-frame {
+      margin: 0 auto;
+    }
+
+    /* Antigravity-style Intro Page */
+    .home-landing {
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+
+    .home-hero {
+      text-align: center;
+      padding: 60px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .hero-title {
+      font-size: 52px;
+      font-weight: 900;
+      line-height: 1.1;
+      margin: 0 0 16px;
+      max-width: 800px;
+      background: linear-gradient(135deg, var(--ink) 20%, var(--teal) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-subtitle {
+      font-size: 19px;
+      color: var(--muted);
+      line-height: 1.55;
+      margin: 0 auto 32px;
+      max-width: 680px;
+    }
+
+    .hero-ctas {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 40px;
+    }
+
+    .btn-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 46px;
+      padding: 0 24px;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid transparent;
+      text-decoration: none;
+    }
+
+    .btn-cta.btn-primary {
+      background: var(--ink);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(23, 32, 38, 0.15);
+    }
+
+    .btn-cta.btn-primary:hover {
+      background: #24323a;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(23, 32, 38, 0.2);
+    }
+
+    .btn-cta.btn-secondary {
+      background: #ffffff;
+      color: var(--ink);
+      border-color: var(--line);
+      box-shadow: 0 2px 8px rgba(23, 32, 38, 0.05);
+    }
+
+    .btn-cta.btn-secondary:hover {
+      background: #f7fafb;
+      border-color: var(--muted);
+      transform: translateY(-2px);
+    }
+
+    /* Floating 3D Browser Mockup */
+    .mockup-container {
+      width: 100%;
+      max-width: 980px;
+      margin: 0 auto;
+      perspective: 1200px;
+      padding: 0 20px;
+    }
+
+    .mockup-browser {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: 0 30px 80px rgba(23, 32, 38, 0.12);
+      overflow: hidden;
+      transform: rotateX(5deg) rotateY(-2deg) rotateZ(0.5deg) translateY(0);
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .mockup-browser:hover {
+      transform: rotateX(2deg) rotateY(-1deg) rotateZ(0.2deg) translateY(-8px);
+      box-shadow: 0 45px 100px rgba(23, 32, 38, 0.18);
+    }
+
+    .mockup-header {
+      height: 42px;
+      background: #f1f5f9;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 8px;
+    }
+
+    .mockup-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .mockup-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .mockup-dot.red { background: #ef4444; }
+    .mockup-dot.yellow { background: #f59e0b; }
+    .mockup-dot.green { background: #10b981; }
+
+    .mockup-url {
+      flex: 1;
+      max-width: 480px;
+      margin: 0 auto;
+      height: 24px;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      user-select: none;
+    }
+
+    .mockup-content {
+      background: #f7fafb;
+      padding: 16px;
+      min-height: 440px;
+      overflow: hidden;
+      position: relative;
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .mockup-sidebar {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    }
+
+    .mockup-side-label,
+    .mockup-section-label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .mockup-side-label {
+      margin-bottom: 2px;
+    }
+
+    .mockup-sb-item {
+      min-height: 56px;
+      border-radius: 8px;
+      background: #f8fafc;
+      border: 1px solid transparent;
+      display: grid;
+      grid-template-columns: 9px minmax(0, 1fr);
+      align-items: center;
+      padding: 10px;
+      gap: 10px;
+    }
+
+    .mockup-sb-item.active {
+      background: var(--teal-bg);
+      border-color: rgba(15, 118, 110, 0.2);
+    }
+
+    .mockup-sb-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--muted);
+    }
+
+    .mockup-sb-item.active .mockup-sb-dot {
+      background: var(--teal);
+    }
+
+    .mockup-sb-item strong {
+      display: block;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mockup-sb-item small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.2;
+    }
+
+    .mockup-canvas {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+      padding: 18px;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: 14px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+
+    .mockup-canvas::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(#eef3f6 1px, transparent 1px),
+        linear-gradient(90deg, #eef3f6 1px, transparent 1px);
+      background-size: 28px 28px;
+      opacity: 0.42;
+      pointer-events: none;
+    }
+
+    .mockup-board-header,
+    .mockup-flow-map,
+    .mockup-validation-rail {
+      position: relative;
+      z-index: 2;
+    }
+
+    .mockup-board-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .mockup-board-header span {
+      display: block;
+      color: var(--teal);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .mockup-board-header strong {
+      display: block;
+      max-width: 420px;
+      margin-top: 4px;
+      color: var(--ink);
+      font-size: 21px;
+      line-height: 1.12;
+      font-weight: 900;
+    }
+
+    .mockup-status-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 6px;
+      max-width: 330px;
+    }
+
+    .mockup-status-row span {
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #ffffff;
+      padding: 6px 9px;
+      font-size: 10px;
+      line-height: 1;
+      color: var(--ink);
+      text-transform: none;
+    }
+
+    .mockup-status-row .status-source {
+      border-color: rgba(15, 118, 110, 0.28);
+      color: var(--teal);
+    }
+
+    .mockup-status-row .status-assumption {
+      border-color: rgba(46, 109, 255, 0.28);
+      color: var(--blue);
+    }
+
+    .mockup-status-row .status-validation {
+      border-color: rgba(185, 28, 28, 0.22);
+      color: var(--red);
+    }
+
+    .mockup-flow-map {
+      display: grid;
+      grid-template-columns: minmax(145px, 0.9fr) minmax(190px, 1fr) minmax(220px, 1.08fr);
+      gap: 14px;
+      align-items: stretch;
+      min-height: 225px;
+    }
+
+    .mockup-flow-map::before {
+      content: "";
+      position: absolute;
+      left: 14%;
+      right: 14%;
+      top: 50%;
+      border-top: 2px dashed #cbd6de;
+      z-index: -1;
+    }
+
+    .mockup-source-stack,
+    .mockup-ai-core,
+    .mockup-artifacts,
+    .mockup-validation-rail > div {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 14px 34px rgba(23, 32, 38, 0.08);
+    }
+
+    .mockup-source-stack {
+      display: grid;
+      align-content: start;
+      gap: 8px;
+      padding: 14px;
+    }
+
+    .mockup-source-card {
+      border: 1px solid #e1e9ee;
+      border-radius: 7px;
+      background: #fbfcfd;
+      padding: 10px;
+    }
+
+    .mockup-source-card strong,
+    .mockup-artifacts strong,
+    .mockup-validation-rail strong {
+      display: block;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.2;
+    }
+
+    .mockup-source-card small,
+    .mockup-artifacts small,
+    .mockup-validation-rail span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.25;
+    }
+
+    .mockup-ai-core {
+      display: grid;
+      align-content: center;
+      justify-items: start;
+      gap: 10px;
+      border-color: rgba(15, 118, 110, 0.35);
+      background: #f0fbf8;
+      padding: 18px;
+      position: relative;
+    }
+
+    .mockup-core-mark {
+      display: inline-grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: var(--teal);
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 900;
+      box-shadow: 0 10px 22px rgba(15, 118, 110, 0.24);
+    }
+
+    .mockup-ai-core h3 {
+      margin: 0;
+      color: var(--ink);
+      font-size: 18px;
+      line-height: 1.16;
+      font-weight: 900;
+    }
+
+    .mockup-ai-core p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .mockup-confidence {
+      width: 100%;
+      border-top: 1px solid rgba(15, 118, 110, 0.16);
+      padding-top: 10px;
+    }
+
+    .mockup-confidence > div:first-child {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .mockup-confidence strong {
+      color: var(--teal);
+    }
+
+    .mockup-bars {
+      display: grid;
+      grid-template-columns: 1fr 0.75fr 0.55fr;
+      gap: 5px;
+      margin-top: 8px;
+    }
+
+    .mockup-bars span {
+      height: 8px;
+      border-radius: 99px;
+    }
+
+    .bar-source {
+      background: var(--teal);
+    }
+
+    .bar-assumption {
+      background: var(--blue);
+    }
+
+    .bar-validation {
+      background: var(--red);
+    }
+
+    .mockup-artifacts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      padding: 14px;
+    }
+
+    .mockup-artifacts .mockup-section-label {
+      grid-column: 1 / -1;
+    }
+
+    .mockup-artifacts article {
+      border: 1px solid #e1e9ee;
+      border-radius: 7px;
+      background: #ffffff;
+      min-height: 70px;
+      padding: 10px;
+    }
+
+    .mockup-validation-rail {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .mockup-validation-rail > div {
+      padding: 11px 12px;
+      box-shadow: 0 8px 20px rgba(23, 32, 38, 0.06);
+    }
+
+    .mockup-validation-rail span {
+      margin-top: 0;
+      text-transform: uppercase;
+      font-weight: 900;
+    }
+
+    /* Tutorial Steps Section */
+    .tutorial-section {
+      padding: 40px 20px 20px;
+      border-top: 1px dashed var(--line);
+    }
+
+    .tutorial-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .tutorial-header h2 {
+      font-size: 32px;
+      font-weight: 850;
+      margin-bottom: 12px;
+      color: var(--ink);
+    }
+
+    .tutorial-header p {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .tutorial-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .tutorial-card {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(23, 32, 38, 0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    .tutorial-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--teal);
+      box-shadow: 0 12px 30px rgba(15, 118, 110, 0.1);
+    }
+
+    .tutorial-num {
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--teal);
+      background: var(--teal-bg);
+      padding: 4px 10px;
+      border-radius: 99px;
+      align-self: flex-start;
+    }
+
+    .tutorial-card h3 {
+      font-size: 18px;
+      font-weight: 800;
+      margin: 0;
+      color: var(--ink);
+    }
+
+    .tutorial-card p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .tutorial-command {
+      font-family: monospace;
+      font-size: 12px;
+      background: #eef3f6;
+      padding: 4px 8px;
+      border-radius: 4px;
+      color: var(--ink);
+      font-weight: bold;
+      margin-top: auto;
+      align-self: flex-start;
+    }
+
+    /* Notion sheet container separator */
+    .landing-workspace-divider {
+      text-align: center;
+      margin: 20px 0;
+      position: relative;
+    }
+
+    .landing-workspace-divider span {
+      display: inline-block;
+      background: var(--paper);
+      padding: 0 20px;
+      position: relative;
+      z-index: 2;
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .landing-workspace-divider::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 1px;
+      background: var(--line);
+      z-index: 1;
+    }
+
+    /* Make responsive rules for Hero & Mockup */
+    @media (max-width: 900px) {
+      .hero-title {
+        font-size: 42px;
+      }
+      .mockup-content {
+        grid-template-columns: 1fr;
+        height: auto;
+        min-height: auto;
+      }
+      .mockup-sidebar {
+        display: none;
+      }
+      .mockup-browser {
+        transform: none !important;
+      }
+      .mockup-board-header,
+      .mockup-validation-rail {
+        grid-template-columns: 1fr;
+      }
+      .mockup-board-header,
+      .mockup-status-row {
+        justify-content: flex-start;
+      }
+      .mockup-flow-map {
+        grid-template-columns: 1fr;
+      }
+      .mockup-flow-map::before {
+        display: none;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .hero-title {
+        font-size: 34px;
+      }
+      .hero-subtitle {
+        font-size: 16px;
+      }
+      .hero-ctas {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .btn-cta {
+        width: 100%;
+      }
+      .mockup-container {
+        padding: 0;
+      }
+      .mockup-header {
+        padding: 0 10px;
+      }
+      .mockup-url {
+        justify-content: flex-start;
+        min-width: 0;
+        padding: 0 8px;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .mockup-content,
+      .mockup-canvas {
+        padding: 12px;
+      }
+      .mockup-board-header strong {
+        font-size: 18px;
+      }
+      .mockup-artifacts {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -2414,7 +3380,9 @@
       <button class="menu-button" type="button" id="menu-toggle" aria-label="Toggle page menu">
         <span class="hamburger" aria-hidden="true"></span>
       </button>
-      <img class="brand-logo" src="logo.png" alt="Flashtotype" draggable="false">
+      <button class="brand-button" type="button" id="brand-home" aria-label="Open Flashtotype introduction">
+        <img class="brand-logo" src="logo.png" alt="Flashtotype" draggable="false">
+      </button>
       <div class="project-meta">
         <p class="project-title" id="project-title">Project board</p>
         <p class="project-subtitle" id="project-subtitle">PM/PO visual workspace</p>
@@ -2478,6 +3446,57 @@
         <button class="primary" type="button" data-copy-bridge-command>Copy command</button>
         <button class="secondary" type="button" data-check-bridge>Check connection</button>
         <button class="secondary" type="button" data-close-bridge-modal>Close</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-modal" id="prompt-editor-modal" aria-hidden="true" aria-label="Edit slide prompt">
+    <div class="content-dialog" role="dialog" aria-modal="true" aria-labelledby="prompt-editor-title" style="width: min(680px, 100%);">
+      <div class="content-dialog-header">
+        <div>
+          <h2 id="prompt-editor-title">Edit Slide Prompt</h2>
+          <p class="content-source" id="prompt-editor-subtitle">Regenerate slide from prompt</p>
+        </div>
+        <button class="content-close" type="button" data-close-prompt-editor-modal aria-label="Close prompt editor modal">×</button>
+      </div>
+      <div class="markdown-content" style="padding: 18px 24px 28px;">
+        <div class="skill-prompt" data-codex-prompt style="margin-top: 0; padding-top: 0; border: 0;">
+          <div class="prompt-compose" style="margin-top: 0; background: #f7fafb; border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; display: grid; gap: 6px;">
+            <span style="font-weight: 850; font-size: 11px; color: var(--muted); text-transform: uppercase;">Agent Control Prompt</span>
+            <pre class="prompt-code" data-prompt-fixed style="background: #ffffff; max-height: 120px; border: 1px solid var(--line); margin-top: 6px; border-radius: var(--radius);"><code></code></pre>
+          </div>
+
+          <div class="prompt-compose" style="margin-top: 14px; display: grid; gap: 6px; border: 1px solid var(--line); border-radius: var(--radius); background: #fbfcfd; padding: 12px;">
+            <span style="font-weight: 850; font-size: 11px; color: var(--muted); text-transform: uppercase;">What do you want to change?</span>
+            <textarea class="prompt-input" data-prompt-addon style="margin-top: 6px; min-height: 100px;" placeholder="Describe what you want to change in this slide (e.g., 'Change the visual prompt to show a dashboard interface, and add a bullet about data security')."></textarea>
+          </div>
+
+          <div class="prompt-compose-actions" style="margin-top: 16px;">
+            <button class="codex-send-button" type="button" data-send-codex>Run prompt</button>
+            <button class="codex-cancel-button" type="button" data-cancel-codex hidden>Cancel</button>
+          </div>
+
+          <div class="codex-bridge-panel" data-codex-bridge-panel style="margin-top: 14px;">
+            <div class="codex-bridge-status" data-codex-status>Local Codex bridge offline</div>
+            <div class="codex-bridge-fields" style="margin-top: 6px;">
+              <label>
+                <span>Provider</span>
+                <select data-codex-provider>
+                  <option value="exec" selected>codex exec</option>
+                  <option value="app-server">app-server</option>
+                </select>
+              </label>
+              <label>
+                <span>Sandbox</span>
+                <select data-codex-sandbox>
+                  <option value="read-only">read-only</option>
+                  <option value="workspace-write" selected>workspace-write</option>
+                </select>
+              </label>
+            </div>
+            <pre class="codex-output" data-codex-output hidden style="margin-top: 10px;"></pre>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -2777,10 +3796,26 @@
         "summary": "Use this page as a Canva-like 16:9 story deck for the product decision, research backup, user pain, prototype direction, risks, and validation plan.",
         "audience": "Product stakeholders",
         "decision": "Decide whether to proceed, pause, or validate further.",
-        "prompt": "Use $flash-present to create or refresh the stakeholder presentation from this Flashtotype decision pack. Preserve evidence labels, source notes, speaker notes, local visual assets, assumptions, validation gaps, and the static presentation page.",
+        "prompt": "Use $flash-present to create or refresh the stakeholder presentation from this Flashtotype decision pack. Preserve the default opening and thank-you slides, evidence labels, source notes, speaker notes, local visual assets, assumptions, validation gaps, and the static presentation page.",
         "slides": [
           {
             "eyebrow": "01",
+            "title": "Opening",
+            "body": "Introduce the product idea, audience, and decision context before the evidence story begins.",
+            "bullets": ["Product or project name", "Audience and meeting purpose", "Decision needed today"],
+            "visual": {
+              "layout": "full-bleed",
+              "prompt": "Create a clean opening slide visual for a product decision readout based on the Flashtotype decision pack. Show a focused stakeholder workspace with product notes, evidence cards, and a clear start-of-discussion moment. No logos, no fake metrics, no readable UI text.",
+              "src": "",
+              "alt": "Opening product decision workspace.",
+              "status": "prompt-only"
+            },
+            "evidenceLabel": "Assumption",
+            "sourceNote": "Source: presentation.md",
+            "speakerNotes": "Set the room context, audience, and decision the presentation will support."
+          },
+          {
+            "eyebrow": "02",
             "title": "Decision Snapshot",
             "body": "State the product idea, audience, decision needed, and recommendation.",
             "bullets": ["Product thesis", "Recommendation", "Confidence level"],
@@ -2793,10 +3828,10 @@
             },
             "evidenceLabel": "Needs validation",
             "sourceNote": "Source: decision-pack.md and flashtotype-brief.md",
-            "speakerNotes": "Open with the decision the team must make and what evidence is still weak."
+            "speakerNotes": "Move from the opening context into the decision the team must make and what evidence is still weak."
           },
           {
-            "eyebrow": "02",
+            "eyebrow": "03",
             "title": "User Pain",
             "body": "Explain the painful workflow, current workaround, and urgency signal.",
             "bullets": ["Primary persona", "Current workaround", "Why this matters now"],
@@ -2812,7 +3847,7 @@
             "speakerNotes": "Anchor the story in the user's repeated moment of friction."
           },
           {
-            "eyebrow": "03",
+            "eyebrow": "04",
             "title": "Research Backup",
             "body": "Summarize the strongest source-backed claims and the most important gaps.",
             "bullets": ["Cited sources", "Confidence", "Open gaps"],
@@ -2828,7 +3863,7 @@
             "speakerNotes": "Separate what is known from what still needs validation."
           },
           {
-            "eyebrow": "04",
+            "eyebrow": "05",
             "title": "Primary Persona",
             "body": "Show who has the pain, their job to be done, adoption trigger, and objections.",
             "bullets": ["Role and context", "Job to be done", "Adoption trigger"],
@@ -2844,7 +3879,7 @@
             "speakerNotes": "Connect persona details to the buying or usage moment."
           },
           {
-            "eyebrow": "05",
+            "eyebrow": "06",
             "title": "Proposed Workflow",
             "body": "Walk through the proposed user flow and system response.",
             "bullets": ["Entry point", "Core action", "Output"],
@@ -2860,7 +3895,7 @@
             "speakerNotes": "Explain how the workflow changes the current workaround."
           },
           {
-            "eyebrow": "06",
+            "eyebrow": "07",
             "title": "Prototype Story",
             "body": "Describe the smallest prototype scenario that can prove the painful moment.",
             "bullets": ["First scenario", "What it proves", "What it does not prove"],
@@ -2876,7 +3911,7 @@
             "speakerNotes": "Keep this focused on what the prototype must prove first."
           },
           {
-            "eyebrow": "07",
+            "eyebrow": "08",
             "title": "Risks And Assumptions",
             "body": "List the top delivery, data, adoption, market, or compliance risks.",
             "bullets": ["Highest-risk assumption", "Validation gap", "Mitigation"],
@@ -2892,7 +3927,7 @@
             "speakerNotes": "Make clear what would change the recommendation."
           },
           {
-            "eyebrow": "08",
+            "eyebrow": "09",
             "title": "Validation Plan",
             "body": "List the next 3 to 5 validation actions and the success metric.",
             "bullets": ["User interview", "Source-backed research", "Prototype review"],
@@ -2906,6 +3941,22 @@
             "evidenceLabel": "Assumption",
             "sourceNote": "Source: decision-pack.md",
             "speakerNotes": "Close by asking for the next decision or research commitment."
+          },
+          {
+            "eyebrow": "10",
+            "title": "Thank You",
+            "body": "Close with appreciation, the requested decision, and the immediate next step.",
+            "bullets": ["Thank you", "Decision or feedback requested", "Next validation commitment"],
+            "visual": {
+              "layout": "full-bleed",
+              "prompt": "Create a clean closing slide visual for a product decision readout based on the Flashtotype validation plan. Show a calm stakeholder wrap-up moment with notes, next-step cards, and a clear handoff. No logos, no fake metrics, no readable UI text.",
+              "src": "",
+              "alt": "Closing stakeholder wrap-up with next-step cards.",
+              "status": "prompt-only"
+            },
+            "evidenceLabel": "Assumption",
+            "sourceNote": "Source: presentation.md",
+            "speakerNotes": "Thank the audience, restate the decision ask, and confirm who owns the next validation step."
           }
         ]
       },
@@ -2942,7 +3993,7 @@
             "path": ".agents/skills/flash-present/SKILL.md",
             "description": "Creates or refreshes an evidence-labeled stakeholder presentation with speaker notes and local visual assets.",
             "usedFor": ["Stakeholder presentations", "Executive readouts", "Speaker notes", "Presentation mode"],
-            "prompt": "Use $flash-present to create or refresh the stakeholder presentation from this Flashtotype decision pack."
+            "prompt": "Use $flash-present to create or refresh the stakeholder presentation from this Flashtotype decision pack with the default opening and thank-you slides."
           },
           {
             "name": "flash-research",
@@ -2978,7 +4029,7 @@
             "path": ".flashtotype/skills/flashtotype-presentation-generator/SKILL.md",
             "description": "Turns Flashtotype research artifacts into a static, evidence-labeled 16:9 stakeholder slide story with local generated slide visuals and speaker notes.",
             "usedFor": ["Stakeholder decks", "Data storytelling", "Local slide visuals", "Evidence-labeled slides", "Presentation page generation"],
-            "prompt": "Use $flashtotype-presentation-generator for this Flashtotype project.\n\nRead `.flashtotype/skills/flashtotype-presentation-generator/SKILL.md` and follow it as the primary workflow. Create or update `flashtotype-workspace/current/user-editable/presentation.md` from the existing Flashtotype artifacts: `flashtotype-brief.md`, `decision-pack.md`, `evidence.json`, `user-journey.md`, `prototype.md`, `Design.md`, and `flashtotype-library.md`. Build a static 16:9 stakeholder slide story with evidence labels, source notes, speaker notes, generated image prompts, local visual asset references, top assumptions, validation gaps, and next actions. If image generation is available, save slide images under `flashtotype-workspace/current/output/assets/`; otherwise keep prompt-only visual placeholders. Regenerate the `presentation` page data inside `flashtotype-workspace/current/output/index.html` without adding a backend, build step, package manager, or network dependency."
+            "prompt": "Use $flashtotype-presentation-generator for this Flashtotype project.\n\nRead `.flashtotype/skills/flashtotype-presentation-generator/SKILL.md` and follow it as the primary workflow. Create or update `flashtotype-workspace/current/user-editable/presentation.md` from the existing Flashtotype artifacts: `flashtotype-brief.md`, `decision-pack.md`, `evidence.json`, `user-journey.md`, `prototype.md`, `Design.md`, and `flashtotype-library.md`. Build a static 16:9 stakeholder slide story with the default opening and thank-you slides, evidence labels, source notes, speaker notes, generated image prompts, local visual asset references, top assumptions, validation gaps, and next actions. If image generation is available, save slide images under `flashtotype-workspace/current/output/assets/`; otherwise keep prompt-only visual placeholders. Regenerate the `presentation` page data inside `flashtotype-workspace/current/output/index.html` without adding a backend, build step, package manager, or network dependency."
           },
           {
             "name": "safe-run-rules",
@@ -3063,6 +4114,7 @@
     ]
   }
   </script>
+  <script src="markdown-it.min.js"></script>
   <script src="flashtotype.js"></script>
 </body>
 </html>

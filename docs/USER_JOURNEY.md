@@ -164,6 +164,7 @@ They do not need existing research, code, designs, product docs, or a prototype.
 
     The board includes:
 
+    - First-run Flashtotype intro, reopened by clicking the topbar logo.
     - Homepage product overview.
     - User journey flow.
     - Prototype workspace.
@@ -177,8 +178,9 @@ They do not need existing research, code, designs, product docs, or a prototype.
 
 14. The user opens Presentation mode.
 
-    Presentation mode turns the decision pack into a stakeholder story:
+    Presentation mode turns the decision pack into a 10-slide stakeholder story by default:
 
+    - Opening title and audience context.
     - Decision snapshot.
     - User pain.
     - Research backup.
@@ -187,6 +189,7 @@ They do not need existing research, code, designs, product docs, or a prototype.
     - Prototype story.
     - Risks and assumptions.
     - Validation plan.
+    - Thank-you close with the decision ask and next action.
 
 15. The user iterates with Codex.
 

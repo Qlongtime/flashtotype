@@ -2,7 +2,7 @@
 
 Files in this folder are generated from `../user-editable/`.
 
-Open `index.html` in a browser to see the Flashtotype board. Keep `logo.png`, `flashtotype.js`, `flashtotype-codex-bridge.mjs`, `start-flashtotype-bridge.ps1`, `start-flashtotype-bridge.cmd`, and the `assets/` folder beside `index.html` when regenerating or moving the output.
+Open `index.html` in a browser to see the Flashtotype board. Keep `logo.png`, `markdown-it.min.js`, `markdown-it.LICENSE.txt`, `flashtotype.js`, `flashtotype-codex-bridge.mjs`, `start-flashtotype-bridge.ps1`, `start-flashtotype-bridge.cmd`, and the `assets/` folder beside `index.html` when regenerating or moving the output.
 
 Generated presentation images should be saved under `assets/` and referenced from board JSON with local paths such as `assets/presentation-slide-01.png`.
 

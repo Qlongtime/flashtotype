@@ -32,6 +32,8 @@ Use the current project root as the target unless the user names another path.
    - `user-workspace-template/current/` to `flashtotype-workspace/current/`
    - Preserve `flashtotype-workspace/current/START-HERE.md` as the durable recovery guide for reopened Codex sessions.
    - `.flashtotype/board-template/index.html` to `flashtotype-workspace/current/output/index.html`
+   - `.flashtotype/board-template/markdown-it.min.js` to `flashtotype-workspace/current/output/markdown-it.min.js`
+   - `.flashtotype/board-template/markdown-it.LICENSE.txt` to `flashtotype-workspace/current/output/markdown-it.LICENSE.txt`
    - `.flashtotype/board-template/flashtotype.js` to `flashtotype-workspace/current/output/flashtotype.js`
    - `.flashtotype/board-template/flashtotype-codex-bridge.mjs` to `flashtotype-workspace/current/output/flashtotype-codex-bridge.mjs`
    - `.flashtotype/board-template/start-flashtotype-bridge.ps1` to `flashtotype-workspace/current/output/start-flashtotype-bridge.ps1`
